@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DeviceToken {
+  id                 String   @id @default(cuid())
+  shopifyCustomerId  String?
+  token              String   @unique
+  platform           String
+  createdAt          DateTime @default(now())
+
+  @@index([shopifyCustomerId])
+}
+
+model WishlistItem {
+  id                 String   @id @default(cuid())
+  shopifyCustomerId  String
+  productId          String
+  createdAt          DateTime @default(now())
+
+  @@unique([shopifyCustomerId, productId])
+  @@index([productId])
+}
+
+model PointsLedger {
+  id                 String   @id @default(cuid())
+  shopifyCustomerId  String
+  points             Int
+  type               String
+  orderId            String?
+  note               String?
+  createdAt          DateTime @default(now())
+
+  @@unique([orderId, type])
+  @@index([shopifyCustomerId])
+}
+
+model PaymentProof {
+  id        String   @id @default(cuid())
+  orderId   String
+  imageUrl  String?
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+}
+
+model ShipmentMap {
+  id         String   @id @default(cuid())
+  orderId    String   @unique
+  bostaId    String?
+  trackingNo String?
+  status     String?
+  updatedAt  DateTime @updatedAt
+}
+
+model ProcessedWebhook {
+  id          String   @id
+  topic       String
+  processedAt DateTime @default(now())
+}
