@@ -11,6 +11,7 @@ export interface Palette {
   danger: string;
   success: string;
   overlay: string;
+  onOverlay: string;
 }
 
 export const lightPalette: Palette = {
@@ -26,6 +27,7 @@ export const lightPalette: Palette = {
   danger: '#8B0000',
   success: '#2F6B3F',
   overlay: 'rgba(30, 11, 12, 0.5)',
+  onOverlay: '#FFFFFF',
 };
 
 export const darkPalette: Palette = {
@@ -41,6 +43,7 @@ export const darkPalette: Palette = {
   danger: '#FF8A8A',
   success: '#7FD39A',
   overlay: 'rgba(0, 0, 0, 0.6)',
+  onOverlay: '#FFFFFF',
 };
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 } as const;

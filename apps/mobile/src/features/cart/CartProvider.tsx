@@ -38,6 +38,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const id = await AsyncStorage.getItem(CART_ID_KEY);
         if (id) setCart(await getCart(id));
       } catch {
+        // A cart we cannot fetch (expired id, offline) is treated as empty; the next add creates a fresh one.
         setCart(null);
       } finally {
         setLoading(false);

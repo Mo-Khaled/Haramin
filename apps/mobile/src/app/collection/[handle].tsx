@@ -9,14 +9,8 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
 import { useCollection, useCollectionProducts } from '@/features/catalog/hooks';
-import {
-  countActive,
-  FilterSheet,
-  NO_FILTERS,
-  SortSheet,
-  toFilterInputs,
-  type ActiveFilters,
-} from '@/features/catalog/FilterSheet';
+import { FilterSheet, SortSheet } from '@/features/catalog/FilterSheet';
+import { countActive, NO_FILTERS, toFilterInputs, type ActiveFilters } from '@/features/catalog/filterInputs';
 import { ProductGrid } from '@/features/catalog/ProductGrid';
 import type { SortKey } from '@/lib/shopify/types';
 import { spacing } from '@/theme/tokens';

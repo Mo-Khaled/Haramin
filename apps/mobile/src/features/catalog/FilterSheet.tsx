@@ -7,41 +7,8 @@ import { Chip } from '@/components/ui/Chip';
 import { Sheet } from '@/components/ui/Sheet';
 import { formatMoney } from '@/lib/format';
 import type { ProductFilter, SortKey } from '@/lib/shopify/types';
+import { NO_FILTERS, PRICE_BANDS, type ActiveFilters } from './filterInputs';
 import { spacing } from '@/theme/tokens';
-
-export interface ActiveFilters {
-  inStock: boolean;
-  priceBand: PriceBand | null;
-}
-
-export interface PriceBand {
-  min: number;
-  max: number | null;
-}
-
-export const NO_FILTERS: ActiveFilters = { inStock: false, priceBand: null };
-
-const PRICE_BANDS: PriceBand[] = [
-  { min: 0, max: 500 },
-  { min: 500, max: 1000 },
-  { min: 1000, max: 2000 },
-  { min: 2000, max: null },
-];
-
-/** Converts UI filter state to the JSON inputs the Storefront API expects. */
-export function toFilterInputs(filters: ActiveFilters): string[] {
-  const inputs: string[] = [];
-  if (filters.inStock) inputs.push(JSON.stringify({ available: true }));
-  if (filters.priceBand) {
-    const { min, max } = filters.priceBand;
-    inputs.push(JSON.stringify({ price: max === null ? { min } : { min, max } }));
-  }
-  return inputs;
-}
-
-export function countActive(filters: ActiveFilters): number {
-  return Number(filters.inStock) + Number(filters.priceBand !== null);
-}
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'FEATURED', label: 'collection.sortFeatured' },

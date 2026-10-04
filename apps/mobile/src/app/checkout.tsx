@@ -9,7 +9,6 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, LoadingState } from '@/components/ui/States';
 import { useCart } from '@/features/cart/CartProvider';
-import { SHOP_URL } from '@/lib/shopify/client';
 
 const CONFIRMATION_PATTERN = /\/(thank[_-]you|thank_you)|\/orders\/[a-z0-9]+/i;
 
@@ -49,7 +48,7 @@ export default function CheckoutScreen() {
           renderLoading={() => <LoadingState />}
           setSupportMultipleWindows={false}
           allowsBackForwardNavigationGestures
-          originWhitelist={[SHOP_URL, 'https://*']}
+          originWhitelist={['https://*']}
         />
       </View>
     </Screen>

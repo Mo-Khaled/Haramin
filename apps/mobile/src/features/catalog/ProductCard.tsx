@@ -59,7 +59,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
         </View>
         {!product.availableForSale ? (
           <View style={[styles.soldOut, { backgroundColor: colors.overlay }]}>
-            <AppText variant="label" color="#FFFFFF">
+            <AppText variant="label" color={colors.onOverlay}>
               {t('common.outOfStock')}
             </AppText>
           </View>

@@ -5,5 +5,4 @@ export const env = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? '',
   whatsappNumber: process.env.EXPO_PUBLIC_WHATSAPP_NUMBER ?? '',
   freeShippingThreshold: 2500,
-  pointsPerEgp: 0.1,
 } as const;
