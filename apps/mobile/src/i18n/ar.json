@@ -1,4 +1,141 @@
 {
   "tabs": { "home": "الرئيسية", "shop": "تسوق", "wishlist": "المفضلة", "cart": "السلة", "account": "حسابي" },
-  "soon": "قريباً"
+  "common": {
+    "error": "حدث خطأ ما",
+    "retry": "حاول مرة أخرى",
+    "back": "رجوع",
+    "close": "إغلاق",
+    "apply": "تطبيق",
+    "done": "تم",
+    "viewAll": "عرض الكل",
+    "loadingMore": "جارٍ التحميل",
+    "outOfStock": "غير متوفر",
+    "off": "خصم {{percent}}%"
+  },
+  "home": {
+    "tagline": "عطور أصلية وعود وبخور",
+    "search": "ابحث عن عطر أو ماركة…",
+    "forHer": "للنساء",
+    "forHim": "للرجال",
+    "homeIncense": "المنزل والبخور",
+    "newArrivals": "وصل حديثاً",
+    "bestSellers": "الأكثر مبيعاً",
+    "offers": "العروض",
+    "brands": "تسوق حسب الماركة",
+    "freeShipping": "شحن مجاني للطلبات فوق {{amount}}"
+  },
+  "shop": {
+    "title": "تسوق",
+    "gender": "تسوق حسب النوع",
+    "collections": "المجموعات",
+    "brands": "الماركات",
+    "all": "كل العطور"
+  },
+  "collection": {
+    "sort": "ترتيب",
+    "filter": "تصفية",
+    "empty": "لا توجد منتجات",
+    "results_zero": "لا منتجات",
+    "results_one": "منتج واحد",
+    "results_two": "منتجان",
+    "results_few": "{{count}} منتجات",
+    "results_many": "{{count}} منتجاً",
+    "results_other": "{{count}} منتج",
+    "clear": "مسح الكل",
+    "showResults": "عرض النتائج",
+    "availability": "التوفر",
+    "price": "السعر",
+    "inStock": "المتوفر فقط",
+    "sortFeatured": "المميز",
+    "sortBest": "الأكثر مبيعاً",
+    "sortNewest": "الأحدث",
+    "sortPriceAsc": "السعر: من الأقل للأعلى",
+    "sortPriceDesc": "السعر: من الأعلى للأقل"
+  },
+  "search": {
+    "placeholder": "ابحث في المنتجات",
+    "prompt": "اكتب للبحث في المتجر",
+    "empty": "لا نتائج عن «{{query}}»"
+  },
+  "product": {
+    "addToCart": "أضف إلى السلة",
+    "added": "تمت الإضافة إلى السلة",
+    "unavailable": "غير متوفر",
+    "description": "الوصف",
+    "addToWishlist": "أضف إلى المفضلة",
+    "removeFromWishlist": "إزالة من المفضلة",
+    "notFound": "المنتج غير موجود",
+    "quickAdd": "إضافة سريعة",
+    "selectOption": "اختر {{name}}",
+    "share": "مشاركة"
+  },
+  "wishlist": {
+    "empty": "قائمة المفضلة فارغة",
+    "emptyHint": "اضغط على القلب في أي منتج لحفظه هنا.",
+    "browse": "تصفح المنتجات"
+  },
+  "cart": {
+    "title": "سلتك",
+    "empty": "سلتك فارغة",
+    "continue": "متابعة التسوق",
+    "subtotal": "المجموع الفرعي",
+    "total": "الإجمالي",
+    "checkout": "إتمام الشراء",
+    "remove": "إزالة",
+    "discountPlaceholder": "كود الخصم",
+    "discountApplied": "تم تطبيق الكود {{code}}",
+    "discountInvalid": "هذا الكود غير صالح لسلتك",
+    "freeShippingLeft": "أضف {{amount}} للحصول على شحن مجاني",
+    "freeShippingDone": "حصلت على شحن مجاني",
+    "increase": "زيادة الكمية",
+    "decrease": "تقليل الكمية",
+    "shippingNote": "تظهر خيارات الشحن والدفع عند إتمام الشراء."
+  },
+  "checkout": {
+    "title": "إتمام الشراء",
+    "confirmedTitle": "شكراً لك!",
+    "confirmedBody": "تم استلام طلبك. سنخطرك مع كل خطوة.",
+    "instapayTitle": "الدفع عبر إنستا باي؟",
+    "instapayBody": "بعد التحويل، أرسل لقطة شاشة للتحويل عبر واتساب لتأكيد طلبك.",
+    "sendProof": "إرسال الإثبات عبر واتساب",
+    "backToShop": "العودة للتسوق"
+  },
+  "account": {
+    "title": "حسابي",
+    "signIn": "تسجيل الدخول أو إنشاء حساب",
+    "signInHint": "تابع طلباتك، اكسب نقاطاً واحفظ مفضلتك على كل أجهزتك.",
+    "signOut": "تسجيل الخروج",
+    "orders": "طلباتي",
+    "loyalty": "نقاط الولاء",
+    "language": "اللغة",
+    "policies": "السياسات",
+    "contact": "تواصل معنا",
+    "whatsapp": "تحدث عبر واتساب",
+    "hello": "أهلاً، {{name}}",
+    "notConfigured": "تسجيل الدخول غير مفعّل بعد.",
+    "signInFailed": "فشل تسجيل الدخول. حاول مرة أخرى.",
+    "stores": "فروعنا"
+  },
+  "orders": {
+    "title": "طلباتي",
+    "empty": "لا توجد طلبات بعد",
+    "number": "الطلب {{name}}",
+    "items": "{{count}} منتجات",
+    "status": { "PAID": "مدفوع", "PENDING": "قيد الانتظار", "FULFILLED": "تم الشحن", "UNFULFILLED": "قيد التجهيز", "PARTIALLY_FULFILLED": "شُحن جزئياً", "REFUNDED": "تم الاسترداد" },
+    "track": "تتبع الشحنة"
+  },
+  "loyalty": {
+    "title": "نقاط الولاء",
+    "balance": "رصيدك",
+    "points": "{{count}} نقطة",
+    "howItWorks": "اكسب نقطة مقابل كل 10 جنيهات تنفقها. استبدل النقاط برصيد في المتجر.",
+    "redeem": "استبدال النقاط",
+    "redeemAmount": "استبدل {{points}} نقطة بقيمة {{amount}}",
+    "history": "السجل",
+    "emptyHistory": "لا يوجد نشاط بعد",
+    "redeemed": "تم استبدال النقاط وإضافة الرصيد إلى حسابك.",
+    "needSignIn": "سجّل الدخول لعرض نقاطك"
+  },
+  "language": { "title": "اللغة", "restartTitle": "إعادة التشغيل مطلوبة", "restartBody": "سيعاد تحميل التطبيق لتطبيق اللغة الجديدة.", "english": "English", "arabic": "العربية" },
+  "policies": { "shipping": "سياسة التوصيل", "refund": "الاسترجاع والاستبدال", "privacy": "سياسة الخصوصية", "terms": "شروط الخدمة" }
 }
