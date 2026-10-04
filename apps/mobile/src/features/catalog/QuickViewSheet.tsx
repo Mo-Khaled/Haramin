@@ -11,6 +11,7 @@ import { Sheet } from '@/components/ui/Sheet';
 import { LoadingState } from '@/components/ui/States';
 import { useCart } from '@/features/cart/CartProvider';
 import type { ProductCard } from '@/lib/shopify/types';
+import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { useProduct } from './hooks';
 import { findVariant, initialSelection, VariantPicker, type Selection } from './VariantPicker';
@@ -22,6 +23,7 @@ interface Props {
 
 export function QuickViewSheet({ product, onClose }: Props) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const cart = useCart();
   const detail = useProduct(product?.handle ?? '');
   const [selection, setSelection] = useState<Selection>({});
@@ -53,7 +55,7 @@ export function QuickViewSheet({ product, onClose }: Props) {
       footer={
         data ? (
           <>
-            {error ? <AppText variant="caption" color="#B3261E">{t('common.error')}</AppText> : null}
+            {error ? <AppText variant="caption" color={colors.danger}>{t('common.error')}</AppText> : null}
             <Button
               label={variant?.availableForSale ? t('product.addToCart') : t('product.unavailable')}
               onPress={add}

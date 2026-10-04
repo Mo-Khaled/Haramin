@@ -27,7 +27,10 @@ export const backend = {
   getLoyaltyHistory: (token: string) => request<LoyaltyHistoryDto>('/loyalty/history', token),
   redeemPoints: (token: string, points: number) =>
     request<RedeemResultDto>('/loyalty/redeem', token, { method: 'POST', body: JSON.stringify({ points }) }),
-  async registerDevice(token: string, deviceToken: string, platform: string): Promise<void> {
-    await request('/devices', token, { method: 'POST', body: JSON.stringify({ token: deviceToken, platform }) });
+  async registerDevice(token: string, deviceToken: string, platform: string, language: string): Promise<void> {
+    await request('/devices', token, {
+      method: 'POST',
+      body: JSON.stringify({ token: deviceToken, platform, language }),
+    });
   },
 };

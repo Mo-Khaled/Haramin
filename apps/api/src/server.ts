@@ -1,44 +1,57 @@
-import Fastify from "fastify";
-import { env } from "./lib/env.js";
-import { initSentry, Sentry } from "./lib/sentry.js";
-import { prisma } from "./lib/prisma.js";
-import { redis } from "./lib/redis.js";
+import Fastify from 'fastify';
 
-export function buildServer() {
-  const app = Fastify({ logger: true });
+import { verifyWithShopify } from './auth/customerAuth.js';
+import type { AppDeps } from './deps.js';
+import { env } from './lib/env.js';
+import { prisma } from './lib/prisma.js';
+import { redis } from './lib/redis.js';
+import { initSentry, Sentry } from './lib/sentry.js';
+import { enqueue } from './queues/index.js';
+import { deviceRoutes } from './routes/devices.js';
+import { loyaltyRoutes } from './routes/loyalty.js';
+import { webhookRoutes } from './routes/webhooks.js';
+import { wishlistRoutes } from './routes/wishlist.js';
+import { creditStoreCredit } from './services/shopifyAdmin.js';
 
-  app.setErrorHandler((err, _req, reply) => {
-    Sentry.captureException(err);
-    app.log.error(err);
-    reply.status(500).send({ error: "internal_error" });
+export function defaultDeps(): AppDeps {
+  return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit };
+}
+
+export function buildServer(deps: AppDeps = defaultDeps()) {
+  const app = Fastify({ logger: process.env.NODE_ENV !== 'test' });
+
+  app.setErrorHandler((error, request, reply) => {
+    Sentry.captureException(error);
+    request.log.error(error);
+    reply.status(500).send({ error: 'internal_error' });
   });
 
-  app.get("/health", async () => {
+  app.get('/health', async () => {
     const checks: Record<string, string> = {};
     if (env.DATABASE_URL) {
-      try {
-        await prisma.$queryRaw`SELECT 1`;
-        checks.postgres = "ok";
-      } catch {
-        checks.postgres = "down";
-      }
+      checks.postgres = await deps.prisma.$queryRaw`SELECT 1`.then(
+        () => 'ok',
+        () => 'down',
+      );
     }
     if (redis) {
-      try {
-        await redis.ping();
-        checks.redis = "ok";
-      } catch {
-        checks.redis = "down";
-      }
+      checks.redis = await redis.ping().then(
+        () => 'ok',
+        () => 'down',
+      );
     }
-    const down = Object.values(checks).includes("down");
-    return { status: down ? "degraded" : "ok", ...checks };
+    return { status: Object.values(checks).includes('down') ? 'degraded' : 'ok', ...checks };
   });
+
+  wishlistRoutes(app, deps);
+  loyaltyRoutes(app, deps);
+  deviceRoutes(app, deps);
+  app.register(async (scope) => webhookRoutes(scope, deps));
 
   return app;
 }
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== 'test') {
   initSentry();
-  buildServer().listen({ port: env.PORT, host: "0.0.0.0" });
+  buildServer().listen({ port: env.PORT, host: '0.0.0.0' });
 }

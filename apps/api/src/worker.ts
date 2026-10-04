@@ -1,23 +1,34 @@
-import { Worker } from "bullmq";
-import { redis } from "./lib/redis.js";
-import { initSentry, Sentry } from "./lib/sentry.js";
-import { QUEUE_NAME } from "./queues/index.js";
+import { Worker } from 'bullmq';
+
+import { createHandlers } from './jobs/handlers.js';
+import { prisma } from './lib/prisma.js';
+import { redis } from './lib/redis.js';
+import { initSentry, Sentry } from './lib/sentry.js';
+import { QUEUE_NAME, scheduleRecurringJobs, type JobName } from './queues/index.js';
 
 initSentry();
 
 if (!redis) {
-  console.error("REDIS_URL is required to run the worker");
+  console.error('REDIS_URL is required to run the worker');
   process.exit(1);
 }
+
+const handlers = createHandlers(prisma);
 
 const worker = new Worker(
   QUEUE_NAME,
   async (job) => {
-    // Handlers (points, push, Bosta) are added in later milestones.
-    console.log(`job ${job.name} ${job.id}`);
+    const handler = handlers[job.name as JobName];
+    if (!handler) throw new Error(`No handler for job ${job.name}`);
+    await handler(job.data);
   },
-  { connection: redis },
+  { connection: redis, concurrency: 5 },
 );
 
-worker.on("failed", (job, err) => Sentry.captureException(err, { extra: { job: job?.name } }));
-console.log("worker started");
+worker.on('failed', (job, error) => {
+  console.error(`job ${job?.name} failed`, error);
+  Sentry.captureException(error, { extra: { job: job?.name, attemptsMade: job?.attemptsMade } });
+});
+
+await scheduleRecurringJobs();
+console.log('worker started');

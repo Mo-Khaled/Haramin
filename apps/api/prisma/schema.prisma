@@ -12,6 +12,7 @@ model DeviceToken {
   shopifyCustomerId  String?
   token              String   @unique
   platform           String
+  language           String   @default("en")
   createdAt          DateTime @default(now())
 
   @@index([shopifyCustomerId])
@@ -51,6 +52,8 @@ model PaymentProof {
 model ShipmentMap {
   id         String   @id @default(cuid())
   orderId    String   @unique
+  orderName  String?
+  shopifyCustomerId String?
   bostaId    String?
   trackingNo String?
   status     String?
@@ -61,4 +64,20 @@ model ProcessedWebhook {
   id          String   @id
   topic       String
   processedAt DateTime @default(now())
+}
+
+model ProductPrice {
+  productId String   @id
+  minPrice  Decimal  @db.Decimal(12, 2)
+  updatedAt DateTime @updatedAt
+}
+
+model AbandonedCheckout {
+  checkoutId        String    @id
+  shopifyCustomerId String?
+  createdAt         DateTime  @default(now())
+  completedAt       DateTime?
+  notifiedAt        DateTime?
+
+  @@index([notifiedAt, completedAt, createdAt])
 }

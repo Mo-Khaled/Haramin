@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
 import { useAuth } from '@/features/auth/AuthProvider';
+import i18n from '@/i18n';
 import { backend } from '@/lib/backend';
 import { env } from '@/lib/env';
 
@@ -35,7 +36,9 @@ export function PushRegistrar() {
     (async () => {
       try {
         const token = await getPushToken();
-        if (token && !cancelled) await backend.registerDevice(session.accessToken, token, Platform.OS);
+        if (token && !cancelled) {
+          await backend.registerDevice(session.accessToken, token, Platform.OS, i18n.language === 'ar' ? 'ar' : 'en');
+        }
       } catch {
         // Push is optional; failing to register must never block the app.
       }
