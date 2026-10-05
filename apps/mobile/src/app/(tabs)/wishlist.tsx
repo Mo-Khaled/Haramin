@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
+import { BottleIllustration } from '@/components/ui/BottleIllustration';
 import { ProductGridSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { TabScroll, useTabTopInset } from '@/components/ui/TabScroll';
@@ -34,9 +35,13 @@ export default function WishlistScreen() {
       {title}
       {ids.length === 0 ? (
         <EmptyState
-          message={`${t('wishlist.empty')}\n${t('wishlist.emptyHint')}`}
+          illustration={<BottleIllustration />}
+          message={t('wishlist.empty')}
+          hint={t('wishlist.emptyHint')}
           actionLabel={t('wishlist.browse')}
           onAction={() => router.push('/shop')}
+          secondaryLabel={t('wishlist.search')}
+          onSecondary={() => router.push('/search')}
         />
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />

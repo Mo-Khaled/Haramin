@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -29,17 +30,30 @@ export function ErrorState({ onRetry }: { onRetry?: () => void }) {
 
 interface EmptyProps {
   message: string;
+  hint?: string;
+  illustration?: ReactNode;
   actionLabel?: string;
   onAction?: () => void;
+  secondaryLabel?: string;
+  onSecondary?: () => void;
 }
 
-export function EmptyState({ message, actionLabel, onAction }: EmptyProps) {
+export function EmptyState({ message, hint, illustration, actionLabel, onAction, secondaryLabel, onSecondary }: EmptyProps) {
   return (
     <View style={styles.center}>
-      <AppText variant="heading" muted style={styles.text}>
+      {illustration}
+      <AppText variant="heading" style={styles.text}>
         {message}
       </AppText>
-      {actionLabel && onAction ? <Button label={actionLabel} onPress={onAction} /> : null}
+      {hint ? (
+        <AppText muted style={styles.text}>
+          {hint}
+        </AppText>
+      ) : null}
+      {actionLabel && onAction ? <Button label={actionLabel} onPress={onAction} style={styles.wide} /> : null}
+      {secondaryLabel && onSecondary ? (
+        <Button label={secondaryLabel} onPress={onSecondary} variant="secondary" style={styles.wide} />
+      ) : null}
     </View>
   );
 }
@@ -47,4 +61,5 @@ export function EmptyState({ message, actionLabel, onAction }: EmptyProps) {
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, padding: spacing.lg },
   text: { textAlign: 'center' },
+  wide: { alignSelf: 'stretch' },
 });

@@ -113,6 +113,21 @@ export async function fetchRecommendations(productId: string): Promise<ProductCa
   return (data.productRecommendations ?? []).map(mapCard);
 }
 
+export interface SearchSuggestions {
+  queries: string[];
+  collections: { handle: string; title: string }[];
+}
+
+export async function fetchSearchSuggestions(query: string): Promise<SearchSuggestions> {
+  const data = await storefront<{
+    predictiveSearch: { queries: { text: string }[]; collections: { handle: string; title: string }[] } | null;
+  }>(Q.PREDICTIVE_SEARCH, { query });
+  return {
+    queries: (data.predictiveSearch?.queries ?? []).map((q) => q.text),
+    collections: data.predictiveSearch?.collections ?? [],
+  };
+}
+
 export async function fetchProduct(handle: string): Promise<ProductDetail | null> {
   const data = await storefront<{
     product: (RawProductCard & {

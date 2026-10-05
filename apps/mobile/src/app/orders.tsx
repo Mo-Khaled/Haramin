@@ -7,6 +7,7 @@ import { Header } from '@/components/ui/Header';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { fetchOrders, type OrderSummary } from '@/lib/customerAccount';
 import { formatMoney } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -54,7 +55,9 @@ export default function OrdersScreen() {
   return (
     <Screen>
       <Header title={t('orders.title')} />
-      {query.isLoading ? (
+      {!session ? (
+        <SignInPrompt message={t('orders.needSignIn')} />
+      ) : query.isLoading ? (
         <LoadingState />
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />

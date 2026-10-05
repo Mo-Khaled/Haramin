@@ -62,7 +62,12 @@
   "search": {
     "placeholder": "Search products",
     "prompt": "Type to search the catalog",
-    "empty": "No results for “{{query}}”"
+    "empty": "No results for “{{query}}”",
+    "recent": "Recent searches",
+    "clear": "Clear",
+    "browse": "Browse",
+    "brandsAndCollections": "Brands & collections",
+    "suggestions": "Suggested searches"
   },
   "product": {
     "addToCart": "Add to cart",
@@ -85,7 +90,8 @@
   "wishlist": {
     "empty": "Your wishlist is empty",
     "emptyHint": "Tap the heart on any product to save it here.",
-    "browse": "Browse products"
+    "browse": "Browse products",
+    "search": "Search for items"
   },
   "cart": {
     "title": "Your cart",
@@ -136,7 +142,13 @@
     "notConfigured": "Sign-in isn’t configured yet.",
     "signInFailed": "Sign-in failed. Please try again.",
     "stores": "Our stores",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "welcome": "Welcome to Haramain",
+    "welcomeBody": "Sign in or create an account with your email. We will send you a one-time code, no password needed.",
+    "track": "Track my orders",
+    "learnMore": "Learn more",
+    "settings": "Settings",
+    "manage": "My account"
   },
   "orders": {
     "title": "My orders",
@@ -151,7 +163,8 @@
       "PARTIALLY_FULFILLED": "Partially shipped",
       "REFUNDED": "Refunded"
     },
-    "track": "Track shipment"
+    "track": "Track shipment",
+    "needSignIn": "Sign in to see and track your orders."
   },
   "loyalty": {
     "title": "Loyalty points",
@@ -232,5 +245,78 @@
     "estimate": "Delivered in {{days}} days",
     "fee": "Shipping {{fee}} · free over {{threshold}}",
     "payment": "Cash on delivery, InstaPay or card at checkout"
+  },
+  "info": {
+    "stores": "Our stores",
+    "storesIntro": "Visit our showroom to discover our fragrances in person.",
+    "openMaps": "Open in Maps",
+    "whatsapp": "WhatsApp",
+    "contact": "Contact us",
+    "contactIntro": "We reply fastest on WhatsApp. You can also call or email us.",
+    "call": "Call us",
+    "email": "Email",
+    "about": "About us",
+    "findStore": "Find our store"
+  },
+  "about": {
+    "headline": "Your scent is your identity",
+    "since": "Al Haramain Perfumes — authenticity since 2002",
+    "stats": {
+      "years": {
+        "value": "23+",
+        "label": "Years of experience"
+      },
+      "brands": {
+        "value": "20+",
+        "label": "Global brands"
+      },
+      "fragrances": {
+        "value": "1000+",
+        "label": "Fragrances"
+      },
+      "authentic": {
+        "value": "100%",
+        "label": "Authentic"
+      }
+    },
+    "storyTitle": "23 years of trust",
+    "timeline": {
+      "2002": {
+        "title": "2002 — Where it began",
+        "body": "We started in Al Ataba with retail, then supplied shops across Cairo."
+      },
+      "import": {
+        "title": "Direct import",
+        "body": "We grew to import straight from the fragrance houses, which earned us Khadlaj's official agency in Egypt."
+      },
+      "2020": {
+        "title": "2020 — Our official showroom",
+        "body": "Opened during the pandemic, keeping our customers’ trust through every difficulty."
+      },
+      "2025": {
+        "title": "2025 — The widest range",
+        "body": "We expanded the showroom to carry the broadest collection of scents for every taste."
+      }
+    },
+    "whyTitle": "Why choose Al Haramain",
+    "agency": "Al Haramain is the exclusive agent in Egypt for Khadlaj and Nabeel, and an authorized distributor for houses such as Lattafa, Afnan and Assaf, so you buy 100% authentic at a fair price.",
+    "why": {
+      "authentic": {
+        "title": "100% authentic",
+        "body": "Every product comes through official agency and distribution."
+      },
+      "prices": {
+        "title": "Fair prices",
+        "body": "Direct agency means real value, not inflated retail markups."
+      },
+      "delivery": {
+        "title": "Fast delivery",
+        "body": "Quick, reliable shipping across Egypt, right to your door."
+      },
+      "experts": {
+        "title": "Curated by experts",
+        "body": "23 years of expertise behind every fragrance we carry."
+      }
+    }
   }
 }

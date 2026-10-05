@@ -1,3 +1,4 @@
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +19,13 @@ const KEYS = [
   { key: 'termsOfService', label: 'policies.terms' },
 ] as const;
 
+type PolicyKey = (typeof KEYS)[number]['key'];
+
 export default function PoliciesScreen() {
   const { t } = useTranslation();
   const policies = usePolicies();
-  const [selected, setSelected] = useState<(typeof KEYS)[number]['key']>('shippingPolicy');
+  const params = useLocalSearchParams<{ policy?: PolicyKey }>();
+  const [selected, setSelected] = useState<PolicyKey>(params.policy ?? 'shippingPolicy');
   const policy = policies.data?.[selected];
 
   return (

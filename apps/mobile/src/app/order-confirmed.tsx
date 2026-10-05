@@ -6,7 +6,7 @@ import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
-import { env } from '@/lib/env';
+import { STORE_INFO, whatsappUrl } from '@/features/info/storeInfo';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 
@@ -14,10 +14,7 @@ export default function OrderConfirmedScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const sendProof = () => {
-    const number = env.whatsappNumber.replace(/\D/g, '');
-    if (number) Linking.openURL(`https://wa.me/${number}`);
-  };
+  const sendProof = () => Linking.openURL(whatsappUrl(STORE_INFO.whatsapp));
 
   return (
     <Screen>
@@ -30,13 +27,11 @@ export default function OrderConfirmedScreen() {
           {t('checkout.confirmedBody')}
         </AppText>
 
-        {env.whatsappNumber ? (
-          <View style={[styles.card, { backgroundColor: colors.surfaceAlt }]}>
-            <AppText variant="bodyStrong">{t('checkout.instapayTitle')}</AppText>
-            <AppText muted>{t('checkout.instapayBody')}</AppText>
-            <Button label={t('checkout.sendProof')} variant="secondary" onPress={sendProof} />
-          </View>
-        ) : null}
+        <View style={[styles.card, { backgroundColor: colors.surfaceAlt }]}>
+          <AppText variant="bodyStrong">{t('checkout.instapayTitle')}</AppText>
+          <AppText muted>{t('checkout.instapayBody')}</AppText>
+          <Button label={t('checkout.sendProof')} variant="secondary" onPress={sendProof} />
+        </View>
 
         <Button label={t('checkout.backToShop')} onPress={() => router.replace('/')} style={styles.full} />
       </View>

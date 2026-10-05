@@ -103,6 +103,15 @@ export const PRODUCT_RECOMMENDATIONS = `
   }
 `;
 
+export const PREDICTIVE_SEARCH = `
+  query PredictiveSearch($language: LanguageCode!, $query: String!) @inContext(language: $language, country: EG) {
+    predictiveSearch(query: $query, limit: 6, types: [QUERY, COLLECTION]) {
+      queries { text }
+      collections { handle title }
+    }
+  }
+`;
+
 export const POLICIES = `
   query Policies($language: LanguageCode!) @inContext(language: $language, country: EG) {
     shop {

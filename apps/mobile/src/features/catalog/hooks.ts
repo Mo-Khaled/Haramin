@@ -10,6 +10,7 @@ import {
   fetchProduct,
   fetchProductsByIds,
   fetchRecommendations,
+  fetchSearchSuggestions,
   searchProducts,
 } from '@/lib/shopify/api';
 import type { SortKey } from '@/lib/shopify/types';
@@ -40,6 +41,16 @@ export function useSearch(query: string) {
     getNextPageParam: (last) => (last.hasNextPage ? last.endCursor : undefined),
     enabled: query.trim().length >= 2,
     staleTime: MINUTE,
+  });
+}
+
+export function useSearchSuggestions(query: string) {
+  const language = useLanguage();
+  return useQuery({
+    queryKey: ['search-suggestions', language, query],
+    queryFn: () => fetchSearchSuggestions(query),
+    enabled: query.trim().length >= 2,
+    staleTime: 5 * MINUTE,
   });
 }
 

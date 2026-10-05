@@ -7,8 +7,9 @@ import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/ui/Header';
 import { Screen } from '@/components/ui/Screen';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
+import { ErrorState, LoadingState } from '@/components/ui/States';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { backend } from '@/lib/backend';
 import { formatMoney } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -32,7 +33,7 @@ export default function LoyaltyScreen() {
     return (
       <Screen>
         <Header title={t('loyalty.title')} />
-        <EmptyState message={t('loyalty.needSignIn')} />
+        <SignInPrompt message={t('loyalty.needSignIn')} />
       </Screen>
     );
   }
