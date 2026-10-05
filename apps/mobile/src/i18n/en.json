@@ -31,7 +31,9 @@
     "brands": "Shop by brand",
     "freeShipping": "Free shipping on orders over {{amount}}",
     "under300": "Under 300 EGP",
-    "bestSellersTab": "Best Sellers"
+    "bestSellersTab": "Best Sellers",
+    "brandWorld": "{{brand}}'s World",
+    "shopNow": "Shop now"
   },
   "shop": {
     "title": "Shop",
@@ -175,5 +177,26 @@
     "system": "Match phone setting",
     "light": "Light",
     "dark": "Dark"
+  },
+  "hero": {
+    "newTitle": "New arrivals",
+    "newSubtitle": "The latest scents, just landed",
+    "bestTitle": "Best sellers",
+    "bestSubtitle": "The fragrances our customers love most",
+    "herTitle": "For her",
+    "herSubtitle": "Florals, musks and soft ouds",
+    "himTitle": "For him",
+    "himSubtitle": "Woods, spices and deep ouds"
+  },
+  "trust": {
+    "original": "100% original",
+    "cod": "Cash on delivery",
+    "freeShipping": "Free shipping over {{amount}}",
+    "fastDelivery": "Fast delivery"
+  },
+  "promo": {
+    "code": "Code {{code}}",
+    "copied": "Code {{code}} copied",
+    "tapToCopy": "Double tap to copy the code"
   }
 }

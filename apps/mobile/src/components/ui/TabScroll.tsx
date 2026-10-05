@@ -18,13 +18,20 @@ interface Props {
   contentContainerStyle?: ViewStyle;
   refreshControl?: ReactElement<RefreshControlProps>;
   keyboardShouldPersistTaps?: 'always' | 'handled' | 'never';
+  stickyHeaderIndices?: number[];
 }
 
 /**
  * Root scroll container for tab screens. It must be the screen's first child: Expo native tabs only
  * inset the first ScrollView, which is what keeps content clear of the tab bar.
  */
-export function TabScroll({ children, contentContainerStyle, refreshControl, keyboardShouldPersistTaps }: Props) {
+export function TabScroll({
+  children,
+  contentContainerStyle,
+  refreshControl,
+  keyboardShouldPersistTaps,
+  stickyHeaderIndices,
+}: Props) {
   const { colors } = useTheme();
   const topInset = useTabTopInset();
   return (
@@ -34,6 +41,7 @@ export function TabScroll({ children, contentContainerStyle, refreshControl, key
       contentContainerStyle={[styles.content, { paddingTop: topInset }, contentContainerStyle]}
       refreshControl={refreshControl}
       keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+      stickyHeaderIndices={stickyHeaderIndices}
       automaticallyAdjustKeyboardInsets
       showsVerticalScrollIndicator={false}>
       {children}

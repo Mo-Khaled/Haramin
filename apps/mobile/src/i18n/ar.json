@@ -31,7 +31,9 @@
     "brands": "تسوق حسب الماركة",
     "freeShipping": "شحن مجاني للطلبات فوق {{amount}}",
     "under300": "أقل من 300 ج.م",
-    "bestSellersTab": "الأكثر مبيعاً"
+    "bestSellersTab": "الأكثر مبيعاً",
+    "brandWorld": "عالم {{brand}}",
+    "shopNow": "تسوق الآن"
   },
   "shop": {
     "title": "تسوق",
@@ -179,5 +181,26 @@
     "system": "حسب إعداد الهاتف",
     "light": "فاتح",
     "dark": "داكن"
+  },
+  "hero": {
+    "newTitle": "وصل حديثاً",
+    "newSubtitle": "أحدث العطور وصلت للتو",
+    "bestTitle": "الأكثر مبيعاً",
+    "bestSubtitle": "العطور المفضلة لدى عملائنا",
+    "herTitle": "للنساء",
+    "herSubtitle": "زهور ومسك وعود ناعم",
+    "himTitle": "للرجال",
+    "himSubtitle": "أخشاب وتوابل وعود عميق"
+  },
+  "trust": {
+    "original": "أصلي 100%",
+    "cod": "الدفع عند الاستلام",
+    "freeShipping": "شحن مجاني فوق {{amount}}",
+    "fastDelivery": "توصيل سريع"
+  },
+  "promo": {
+    "code": "كود {{code}}",
+    "copied": "تم نسخ الكود {{code}}",
+    "tapToCopy": "اضغط مرتين لنسخ الكود"
   }
 }
