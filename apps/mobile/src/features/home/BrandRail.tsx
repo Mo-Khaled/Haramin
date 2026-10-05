@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   list: { flexDirection: 'row', paddingHorizontal: spacing.md, gap: spacing.md },
   brand: { width: CIRCLE + 8, alignItems: 'center', gap: spacing.xs },
   circle: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: lightPalette.surface,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',

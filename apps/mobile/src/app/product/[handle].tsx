@@ -18,12 +18,13 @@ import { useAddToCart } from '@/features/cart/useAddToCart';
 import { BestForChips } from '@/features/catalog/BestForChips';
 import { findBrandHandle } from '@/features/catalog/brandMatch';
 import { DeliveryEstimate } from '@/features/catalog/DeliveryEstimate';
-import { useCollectionOptional, usePolicies, useProduct, useProductsByIds, useRecommendations } from '@/features/catalog/hooks';
+import { useCollectionOptional, usePage, useProduct, useProductsByIds, useRecommendations } from '@/features/catalog/hooks';
 import { ProductCarousel } from '@/features/catalog/ProductCarousel';
 import { parseBestFor } from '@/features/catalog/productTags';
 import { useBrands } from '@/features/catalog/useBrands';
 import { useRecentlyViewed } from '@/features/catalog/useRecentlyViewed';
 import { findVariant, initialSelection, VariantPicker, type Selection } from '@/features/catalog/VariantPicker';
+import { POLICY_PAGES } from '@/features/info/policyDocuments';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent, formatMoney } from '@/lib/format';
 import { htmlToText } from '@/lib/html';
@@ -95,17 +96,16 @@ function BrandSection({ product }: { product: ProductDetail }) {
 
 function DeliveryReturns() {
   const { t } = useTranslation();
-  const policies = usePolicies();
-  const sections = [policies.data?.shippingPolicy, policies.data?.refundPolicy].filter(
-    (policy): policy is NonNullable<typeof policy> => !!policy?.body,
-  );
+  const delivery = usePage(POLICY_PAGES.shippingPolicy);
+  const returns = usePage(POLICY_PAGES.refundPolicy);
+  const sections = [delivery.data, returns.data].filter((page): page is NonNullable<typeof page> => !!page);
   if (sections.length === 0) return null;
   return (
     <Accordion title={t('product.deliveryReturns')}>
-      {sections.map((policy) => (
-        <View key={policy.title} style={styles.policy}>
-          <AppText variant="bodyStrong">{policy.title}</AppText>
-          <AppText muted>{htmlToText(policy.body)}</AppText>
+      {sections.map((page) => (
+        <View key={page.title} style={styles.policy}>
+          <AppText variant="bodyStrong">{page.title}</AppText>
+          <AppText muted>{htmlToText(page.body)}</AppText>
         </View>
       ))}
     </Accordion>

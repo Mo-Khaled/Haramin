@@ -181,6 +181,11 @@ export function handleFromUrl(url: string): string | null {
   return match ? match[1] : null;
 }
 
+export async function fetchPage(handle: string): Promise<Policy | null> {
+  const data = await storefront<{ page: Policy | null }>(Q.PAGE, { handle });
+  return data.page?.body ? data.page : null;
+}
+
 export async function fetchPolicies(): Promise<Record<string, Policy | null>> {
   const data = await storefront<{ shop: Record<string, Policy | null> }>(Q.POLICIES);
   return data.shop;

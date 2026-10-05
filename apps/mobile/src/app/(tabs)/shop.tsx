@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
@@ -78,7 +78,7 @@ function CategoryRow({ label, handle }: { label: string; handle: string }) {
       onPress={() => openCollection(handle)}
       style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
       <AppText style={styles.rowLabel}>{label}</AppText>
-      <Icon name="chevron-forward" color={colors.textSecondary} size="sm" />
+      <Icon name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.textSecondary} size="sm" />
     </Pressable>
   );
 }

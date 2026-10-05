@@ -32,8 +32,7 @@
     "freeShipping": "Free shipping on orders over {{amount}}",
     "under300": "Under 300 EGP",
     "bestSellersTab": "Best Sellers",
-    "brandWorld": "{{brand}}'s World",
-    "shopNow": "Shop now"
+    "brandWorld": "{{brand}}'s World"
   },
   "shop": {
     "title": "Shop",
@@ -198,14 +197,10 @@
     "dark": "Dark"
   },
   "hero": {
-    "newTitle": "New arrivals",
-    "newSubtitle": "The latest scents, just landed",
-    "bestTitle": "Best sellers",
-    "bestSubtitle": "The fragrances our customers love most",
-    "herTitle": "For her",
-    "herSubtitle": "Florals, musks and soft ouds",
-    "himTitle": "For him",
-    "himSubtitle": "Woods, spices and deep ouds"
+    "faan": "Haramain × FAAN collection",
+    "supremacy": "Afnan Supremacy collection",
+    "khadlaj": "Khadlaj home fragrance mists",
+    "branch": "Visit our branch"
   },
   "trust": {
     "original": "100% original",
@@ -242,9 +237,11 @@
     }
   },
   "delivery": {
-    "estimate": "Delivered in {{days}} days",
-    "fee": "Shipping {{fee}} · free over {{threshold}}",
-    "payment": "Cash on delivery, InstaPay or card at checkout"
+    "estimate": "Delivered in {{days}} business days across Egypt",
+    "fee": "Standard via Bosta {{fee}} · free over {{threshold}}",
+    "payment": "Cash on delivery, InstaPay or card at checkout",
+    "sameDay": "Same-day via Uber {{fee}}, subject to availability",
+    "pickup": "Pick up from our El Ataba branch"
   },
   "info": {
     "stores": "Our stores",

@@ -112,6 +112,12 @@ export const PREDICTIVE_SEARCH = `
   }
 `;
 
+export const PAGE = `
+  query Page($language: LanguageCode!, $handle: String!) @inContext(language: $language, country: EG) {
+    page(handle: $handle) { title body }
+  }
+`;
+
 export const POLICIES = `
   query Policies($language: LanguageCode!) @inContext(language: $language, country: EG) {
     shop {

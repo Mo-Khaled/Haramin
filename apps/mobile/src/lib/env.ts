@@ -4,7 +4,8 @@ export const env = {
   customerClientId: process.env.EXPO_PUBLIC_CUSTOMER_ACCOUNT_CLIENT_ID ?? '',
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? '',
   freeShippingThreshold: 2500,
-  /** Bosta flat rate shown on the product page; confirm with the store before launch. */
+  /** Standard Bosta fee as charged at checkout (the website's delivery page still says 80 EGP). */
   shippingFee: 90,
-  deliveryDays: '2–3',
+  sameDayFee: 200,
+  deliveryDays: '2–5',
 } as const;

@@ -6,6 +6,7 @@ import {
   fetchCollectionProducts,
   fetchCollections,
   fetchMenu,
+  fetchPage,
   fetchPolicies,
   fetchProduct,
   fetchProductsByIds,
@@ -110,6 +111,16 @@ export function useCollection(handle: string) {
 export function useMenu(handle: string) {
   const language = useLanguage();
   return useQuery({ queryKey: ['menu', language, handle], queryFn: () => fetchMenu(handle), staleTime: 30 * MINUTE });
+}
+
+export function usePage(handle: string) {
+  const language = useLanguage();
+  return useQuery({
+    queryKey: ['page', language, handle],
+    queryFn: () => fetchPage(handle),
+    enabled: handle.length > 0,
+    staleTime: 30 * MINUTE,
+  });
 }
 
 export function usePolicies() {
