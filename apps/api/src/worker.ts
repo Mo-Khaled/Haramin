@@ -5,6 +5,7 @@ import { prisma } from './lib/prisma.js';
 import { redis } from './lib/redis.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { QUEUE_NAME, scheduleRecurringJobs, type JobName } from './queues/index.js';
+import { ensureWebhooks } from './services/webhookRegistration.js';
 
 initSentry();
 
@@ -32,3 +33,12 @@ worker.on('failed', (job, error) => {
 
 await scheduleRecurringJobs();
 console.log('worker started');
+
+// Registration needs Shopify credentials; a failure must not stop the worker from processing jobs.
+ensureWebhooks().then(
+  (created) => console.log(created.length ? `registered webhooks: ${created.join(', ')}` : 'webhooks already registered'),
+  (error) => {
+    console.error('webhook registration failed', error);
+    Sentry.captureException(error);
+  },
+);

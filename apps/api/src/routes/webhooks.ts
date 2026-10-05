@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 
 import type { AppDeps } from '../deps.js';
-import { env } from '../lib/env.js';
+import { env, shopifyWebhookSecret } from '../lib/env.js';
 import { verifyShopifyHmac } from '../lib/hmac.js';
 import type { JobName } from '../queues/index.js';
 
@@ -28,7 +28,7 @@ export function webhookRoutes(app: FastifyInstance, deps: AppDeps): void {
   app.post('/webhooks/shopify', async (request, reply) => {
     const raw = request.body as Buffer;
     const signature = request.headers['x-shopify-hmac-sha256'] as string | undefined;
-    if (!verifyShopifyHmac(raw, signature, env.SHOPIFY_WEBHOOK_SECRET)) return reply.code(401).send({ error: 'bad_signature' });
+    if (!verifyShopifyHmac(raw, signature, shopifyWebhookSecret)) return reply.code(401).send({ error: 'bad_signature' });
 
     const topic = request.headers['x-shopify-topic'] as string | undefined;
     const eventId = request.headers['x-shopify-event-id'] as string | undefined;

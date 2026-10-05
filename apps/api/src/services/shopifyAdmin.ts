@@ -1,16 +1,16 @@
 import { env, SHOPIFY_API_VERSION } from '../lib/env.js';
 import { customerGid, orderGid } from '../lib/hmac.js';
+import { getAdminToken } from './shopifyToken.js';
 
 interface GraphQLResult<T> {
   data?: T;
   errors?: { message: string }[];
 }
 
-async function adminGraphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
-  if (!env.SHOPIFY_ADMIN_TOKEN) throw new Error('SHOPIFY_ADMIN_TOKEN is not configured');
-  const response = await fetch(`https://${env.SHOPIFY_SHOP_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`, {
+export async function adminGraphql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+  const response = await fetch(`https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': env.SHOPIFY_ADMIN_TOKEN },
+    headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': await getAdminToken() },
     body: JSON.stringify({ query, variables }),
   });
   if (!response.ok) throw new Error(`Shopify Admin HTTP ${response.status}`);
