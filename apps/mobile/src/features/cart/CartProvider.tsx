@@ -9,9 +9,20 @@ import {
   setCartDiscountCodes,
   updateCartLine,
 } from '@/lib/shopify/api';
+import { ShopifyError } from '@/lib/shopify/client';
 import type { Cart } from '@/lib/shopify/types';
 
 const CART_ID_KEY = 'haramain.cartId';
+
+/** Adds to the saved cart, or starts a new one if that cart has expired or was already checked out. */
+async function addToSavedCart(cartId: string, variantId: string, quantity: number): Promise<Cart> {
+  try {
+    return await addCartLine(cartId, variantId, quantity);
+  } catch (error) {
+    if (!(error instanceof ShopifyError) || (await getCart(cartId))) throw error;
+    return createCart(variantId, quantity);
+  }
+}
 
 interface CartContextValue {
   cart: Cart | null;
@@ -64,7 +75,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback(
     (variantId: string, quantity = 1) =>
       run(async () => {
-        const next = cart ? await addCartLine(cart.id, variantId, quantity) : await createCart(variantId, quantity);
+        const next = cart ? await addToSavedCart(cart.id, variantId, quantity) : await createCart(variantId, quantity);
         await persist(next);
       }),
     [cart, persist, run],

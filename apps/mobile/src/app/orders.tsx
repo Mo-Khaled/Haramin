@@ -23,7 +23,7 @@ function OrderRow({ order }: { order: OrderSummary }) {
     <View style={[styles.card, { backgroundColor: colors.surface }]}>
       <View style={styles.rowTop}>
         <AppText variant="bodyStrong">{t('orders.number', { name: order.name })}</AppText>
-        <AppText variant="label" color={colors.primary}>
+        <AppText variant="label" color={colors.primaryText}>
           {status}
         </AppText>
       </View>
@@ -33,7 +33,7 @@ function OrderRow({ order }: { order: OrderSummary }) {
       <AppText variant="label">{formatMoney(order.total.amount, i18n.language, order.total.currencyCode)}</AppText>
       {order.trackingUrl ? (
         <Pressable accessibilityRole="link" onPress={() => Linking.openURL(order.trackingUrl!)} style={styles.track}>
-          <AppText variant="label" color={colors.primary}>
+          <AppText variant="label" color={colors.primaryText}>
             {t('orders.track')}
           </AppText>
         </Pressable>

@@ -1,5 +1,11 @@
 {
-  "tabs": { "home": "الرئيسية", "shop": "تسوق", "wishlist": "المفضلة", "cart": "السلة", "account": "حسابي" },
+  "tabs": {
+    "home": "الرئيسية",
+    "shop": "تسوق",
+    "wishlist": "المفضلة",
+    "cart": "السلة",
+    "account": "حسابي"
+  },
   "common": {
     "error": "حدث خطأ ما",
     "retry": "حاول مرة أخرى",
@@ -89,7 +95,8 @@
     "freeShippingDone": "حصلت على شحن مجاني",
     "increase": "زيادة الكمية",
     "decrease": "تقليل الكمية",
-    "shippingNote": "تظهر خيارات الشحن والدفع عند إتمام الشراء."
+    "shippingNote": "تظهر خيارات الشحن والدفع عند إتمام الشراء.",
+    "estimatedShipping": "الشحن المتوقع"
   },
   "checkout": {
     "title": "إتمام الشراء",
@@ -98,7 +105,11 @@
     "instapayTitle": "الدفع عبر إنستا باي؟",
     "instapayBody": "بعد التحويل، أرسل لقطة شاشة للتحويل عبر واتساب لتأكيد طلبك.",
     "sendProof": "إرسال الإثبات عبر واتساب",
-    "backToShop": "العودة للتسوق"
+    "backToShop": "العودة للتسوق",
+    "leaveTitle": "مغادرة إتمام الشراء؟",
+    "leaveBody": "سلتك محفوظة، ويمكنك العودة لإتمام طلبك في أي وقت.",
+    "stay": "البقاء",
+    "leave": "مغادرة"
   },
   "account": {
     "title": "حسابي",
@@ -114,14 +125,22 @@
     "hello": "أهلاً، {{name}}",
     "notConfigured": "تسجيل الدخول غير مفعّل بعد.",
     "signInFailed": "فشل تسجيل الدخول. حاول مرة أخرى.",
-    "stores": "فروعنا"
+    "stores": "فروعنا",
+    "appearance": "المظهر"
   },
   "orders": {
     "title": "طلباتي",
     "empty": "لا توجد طلبات بعد",
     "number": "الطلب {{name}}",
     "items": "{{count}} منتجات",
-    "status": { "PAID": "مدفوع", "PENDING": "قيد الانتظار", "FULFILLED": "تم الشحن", "UNFULFILLED": "قيد التجهيز", "PARTIALLY_FULFILLED": "شُحن جزئياً", "REFUNDED": "تم الاسترداد" },
+    "status": {
+      "PAID": "مدفوع",
+      "PENDING": "قيد الانتظار",
+      "FULFILLED": "تم الشحن",
+      "UNFULFILLED": "قيد التجهيز",
+      "PARTIALLY_FULFILLED": "شُحن جزئياً",
+      "REFUNDED": "تم الاسترداد"
+    },
     "track": "تتبع الشحنة"
   },
   "loyalty": {
@@ -136,6 +155,23 @@
     "redeemed": "تم استبدال النقاط وإضافة الرصيد إلى حسابك.",
     "needSignIn": "سجّل الدخول لعرض نقاطك"
   },
-  "language": { "title": "اللغة", "restartTitle": "إعادة التشغيل مطلوبة", "restartBody": "سيعاد تحميل التطبيق لتطبيق اللغة الجديدة.", "english": "English", "arabic": "العربية" },
-  "policies": { "shipping": "سياسة التوصيل", "refund": "الاسترجاع والاستبدال", "privacy": "سياسة الخصوصية", "terms": "شروط الخدمة" }
+  "language": {
+    "title": "اللغة",
+    "restartTitle": "إعادة التشغيل مطلوبة",
+    "restartBody": "سيعاد تحميل التطبيق لتطبيق اللغة الجديدة.",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "policies": {
+    "shipping": "سياسة التوصيل",
+    "refund": "الاسترجاع والاستبدال",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة"
+  },
+  "appearance": {
+    "title": "المظهر",
+    "system": "حسب إعداد الهاتف",
+    "light": "فاتح",
+    "dark": "داكن"
+  }
 }

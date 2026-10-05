@@ -1,4 +1,5 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useCart } from '@/features/cart/CartProvider';
@@ -12,10 +13,11 @@ export default function TabsLayout() {
 
   return (
     <NativeTabs
-      backgroundColor={colors.background}
+      // iOS draws its own translucent glass bar; a forced colour makes it look muddy.
+      backgroundColor={Platform.OS === 'android' ? colors.background : undefined}
       indicatorColor={colors.surfaceAlt}
-      tintColor={colors.primary}
-      labelStyle={{ selected: { color: colors.primary } }}>
+      tintColor={colors.primaryText}
+      labelStyle={{ selected: { color: colors.primaryText } }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t('tabs.home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />

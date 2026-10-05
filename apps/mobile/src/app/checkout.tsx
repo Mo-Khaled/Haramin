@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
-import { useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef } from 'react';
+import { Alert, BackHandler, StyleSheet, View } from 'react-native';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { useTranslation } from 'react-i18next';
 
 import { Header } from '@/components/ui/Header';
@@ -9,14 +10,49 @@ import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { EmptyState, LoadingState } from '@/components/ui/States';
 import { useCart } from '@/features/cart/CartProvider';
-
-const CONFIRMATION_PATTERN = /\/(thank[_-]you|thank_you)|\/orders\/[a-z0-9]+/i;
+import { classifyCheckoutUrl } from '@/features/checkout/checkoutNavigation';
+import { env } from '@/lib/env';
 
 export default function CheckoutScreen() {
   const { t } = useTranslation();
   const cart = useCart();
   const finished = useRef(false);
   const checkoutUrl = cart.cart?.checkoutUrl;
+
+  const confirmLeave = useCallback(() => {
+    Alert.alert(t('checkout.leaveTitle'), t('checkout.leaveBody'), [
+      { text: t('checkout.stay'), style: 'cancel' },
+      { text: t('checkout.leave'), style: 'destructive', onPress: () => router.back() },
+    ]);
+  }, [t]);
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      confirmLeave();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [confirmLeave]);
+
+  /** Returns whether the WebView may load the URL; completes or exits the checkout as a side effect. */
+  const handleUrl = useCallback(
+    (url: string): boolean => {
+      if (finished.current) return false;
+      const decision = classifyCheckoutUrl(url, env.shopDomain);
+      if (decision === 'complete') {
+        finished.current = true;
+        cart.reset().finally(() => router.replace('/order-confirmed'));
+        return true;
+      }
+      if (decision === 'exit') {
+        finished.current = true;
+        router.back();
+        return false;
+      }
+      return true;
+    },
+    [cart],
+  );
 
   if (!checkoutUrl) {
     return (
@@ -27,28 +63,26 @@ export default function CheckoutScreen() {
     );
   }
 
-  const onNavigate = (nav: WebViewNavigation) => {
-    if (finished.current || !CONFIRMATION_PATTERN.test(nav.url)) return;
-    finished.current = true;
-    cart.reset().finally(() => router.replace('/order-confirmed'));
-  };
-
   return (
     <Screen>
       <Header
         title={t('checkout.title')}
         showBack={false}
-        right={<IconButton name="close" label={t('common.close')} onPress={() => router.back()} />}
+        right={<IconButton name="close" label={t('common.close')} onPress={confirmLeave} />}
       />
       <View style={styles.flex}>
         <WebView
           source={{ uri: checkoutUrl }}
-          onNavigationStateChange={onNavigate}
+          onShouldStartLoadWithRequest={(request: ShouldStartLoadRequest) =>
+            request.isTopFrame === false ? true : handleUrl(request.url)
+          }
+          onNavigationStateChange={(nav: WebViewNavigation) => {
+            handleUrl(nav.url);
+          }}
           startInLoadingState
           renderLoading={() => <LoadingState />}
           setSupportMultipleWindows={false}
-          allowsBackForwardNavigationGestures
-          originWhitelist={['https://*']}
+          allowsBackForwardNavigationGestures={false}
         />
       </View>
     </Screen>

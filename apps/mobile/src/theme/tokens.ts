@@ -4,9 +4,11 @@ export interface Palette {
   surfaceAlt: string;
   text: string;
   textSecondary: string;
+  /** Fill colour for buttons, tiles, badges and selected chips. Always paired with `onPrimary`. */
   primary: string;
   onPrimary: string;
-  accent: string;
+  /** Brand colour for text, icons, outlines and links drawn directly on `background`/`surface`. */
+  primaryText: string;
   border: string;
   danger: string;
   success: string;
@@ -22,25 +24,25 @@ export const lightPalette: Palette = {
   textSecondary: '#6B5A5C',
   primary: '#6E2931',
   onPrimary: '#FBF9EE',
-  accent: '#F5C7CF',
+  primaryText: '#6E2931',
   border: '#E6DDD3',
-  danger: '#8B0000',
+  danger: '#A01818',
   success: '#2F6B3F',
   overlay: 'rgba(30, 11, 12, 0.5)',
   onOverlay: '#FFFFFF',
 };
 
 export const darkPalette: Palette = {
-  background: '#1E0B0C',
-  surface: '#2A1415',
-  surfaceAlt: '#35191B',
-  text: '#FBF9EE',
-  textSecondary: '#C9B8B4',
-  primary: '#F5C7CF',
-  onPrimary: '#1E0B0C',
-  accent: '#6E2931',
-  border: '#4A2A2D',
-  danger: '#FF8A8A',
+  background: '#160E0E',
+  surface: '#211616',
+  surfaceAlt: '#2C1E1E',
+  text: '#F6EEE6',
+  textSecondary: '#BFAEA8',
+  primary: '#93404B',
+  onPrimary: '#FBF5EE',
+  primaryText: '#E8A7B0',
+  border: '#3E2C2C',
+  danger: '#FF8F8F',
   success: '#7FD39A',
   overlay: 'rgba(0, 0, 0, 0.6)',
   onOverlay: '#FFFFFF',

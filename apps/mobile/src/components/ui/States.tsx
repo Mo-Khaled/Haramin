@@ -10,7 +10,7 @@ export function LoadingState() {
   const { colors } = useTheme();
   return (
     <View style={styles.center} accessibilityRole="progressbar">
-      <ActivityIndicator color={colors.primary} size="large" />
+      <ActivityIndicator color={colors.primaryText} size="large" />
     </View>
   );
 }

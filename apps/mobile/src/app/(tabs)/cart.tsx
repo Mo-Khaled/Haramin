@@ -1,16 +1,15 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
-import { Price } from '@/components/ui/Price';
-import { Screen } from '@/components/ui/Screen';
 import { EmptyState, LoadingState } from '@/components/ui/States';
+import { TabScroll } from '@/components/ui/TabScroll';
 import { FreeShippingBar } from '@/features/cart/FreeShippingBar';
 import { useCart } from '@/features/cart/CartProvider';
 import { formatMoney } from '@/lib/format';
@@ -53,6 +52,7 @@ function LineItem({ line }: { line: CartLine }) {
             name="remove-circle-outline"
             label={t('cart.decrease')}
             onPress={() => cart.setQuantity(line.id, line.quantity - 1)}
+            disabled={cart.busy}
           />
           <AppText variant="bodyStrong" accessibilityLabel={String(line.quantity)}>
             {line.quantity}
@@ -61,9 +61,16 @@ function LineItem({ line }: { line: CartLine }) {
             name="add-circle-outline"
             label={t('cart.increase')}
             onPress={() => cart.setQuantity(line.id, line.quantity + 1)}
+            disabled={cart.busy}
           />
           <View style={styles.spacer} />
-          <IconButton name="trash-outline" label={t('cart.remove')} onPress={() => cart.removeLine(line.id)} color={colors.danger} />
+          <IconButton
+            name="trash-outline"
+            label={t('cart.remove')}
+            onPress={() => cart.removeLine(line.id)}
+            color={colors.danger}
+            disabled={cart.busy}
+          />
         </View>
       </View>
     </View>
@@ -124,55 +131,75 @@ function DiscountField() {
   );
 }
 
-export default function CartScreen() {
-  const { t, i18n } = useTranslation();
+function SummaryRow({ label, amount, strong }: { label: string; amount: string; strong?: boolean }) {
+  const { i18n } = useTranslation();
+  return (
+    <View style={styles.totalRow}>
+      <AppText variant={strong ? 'bodyStrong' : 'body'} muted={!strong}>
+        {label}
+      </AppText>
+      <AppText variant={strong ? 'heading' : 'body'}>{formatMoney(amount, i18n.language)}</AppText>
+    </View>
+  );
+}
+
+function OrderSummary() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
+  const { cart, busy } = useCart();
+  if (!cart) return null;
+
+  const subtotal = parseFloat(cart.subtotal.amount);
+  const total = parseFloat(cart.total.amount);
+  const extraCharges = total - subtotal;
+
+  return (
+    <View style={[styles.summary, { backgroundColor: colors.surface }]}>
+      <SummaryRow label={t('cart.subtotal')} amount={cart.subtotal.amount} />
+      {extraCharges > 0 ? <SummaryRow label={t('cart.estimatedShipping')} amount={extraCharges.toFixed(2)} /> : null}
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+      <SummaryRow label={t('cart.total')} amount={cart.total.amount} strong />
+      <AppText variant="caption" muted>
+        {t('cart.shippingNote')}
+      </AppText>
+      <Button label={t('cart.checkout')} onPress={() => router.push('/checkout')} disabled={busy} />
+    </View>
+  );
+}
+
+export default function CartScreen() {
+  const { t } = useTranslation();
   const cart = useCart();
+  const data = cart.cart;
 
   if (cart.loading) {
     return (
-      <Screen>
+      <TabScroll>
         <LoadingState />
-      </Screen>
+      </TabScroll>
     );
   }
 
-  const data = cart.cart;
   if (!data || data.lines.length === 0) {
     return (
-      <Screen>
+      <TabScroll>
         <EmptyState message={t('cart.empty')} actionLabel={t('cart.continue')} onAction={() => router.push('/shop')} />
-      </Screen>
+      </TabScroll>
     );
   }
 
-  const subtotal = parseFloat(data.subtotal.amount);
-
   return (
-    <Screen>
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          <AppText variant="title" accessibilityRole="header">
-            {t('cart.title')}
-          </AppText>
-          <FreeShippingBar subtotal={subtotal} />
-          {data.lines.map((line) => (
-            <LineItem key={line.id} line={line} />
-          ))}
-          <DiscountField />
-        </ScrollView>
-        <View style={[styles.footer, { backgroundColor: colors.background, borderColor: colors.border }]}>
-          <View style={styles.totalRow}>
-            <AppText variant="bodyStrong">{t('cart.total')}</AppText>
-            <Price price={data.total} large />
-          </View>
-          <AppText variant="caption" muted>
-            {t('cart.shippingNote')}
-          </AppText>
-          <Button label={t('cart.checkout')} onPress={() => router.push('/checkout')} />
-        </View>
-      </KeyboardAvoidingView>
-    </Screen>
+    <TabScroll contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <AppText variant="title" accessibilityRole="header">
+        {t('cart.title')}
+      </AppText>
+      <FreeShippingBar subtotal={parseFloat(data.subtotal.amount)} />
+      {data.lines.map((line) => (
+        <LineItem key={line.id} line={line} />
+      ))}
+      <DiscountField />
+      <OrderSummary />
+    </TabScroll>
   );
 }
 
@@ -194,6 +221,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     fontSize: 16,
   },
-  footer: { padding: spacing.md, gap: spacing.sm, borderTopWidth: StyleSheet.hairlineWidth },
+  summary: { padding: spacing.md, gap: spacing.sm, borderRadius: radius.md },
+  divider: { height: StyleSheet.hairlineWidth },
   totalRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 });

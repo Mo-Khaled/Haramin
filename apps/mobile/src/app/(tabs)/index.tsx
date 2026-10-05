@@ -1,12 +1,12 @@
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { Icon } from '@/components/ui/Icon';
-import { Screen } from '@/components/ui/Screen';
+import { Logo } from '@/components/ui/Logo';
 import { SearchBar } from '@/components/ui/SearchBar';
+import { TabScroll } from '@/components/ui/TabScroll';
 import { useMenu } from '@/features/catalog/hooks';
 import { ProductRail } from '@/features/catalog/ProductRail';
 import { env } from '@/lib/env';
@@ -14,8 +14,6 @@ import { formatMoney } from '@/lib/format';
 import { handleFromUrl } from '@/lib/shopify/api';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
-
-const LOGO = 'https://haramaineg.com/cdn/shop/files/web-logo_3fc8b320-3bb2-49b6-b701-e2df73aab5ac.png?width=400';
 
 function openCollection(handle: string) {
   router.push({ pathname: '/collection/[handle]', params: { handle } });
@@ -34,10 +32,9 @@ export default function HomeScreen() {
   ];
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <TabScroll contentContainerStyle={styles.content}>
         <View style={styles.hero}>
-          <Image source={{ uri: LOGO }} style={styles.logo} contentFit="contain" accessibilityLabel="Haramain Perfumes" />
+          <Logo />
           <AppText muted style={styles.tagline}>
             {t('home.tagline')}
           </AppText>
@@ -64,7 +61,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={[styles.pad, styles.banner, { backgroundColor: colors.surfaceAlt }]}>
-          <Icon name="car-outline" color={colors.primary} />
+          <Icon name="car-outline" color={colors.primaryText} />
           <AppText variant="label" style={styles.bannerText}>
             {t('home.freeShipping', { amount: formatMoney(env.freeShippingThreshold, i18n.language) })}
           </AppText>
@@ -96,8 +93,7 @@ export default function HomeScreen() {
           </View>
         ) : null}
         <ProductRail title={t('home.offers')} handle="under-300-egp" />
-      </ScrollView>
-    </Screen>
+    </TabScroll>
   );
 }
 
@@ -105,7 +101,6 @@ const styles = StyleSheet.create({
   content: { paddingBottom: spacing.xxl, gap: spacing.lg },
   pad: { paddingHorizontal: spacing.md },
   hero: { alignItems: 'center', gap: spacing.xs, paddingTop: spacing.md },
-  logo: { width: 200, height: 64 },
   tagline: { textAlign: 'center' },
   tiles: { flexDirection: 'row', gap: spacing.sm },
   tile: {

@@ -132,7 +132,7 @@ export default function ProductScreen() {
                 {images.map((img, i) => (
                   <View
                     key={img.url}
-                    style={[styles.dot, { backgroundColor: i === imageIndex ? colors.primary : colors.border }]}
+                    style={[styles.dot, { backgroundColor: i === imageIndex ? colors.primaryText : colors.border }]}
                   />
                 ))}
               </View>

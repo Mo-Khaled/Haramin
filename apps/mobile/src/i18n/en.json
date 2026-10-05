@@ -1,5 +1,11 @@
 {
-  "tabs": { "home": "Home", "shop": "Shop", "wishlist": "Wishlist", "cart": "Cart", "account": "Account" },
+  "tabs": {
+    "home": "Home",
+    "shop": "Shop",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
+    "account": "Account"
+  },
   "common": {
     "error": "Something went wrong",
     "retry": "Try again",
@@ -85,7 +91,8 @@
     "freeShippingDone": "You’ve unlocked free shipping",
     "increase": "Increase quantity",
     "decrease": "Decrease quantity",
-    "shippingNote": "Shipping and payment options are shown at checkout."
+    "shippingNote": "Shipping and payment options are shown at checkout.",
+    "estimatedShipping": "Estimated shipping"
   },
   "checkout": {
     "title": "Checkout",
@@ -94,7 +101,11 @@
     "instapayTitle": "Paying with InstaPay?",
     "instapayBody": "After you pay, send a screenshot of the transfer to our WhatsApp so we can confirm your order.",
     "sendProof": "Send proof on WhatsApp",
-    "backToShop": "Back to shop"
+    "backToShop": "Back to shop",
+    "leaveTitle": "Leave checkout?",
+    "leaveBody": "Your cart is saved. You can come back and finish your order any time.",
+    "stay": "Stay",
+    "leave": "Leave"
   },
   "account": {
     "title": "Account",
@@ -110,14 +121,22 @@
     "hello": "Hello, {{name}}",
     "notConfigured": "Sign-in isn’t configured yet.",
     "signInFailed": "Sign-in failed. Please try again.",
-    "stores": "Our stores"
+    "stores": "Our stores",
+    "appearance": "Appearance"
   },
   "orders": {
     "title": "My orders",
     "empty": "No orders yet",
     "number": "Order {{name}}",
     "items": "{{count}} items",
-    "status": { "PAID": "Paid", "PENDING": "Pending", "FULFILLED": "Shipped", "UNFULFILLED": "Processing", "PARTIALLY_FULFILLED": "Partially shipped", "REFUNDED": "Refunded" },
+    "status": {
+      "PAID": "Paid",
+      "PENDING": "Pending",
+      "FULFILLED": "Shipped",
+      "UNFULFILLED": "Processing",
+      "PARTIALLY_FULFILLED": "Partially shipped",
+      "REFUNDED": "Refunded"
+    },
     "track": "Track shipment"
   },
   "loyalty": {
@@ -132,6 +151,23 @@
     "redeemed": "Points redeemed. Store credit has been added to your account.",
     "needSignIn": "Sign in to see your points"
   },
-  "language": { "title": "Language", "restartTitle": "Restart required", "restartBody": "The app will reload to apply the new language.", "english": "English", "arabic": "العربية" },
-  "policies": { "shipping": "Delivery policy", "refund": "Returns & exchange", "privacy": "Privacy policy", "terms": "Terms of service" }
+  "language": {
+    "title": "Language",
+    "restartTitle": "Restart required",
+    "restartBody": "The app will reload to apply the new language.",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "policies": {
+    "shipping": "Delivery policy",
+    "refund": "Returns & exchange",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "system": "Match phone setting",
+    "light": "Light",
+    "dark": "Dark"
+  }
 }

@@ -1,12 +1,12 @@
 import { router, type Href } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Icon, type IconName } from '@/components/ui/Icon';
-import { Screen } from '@/components/ui/Screen';
+import { TabScroll } from '@/components/ui/TabScroll';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { env } from '@/lib/env';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -25,7 +25,7 @@ function Row({ icon, label, onPress }: RowProps) {
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
-      <Icon name={icon} color={colors.primary} />
+      <Icon name={icon} color={colors.primaryText} />
       <AppText style={styles.rowLabel}>{label}</AppText>
       <Icon name="chevron-forward" size="sm" color={colors.textSecondary} />
     </Pressable>
@@ -54,8 +54,7 @@ export default function AccountScreen() {
   };
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content}>
+    <TabScroll contentContainerStyle={styles.content}>
         <AppText variant="title" accessibilityRole="header">
           {t('account.title')}
         </AppText>
@@ -96,6 +95,7 @@ export default function AccountScreen() {
 
         <View>
           <Row icon="language-outline" label={t('account.language')} onPress={go('/language')} />
+          <Row icon="contrast-outline" label={t('account.appearance')} onPress={go('/appearance')} />
           <Row icon="document-text-outline" label={t('account.policies')} onPress={go('/policies')} />
           {env.whatsappNumber ? (
             <Row icon="logo-whatsapp" label={t('account.whatsapp')} onPress={openWhatsapp} />
@@ -105,8 +105,7 @@ export default function AccountScreen() {
         {auth.session ? (
           <Button label={t('account.signOut')} variant="secondary" onPress={() => auth.signOut()} />
         ) : null}
-      </ScrollView>
-    </Screen>
+    </TabScroll>
   );
 }
 

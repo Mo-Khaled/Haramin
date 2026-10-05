@@ -47,6 +47,7 @@ export function useProduct(handle: string) {
   return useQuery({
     queryKey: ['product', language, handle],
     queryFn: () => fetchProduct(handle),
+    enabled: handle.length > 0,
     staleTime: 5 * MINUTE,
   });
 }

@@ -13,12 +13,13 @@ interface Props {
   empty?: ReactElement | null;
   onEndReached?: () => void;
   loadingMore?: boolean;
-  bottomInset?: number;
+  /** Extra top padding when the grid is a tab screen's root (see useTabTopInset). */
+  topInset?: number;
   refreshing?: boolean;
   onRefresh?: () => void;
 }
 
-export function ProductGrid({ products, header, empty, onEndReached, loadingMore, bottomInset = 0, refreshing, onRefresh }: Props) {
+export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, refreshing, onRefresh }: Props) {
   const { colors } = useTheme();
   const [quickView, setQuickView] = useState<ProductCard | null>(null);
 
@@ -39,10 +40,12 @@ export function ProductGrid({ products, header, empty, onEndReached, loadingMore
         renderItem={renderItem}
         numColumns={2}
         columnWrapperStyle={styles.row}
-        contentContainerStyle={[styles.content, { paddingBottom: spacing.xl + bottomInset }]}
+        style={{ backgroundColor: colors.background }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={[styles.content, { paddingTop: topInset, paddingBottom: spacing.xl }]}
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
-        ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.primary} style={styles.footer} /> : null}
+        ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.primaryText} style={styles.footer} /> : null}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.6}
         refreshing={refreshing}

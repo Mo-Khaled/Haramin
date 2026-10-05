@@ -80,9 +80,9 @@ function ProductCardView({ product, onQuickAdd }: Props) {
             onPress={() => onQuickAdd(product)}
             style={({ pressed }) => [
               styles.quickAdd,
-              { borderColor: colors.primary, opacity: pressed ? 0.7 : 1 },
+              { borderColor: colors.primaryText, opacity: pressed ? 0.7 : 1 },
             ]}>
-            <AppText variant="label" color={colors.primary}>
+            <AppText variant="label" color={colors.primaryText}>
               {t('product.quickAdd')}
             </AppText>
           </Pressable>

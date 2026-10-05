@@ -17,7 +17,7 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
   const { colors } = useTheme();
   const inactive = disabled || loading;
   const isPrimary = variant === 'primary';
-  const foreground = isPrimary ? colors.onPrimary : colors.primary;
+  const foreground = isPrimary ? colors.onPrimary : colors.primaryText;
 
   return (
     <Pressable
@@ -30,7 +30,7 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
         styles.base,
         {
           backgroundColor: isPrimary ? colors.primary : 'transparent',
-          borderColor: isPrimary ? 'transparent' : colors.primary,
+          borderColor: isPrimary ? 'transparent' : colors.primaryText,
           opacity: inactive ? 0.5 : pressed ? 0.85 : 1,
         },
         style,

@@ -35,7 +35,7 @@ export function ProductRail({ title, handle }: Props) {
           accessibilityRole="link"
           onPress={() => router.push({ pathname: '/collection/[handle]', params: { handle } })}
           style={styles.viewAll}>
-          <AppText variant="label" color={colors.primary}>
+          <AppText variant="label" color={colors.primaryText}>
             {t('common.viewAll')}
           </AppText>
         </Pressable>

@@ -26,7 +26,7 @@ export function FreeShippingBar({ subtotal }: { subtotal: number }) {
       accessibilityValue={{ min: 0, max: 100, now: Math.round(progress * 100) }}>
       <AppText variant="label">{message}</AppText>
       <View style={[styles.track, { backgroundColor: colors.border }]}>
-        <View style={[styles.fill, { backgroundColor: colors.primary, width: `${progress * 100}%` }]} />
+        <View style={[styles.fill, { backgroundColor: colors.primaryText, width: `${progress * 100}%` }]} />
       </View>
     </View>
   );

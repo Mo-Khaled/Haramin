@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { Icon } from '@/components/ui/Icon';
-import { Screen } from '@/components/ui/Screen';
+import { TabScroll } from '@/components/ui/TabScroll';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { ErrorState, LoadingState } from '@/components/ui/States';
 import { useCollections, useMenu } from '@/features/catalog/hooks';
@@ -34,20 +34,22 @@ export default function ShopScreen() {
   const brandHandles = new Set(brands.map((b) => handleFromUrl(b.url)));
   const other = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle));
 
+  const loading = collections.isLoading || menu.isLoading;
+
   return (
-    <Screen>
+    <TabScroll>
       <View style={styles.header}>
         <AppText variant="title" accessibilityRole="header">
           {t('shop.title')}
         </AppText>
         <SearchBar placeholder={t('search.placeholder')} />
       </View>
-      {collections.isLoading || menu.isLoading ? (
+      {loading ? (
         <LoadingState />
       ) : collections.isError ? (
         <ErrorState onRetry={() => collections.refetch()} />
       ) : (
-        <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.content}>
           <Row label={t('shop.all')} handle="all-perfumes" />
           <Row label={t('home.forHer')} handle="for-her" />
           <Row label={t('home.forHim')} handle="for-him" />
@@ -66,9 +68,9 @@ export default function ShopScreen() {
           {other.map((c) => (
             <Row key={c.id} label={c.title} handle={c.handle} />
           ))}
-        </ScrollView>
+        </View>
       )}
-    </Screen>
+    </TabScroll>
   );
 }
 
