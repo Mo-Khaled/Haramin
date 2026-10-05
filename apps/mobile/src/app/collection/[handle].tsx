@@ -7,7 +7,8 @@ import { Chip } from '@/components/ui/Chip';
 import { Header } from '@/components/ui/Header';
 import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
+import { ProductGridSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useCollection, useCollectionProducts } from '@/features/catalog/hooks';
 import { FilterSheet, SortSheet } from '@/features/catalog/FilterSheet';
 import { countActive, NO_FILTERS, toFilterInputs, type ActiveFilters } from '@/features/catalog/filterInputs';
@@ -49,7 +50,7 @@ export default function CollectionScreen() {
         right={<IconButton name="search" label={t('search.placeholder')} onPress={() => router.push('/search')} />}
       />
       {query.isLoading ? (
-        <LoadingState />
+        <ProductGridSkeleton />
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />
       ) : (
@@ -62,6 +63,8 @@ export default function CollectionScreen() {
             </View>
           }
           loadingMore={query.isFetchingNextPage}
+          refreshing={query.isRefetching && !query.isFetchingNextPage}
+          onRefresh={() => query.refetch()}
           onEndReached={() => query.hasNextPage && !query.isFetchingNextPage && query.fetchNextPage()}
         />
       )}

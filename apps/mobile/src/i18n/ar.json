@@ -16,7 +16,8 @@
     "viewAll": "عرض الكل",
     "loadingMore": "جارٍ التحميل",
     "outOfStock": "غير متوفر",
-    "off": "خصم {{percent}}%"
+    "off": "خصم {{percent}}%",
+    "offline": "لا يوجد اتصال بالإنترنت. يتم عرض المحتوى المحفوظ."
   },
   "home": {
     "tagline": "عطور أصلية وعود وبخور",
@@ -28,7 +29,9 @@
     "bestSellers": "الأكثر مبيعاً",
     "offers": "العروض",
     "brands": "تسوق حسب الماركة",
-    "freeShipping": "شحن مجاني للطلبات فوق {{amount}}"
+    "freeShipping": "شحن مجاني للطلبات فوق {{amount}}",
+    "under300": "أقل من 300 ج.م",
+    "bestSellersTab": "الأكثر مبيعاً"
   },
   "shop": {
     "title": "تسوق",
@@ -96,7 +99,10 @@
     "increase": "زيادة الكمية",
     "decrease": "تقليل الكمية",
     "shippingNote": "تظهر خيارات الشحن والدفع عند إتمام الشراء.",
-    "estimatedShipping": "الشحن المتوقع"
+    "estimatedShipping": "الشحن المتوقع",
+    "added": "تمت الإضافة إلى السلة",
+    "viewBag": "عرض السلة",
+    "addFailed": "تعذرت الإضافة إلى السلة. حاول مرة أخرى."
   },
   "checkout": {
     "title": "إتمام الشراء",

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { IconButton } from '@/components/ui/IconButton';
+import { PressableScale } from '@/components/ui/PressableScale';
 import { Price } from '@/components/ui/Price';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent } from '@/lib/format';
@@ -26,11 +27,11 @@ function ProductCardView({ product, onQuickAdd }: Props) {
   const percent = discountPercent(product.price.amount, product.compareAtPrice?.amount);
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={product.title}
       onPress={() => router.push({ pathname: '/product/[handle]', params: { handle: product.handle } })}
-      style={({ pressed }) => [styles.card, { backgroundColor: colors.surface, opacity: pressed ? 0.9 : 1 }]}>
+      style={[styles.card, { backgroundColor: colors.surface }]}>
       <View style={[styles.imageWrap, { backgroundColor: colors.surfaceAlt }]}>
         {product.featuredImage ? (
           <Image
@@ -88,7 +89,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
           </Pressable>
         ) : null}
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 

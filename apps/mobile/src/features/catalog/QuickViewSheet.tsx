@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Price } from '@/components/ui/Price';
 import { Sheet } from '@/components/ui/Sheet';
 import { LoadingState } from '@/components/ui/States';
-import { useCart } from '@/features/cart/CartProvider';
+import { useAddToCart } from '@/features/cart/useAddToCart';
 import type { ProductCard } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -24,7 +24,7 @@ interface Props {
 export function QuickViewSheet({ product, onClose }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const cart = useCart();
+  const { add: addToCart, busy } = useAddToCart();
   const detail = useProduct(product?.handle ?? '');
   const [selection, setSelection] = useState<Selection>({});
   const [error, setError] = useState(false);
@@ -39,12 +39,9 @@ export function QuickViewSheet({ product, onClose }: Props) {
 
   const add = async () => {
     if (!variant) return;
-    try {
-      await cart.addItem(variant.id);
-      onClose();
-    } catch {
-      setError(true);
-    }
+    // The confirmation toast renders behind this modal, so close on success and keep errors inline.
+    if (await addToCart(variant.id)) onClose();
+    else setError(true);
   };
 
   return (
@@ -59,7 +56,7 @@ export function QuickViewSheet({ product, onClose }: Props) {
             <Button
               label={variant?.availableForSale ? t('product.addToCart') : t('product.unavailable')}
               onPress={add}
-              loading={cart.busy}
+              loading={busy}
               disabled={!variant?.availableForSale}
             />
             <Button

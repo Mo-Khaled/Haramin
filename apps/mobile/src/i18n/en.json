@@ -16,7 +16,8 @@
     "viewAll": "View all",
     "loadingMore": "Loading more",
     "outOfStock": "Out of stock",
-    "off": "{{percent}}% off"
+    "off": "{{percent}}% off",
+    "offline": "You are offline. Showing saved content."
   },
   "home": {
     "tagline": "Authentic perfumes, oud & incense",
@@ -28,7 +29,9 @@
     "bestSellers": "Best Sellers",
     "offers": "Offers",
     "brands": "Shop by brand",
-    "freeShipping": "Free shipping on orders over {{amount}}"
+    "freeShipping": "Free shipping on orders over {{amount}}",
+    "under300": "Under 300 EGP",
+    "bestSellersTab": "Best Sellers"
   },
   "shop": {
     "title": "Shop",
@@ -92,7 +95,10 @@
     "increase": "Increase quantity",
     "decrease": "Decrease quantity",
     "shippingNote": "Shipping and payment options are shown at checkout.",
-    "estimatedShipping": "Estimated shipping"
+    "estimatedShipping": "Estimated shipping",
+    "added": "Added to bag",
+    "viewBag": "View bag",
+    "addFailed": "Couldn't add to bag. Please try again."
   },
   "checkout": {
     "title": "Checkout",

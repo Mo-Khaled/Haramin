@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { useAuth } from '@/features/auth/AuthProvider';
 import { backend } from '@/lib/backend';
+import { haptics } from '@/lib/haptics';
 
 const STORAGE_KEY = 'haramain.wishlist';
 
@@ -45,6 +46,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(
     (productId: string) => {
       const exists = ids.includes(productId);
+      haptics.select();
       const next = exists ? ids.filter((id) => id !== productId) : [productId, ...ids];
       setIds(next);
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => undefined);

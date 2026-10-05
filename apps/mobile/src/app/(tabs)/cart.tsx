@@ -13,6 +13,7 @@ import { TabScroll } from '@/components/ui/TabScroll';
 import { FreeShippingBar } from '@/features/cart/FreeShippingBar';
 import { useCart } from '@/features/cart/CartProvider';
 import { formatMoney } from '@/lib/format';
+import { haptics } from '@/lib/haptics';
 import type { CartLine } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
@@ -51,7 +52,10 @@ function LineItem({ line }: { line: CartLine }) {
           <IconButton
             name="remove-circle-outline"
             label={t('cart.decrease')}
-            onPress={() => cart.setQuantity(line.id, line.quantity - 1)}
+            onPress={() => {
+              haptics.tap();
+              cart.setQuantity(line.id, line.quantity - 1);
+            }}
             disabled={cart.busy}
           />
           <AppText variant="bodyStrong" accessibilityLabel={String(line.quantity)}>
@@ -60,7 +64,10 @@ function LineItem({ line }: { line: CartLine }) {
           <IconButton
             name="add-circle-outline"
             label={t('cart.increase')}
-            onPress={() => cart.setQuantity(line.id, line.quantity + 1)}
+            onPress={() => {
+              haptics.tap();
+              cart.setQuantity(line.id, line.quantity + 1);
+            }}
             disabled={cart.busy}
           />
           <View style={styles.spacer} />

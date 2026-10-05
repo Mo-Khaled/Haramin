@@ -3,19 +3,23 @@ import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_600SemiBold } from '@ex
 import { Platypi_600SemiBold } from '@expo-google-fonts/platypi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { ToastProvider } from '@/components/ui/Toast';
 import { AuthProvider } from '@/features/auth/AuthProvider';
 import { CartProvider } from '@/features/cart/CartProvider';
 import { PushRegistrar } from '@/features/notifications/PushRegistrar';
 import { WishlistProvider } from '@/features/wishlist/WishlistProvider';
-import { restoreLanguage } from '@/i18n';
+import i18n, { restoreLanguage } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
+import { lightPalette, minTouch, radius, spacing } from '@/theme/tokens';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -65,8 +69,11 @@ export default function RootLayout() {
             <AuthProvider>
               <CartProvider>
                 <WishlistProvider>
-                  <PushRegistrar />
-                  <Navigator />
+                  <ToastProvider>
+                    <PushRegistrar />
+                    <Navigator />
+                    <OfflineBanner />
+                  </ToastProvider>
                 </WishlistProvider>
               </CartProvider>
             </AuthProvider>
@@ -76,3 +83,38 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+/**
+ * Last-resort screen for a render crash. It sits outside the providers, so it uses plain
+ * components and the light palette rather than the themed UI kit.
+ */
+export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
+  return (
+    <View style={errorStyles.root}>
+      <Text style={errorStyles.title}>{i18n.t('common.error')}</Text>
+      <Pressable accessibilityRole="button" onPress={retry} style={errorStyles.button}>
+        <Text style={errorStyles.buttonText}>{i18n.t('common.retry')}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const errorStyles = StyleSheet.create({
+  root: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+    backgroundColor: lightPalette.background,
+  },
+  title: { fontSize: 18, color: lightPalette.text, textAlign: 'center' },
+  button: {
+    minHeight: minTouch,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.md,
+    justifyContent: 'center',
+    backgroundColor: lightPalette.primary,
+  },
+  buttonText: { fontSize: 16, color: lightPalette.onPrimary },
+});

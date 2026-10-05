@@ -4,6 +4,7 @@ import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
+import { RailSkeleton } from '@/components/ui/Skeleton';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import type { ProductCard } from '@/lib/shopify/types';
@@ -40,18 +41,22 @@ export function ProductRail({ title, handle }: Props) {
           </AppText>
         </Pressable>
       </View>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={products}
-        keyExtractor={(p) => p.id}
-        contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <ProductCardItem product={item} onQuickAdd={setQuickView} />
-          </View>
-        )}
-      />
+      {query.isLoading ? (
+        <RailSkeleton />
+      ) : (
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={products}
+          keyExtractor={(p) => p.id}
+          contentContainerStyle={styles.list}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              <ProductCardItem product={item} onQuickAdd={setQuickView} />
+            </View>
+          )}
+        />
+      )}
       <QuickViewSheet product={quickView} onClose={() => setQuickView(null)} />
     </View>
   );

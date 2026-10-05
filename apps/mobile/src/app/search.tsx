@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Header } from '@/components/ui/Header';
 import { Screen } from '@/components/ui/Screen';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
+import { ProductGridSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useSearch } from '@/features/catalog/hooks';
 import { ProductGrid } from '@/features/catalog/ProductGrid';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -46,7 +47,7 @@ export default function SearchScreen() {
       {!active ? (
         <EmptyState message={t('search.prompt')} />
       ) : search.isLoading ? (
-        <LoadingState />
+        <ProductGridSkeleton />
       ) : search.isError ? (
         <ErrorState onRetry={() => search.refetch()} />
       ) : (

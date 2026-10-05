@@ -3,7 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
+import { ProductGridSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState, ErrorState } from '@/components/ui/States';
 import { TabScroll, useTabTopInset } from '@/components/ui/TabScroll';
 import { useProductsByIds } from '@/features/catalog/hooks';
 import { ProductGrid } from '@/features/catalog/ProductGrid';
@@ -29,7 +30,7 @@ export default function WishlistScreen() {
   }
 
   return (
-    <TabScroll contentContainerStyle={styles.page}>
+    <TabScroll>
       {title}
       {ids.length === 0 ? (
         <EmptyState
@@ -40,13 +41,12 @@ export default function WishlistScreen() {
       ) : query.isError ? (
         <ErrorState onRetry={() => query.refetch()} />
       ) : (
-        <LoadingState />
+        <ProductGridSkeleton />
       )}
     </TabScroll>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { paddingHorizontal: spacing.md },
-  header: { paddingVertical: spacing.md },
+  header: { padding: spacing.md },
 });
