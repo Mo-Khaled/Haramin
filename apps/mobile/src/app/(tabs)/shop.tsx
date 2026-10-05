@@ -1,23 +1,81 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
-import { Icon } from '@/components/ui/Icon';
-import { TabScroll } from '@/components/ui/TabScroll';
+import { Icon, type IconName } from '@/components/ui/Icon';
+import { PressableScale } from '@/components/ui/PressableScale';
 import { SearchBar } from '@/components/ui/SearchBar';
-import { ErrorState, LoadingState } from '@/components/ui/States';
-import { useCollections, useMenu } from '@/features/catalog/hooks';
-import { handleFromUrl } from '@/lib/shopify/api';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/States';
+import { TabScroll } from '@/components/ui/TabScroll';
+import { useCollections } from '@/features/catalog/hooks';
+import { useBrands, type Brand } from '@/features/catalog/useBrands';
+import { BrandLogo } from '@/features/home/BrandRail';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
 
-function Row({ label, handle }: { label: string; handle: string }) {
+type ShopView = 'brands' | 'categories';
+
+const GENDER_TILES: { labelKey: string; handle: string; icon: IconName }[] = [
+  { labelKey: 'home.forHer', handle: 'for-her', icon: 'flower-outline' },
+  { labelKey: 'home.forHim', handle: 'for-him', icon: 'water-outline' },
+  { labelKey: 'home.homeIncense', handle: 'insence', icon: 'flame-outline' },
+];
+
+function openCollection(handle: string) {
+  router.push({ pathname: '/collection/[handle]', params: { handle } });
+}
+
+function BrandCard({ brand }: { brand: Brand }) {
+  const { colors } = useTheme();
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={brand.title}
+      onPress={() => openCollection(brand.handle)}
+      style={[styles.brandCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <BrandLogo brand={brand} size={88} />
+      <AppText variant="label" numberOfLines={1} style={styles.center}>
+        {brand.title}
+      </AppText>
+    </PressableScale>
+  );
+}
+
+function BrandsGrid() {
+  const { brands, isLoading, isError, refetch } = useBrands();
+  if (isError) return <ErrorState onRetry={() => refetch()} />;
+  if (isLoading) {
+    return (
+      <View style={styles.grid}>
+        {[0, 1, 2, 3].map((i) => (
+          <View key={i} style={styles.gridCell}>
+            <Skeleton height={150} borderRadius={radius.md} />
+          </View>
+        ))}
+      </View>
+    );
+  }
+  return (
+    <View style={styles.grid}>
+      {brands.map((brand) => (
+        <View key={brand.handle} style={styles.gridCell}>
+          <BrandCard brand={brand} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function CategoryRow({ label, handle }: { label: string; handle: string }) {
   const { colors } = useTheme();
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.push({ pathname: '/collection/[handle]', params: { handle } })}
+      onPress={() => openCollection(handle)}
       style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
       <AppText style={styles.rowLabel}>{label}</AppText>
       <Icon name="chevron-forward" color={colors.textSecondary} size="sm" />
@@ -25,65 +83,104 @@ function Row({ label, handle }: { label: string; handle: string }) {
   );
 }
 
-export default function ShopScreen() {
+function Categories() {
   const { t } = useTranslation();
-  const menu = useMenu('main-menu');
+  const { colors } = useTheme();
   const collections = useCollections();
-
-  const brands = menu.data?.find((item) => item.items.length > 0 && /brand/i.test(item.title))?.items ?? [];
-  const brandHandles = new Set(brands.map((b) => handleFromUrl(b.url)));
-  const other = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle));
-
-  const loading = collections.isLoading || menu.isLoading;
+  const { brands } = useBrands();
+  const brandHandles = new Set(brands.map((b) => b.handle));
+  const others = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle));
 
   return (
-    <TabScroll>
-      <View style={styles.header}>
-        <AppText variant="title" accessibilityRole="header">
-          {t('shop.title')}
-        </AppText>
-        <SearchBar placeholder={t('search.placeholder')} />
+    <View style={styles.categories}>
+      <View style={styles.tiles}>
+        {GENDER_TILES.map((tile) => (
+          <PressableScale
+            key={tile.handle}
+            accessibilityRole="button"
+            accessibilityLabel={t(tile.labelKey)}
+            onPress={() => openCollection(tile.handle)}
+            style={[styles.tile, { backgroundColor: colors.primary }]}>
+            <Icon name={tile.icon} color={colors.onPrimary} size="lg" />
+            <AppText variant="label" color={colors.onPrimary} style={styles.center}>
+              {t(tile.labelKey)}
+            </AppText>
+          </PressableScale>
+        ))}
       </View>
-      {loading ? (
-        <LoadingState />
-      ) : collections.isError ? (
+      {collections.isError ? (
         <ErrorState onRetry={() => collections.refetch()} />
+      ) : collections.isLoading ? (
+        <Skeleton height={200} />
       ) : (
-        <View style={styles.content}>
-          <Row label={t('shop.all')} handle="all-perfumes" />
-          <Row label={t('home.forHer')} handle="for-her" />
-          <Row label={t('home.forHim')} handle="for-him" />
-
-          <AppText variant="heading" style={styles.sectionTitle} accessibilityRole="header">
-            {t('shop.brands')}
-          </AppText>
-          {brands.map((brand) => {
-            const handle = handleFromUrl(brand.url);
-            return handle ? <Row key={brand.url} label={brand.title} handle={handle} /> : null;
-          })}
-
-          <AppText variant="heading" style={styles.sectionTitle} accessibilityRole="header">
-            {t('shop.collections')}
-          </AppText>
-          {other.map((c) => (
-            <Row key={c.id} label={c.title} handle={c.handle} />
+        <View>
+          <CategoryRow label={t('shop.all')} handle="all-perfumes" />
+          {others.map((c) => (
+            <CategoryRow key={c.id} label={c.title} handle={c.handle} />
           ))}
         </View>
       )}
+    </View>
+  );
+}
+
+export default function ShopScreen() {
+  const { t } = useTranslation();
+  const params = useLocalSearchParams<{ view?: ShopView }>();
+  const [view, setView] = useState<ShopView>(params.view ?? 'brands');
+
+  useEffect(() => {
+    if (params.view) setView(params.view);
+  }, [params.view]);
+
+  return (
+    <TabScroll contentContainerStyle={styles.page}>
+      <AppText variant="title" accessibilityRole="header">
+        {t('shop.title')}
+      </AppText>
+      <SearchBar placeholder={t('search.placeholder')} />
+      <SegmentedControl<ShopView>
+        value={view}
+        onChange={setView}
+        options={[
+          { value: 'brands', label: t('shop.brands') },
+          { value: 'categories', label: t('shop.collections') },
+        ]}
+      />
+      {view === 'brands' ? <BrandsGrid /> : <Categories />}
     </TabScroll>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md, gap: spacing.md },
-  content: { paddingHorizontal: spacing.md, paddingBottom: spacing.xxl },
-  sectionTitle: { marginTop: spacing.lg, marginBottom: spacing.xs },
+  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl },
+  center: { textAlign: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.xs },
+  gridCell: { width: '50%', padding: spacing.xs },
+  brandCard: {
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.md,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  categories: { gap: spacing.md },
+  tiles: { flexDirection: 'row', gap: spacing.sm },
+  tile: {
+    flex: 1,
+    minHeight: 96,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    padding: spacing.sm,
+  },
   row: {
-    minHeight: minTouch,
+    minHeight: minTouch + 8,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderRadius: radius.sm,
   },
   rowLabel: { flex: 1 },
 });
