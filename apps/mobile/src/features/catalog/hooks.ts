@@ -9,6 +9,7 @@ import {
   fetchPolicies,
   fetchProduct,
   fetchProductsByIds,
+  fetchRecommendations,
   searchProducts,
 } from '@/lib/shopify/api';
 import type { SortKey } from '@/lib/shopify/types';
@@ -49,6 +50,26 @@ export function useProduct(handle: string) {
     queryFn: () => fetchProduct(handle),
     enabled: handle.length > 0,
     staleTime: 5 * MINUTE,
+  });
+}
+
+export function useRecommendations(productId: string | undefined) {
+  const language = useLanguage();
+  return useQuery({
+    queryKey: ['recommendations', language, productId],
+    queryFn: () => fetchRecommendations(productId!),
+    enabled: !!productId,
+    staleTime: 10 * MINUTE,
+  });
+}
+
+export function useCollectionOptional(handle: string | undefined) {
+  const language = useLanguage();
+  return useQuery({
+    queryKey: ['collection', language, handle],
+    queryFn: () => fetchCollection(handle!),
+    enabled: !!handle,
+    staleTime: 10 * MINUTE,
   });
 }
 

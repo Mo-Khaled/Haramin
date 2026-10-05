@@ -78,7 +78,13 @@
     "notFound": "المنتج غير موجود",
     "quickAdd": "إضافة سريعة",
     "selectOption": "اختر {{name}}",
-    "share": "مشاركة"
+    "share": "مشاركة",
+    "deliveryReturns": "التوصيل والاسترجاع",
+    "aboutBrand": "عن العلامة التجارية",
+    "viewBrand": "عرض كل منتجات {{brand}}",
+    "recentlyViewed": "شاهدتها مؤخراً",
+    "youMayAlsoLike": "قد يعجبك أيضاً",
+    "addToBagPrice": "أضف إلى السلة · {{price}}"
   },
   "wishlist": {
     "empty": "قائمة المفضلة فارغة",
@@ -202,5 +208,33 @@
     "code": "كود {{code}}",
     "copied": "تم نسخ الكود {{code}}",
     "tapToCopy": "اضغط مرتين لنسخ الكود"
+  },
+  "bestFor": {
+    "title": "مناسب لـ",
+    "gender": {
+      "women": "النساء",
+      "men": "الرجال",
+      "unisex": "للجنسين"
+    },
+    "occasion": {
+      "daily": "الاستخدام اليومي",
+      "formal": "المناسبات الرسمية",
+      "outing": "الخروجات"
+    },
+    "season": {
+      "summer": "الصيف",
+      "winter": "الشتاء",
+      "all-season": "كل المواسم"
+    },
+    "time": {
+      "morning": "النهار",
+      "evening": "المساء",
+      "anytime": "أي وقت"
+    }
+  },
+  "delivery": {
+    "estimate": "التوصيل خلال {{days}} أيام",
+    "fee": "الشحن {{fee}} · مجاني فوق {{threshold}}",
+    "payment": "الدفع عند الاستلام أو إنستا باي أو بالبطاقة"
   }
 }

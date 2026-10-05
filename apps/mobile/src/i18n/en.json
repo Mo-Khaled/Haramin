@@ -74,7 +74,13 @@
     "notFound": "Product not found",
     "quickAdd": "Quick add",
     "selectOption": "Select {{name}}",
-    "share": "Share"
+    "share": "Share",
+    "deliveryReturns": "Delivery & returns",
+    "aboutBrand": "About the brand",
+    "viewBrand": "View all {{brand}}",
+    "recentlyViewed": "Recently viewed",
+    "youMayAlsoLike": "You may also like",
+    "addToBagPrice": "Add to bag · {{price}}"
   },
   "wishlist": {
     "empty": "Your wishlist is empty",
@@ -198,5 +204,33 @@
     "code": "Code {{code}}",
     "copied": "Code {{code}} copied",
     "tapToCopy": "Double tap to copy the code"
+  },
+  "bestFor": {
+    "title": "Best for",
+    "gender": {
+      "women": "Women",
+      "men": "Men",
+      "unisex": "Unisex"
+    },
+    "occasion": {
+      "daily": "Daily wear",
+      "formal": "Formal",
+      "outing": "Going out"
+    },
+    "season": {
+      "summer": "Summer",
+      "winter": "Winter",
+      "all-season": "All seasons"
+    },
+    "time": {
+      "morning": "Daytime",
+      "evening": "Evening",
+      "anytime": "Any time"
+    }
+  },
+  "delivery": {
+    "estimate": "Delivered in {{days}} days",
+    "fee": "Shipping {{fee}} · free over {{threshold}}",
+    "payment": "Cash on delivery, InstaPay or card at checkout"
   }
 }

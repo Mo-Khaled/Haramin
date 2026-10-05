@@ -48,6 +48,7 @@ export const PRODUCT_DETAIL = `
   @inContext(language: $language, country: EG) {
     product(handle: $handle) {
       ...ProductCard
+      productType
       description
       descriptionHtml
       tags
@@ -78,7 +79,7 @@ export const COLLECTIONS = `
 
 export const COLLECTION_BY_HANDLE = `
   query CollectionByHandle($language: LanguageCode!, $handle: String!) @inContext(language: $language, country: EG) {
-    collection(handle: $handle) { id handle title image { ${IMAGE} } }
+    collection(handle: $handle) { id handle title description image { ${IMAGE} } }
   }
 `;
 
@@ -92,6 +93,13 @@ export const PRODUCTS_BY_IDS = `
   ${PRODUCT_CARD_FRAGMENT}
   query ProductsByIds($language: LanguageCode!, $ids: [ID!]!) @inContext(language: $language, country: EG) {
     nodes(ids: $ids) { ... on Product { ...ProductCard } }
+  }
+`;
+
+export const PRODUCT_RECOMMENDATIONS = `
+  ${PRODUCT_CARD_FRAGMENT}
+  query ProductRecommendations($language: LanguageCode!, $productId: ID!) @inContext(language: $language, country: EG) {
+    productRecommendations(productId: $productId, intent: RELATED) { ...ProductCard }
   }
 `;
 

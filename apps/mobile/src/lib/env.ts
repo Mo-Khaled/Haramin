@@ -5,4 +5,7 @@ export const env = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? '',
   whatsappNumber: process.env.EXPO_PUBLIC_WHATSAPP_NUMBER ?? '',
   freeShippingThreshold: 2500,
+  /** Bosta flat rate shown on the product page; confirm with the store before launch. */
+  shippingFee: 90,
+  deliveryDays: '2–3',
 } as const;

@@ -43,6 +43,7 @@ export interface ProductOption {
 }
 
 export interface ProductDetail extends ProductCard {
+  productType: string;
   descriptionHtml: string;
   description: string;
   tags: string[];
@@ -79,6 +80,10 @@ export interface CollectionSummary {
   handle: string;
   title: string;
   image: ShopImage | null;
+}
+
+export interface CollectionDetail extends CollectionSummary {
+  description: string;
 }
 
 export interface MenuItem {

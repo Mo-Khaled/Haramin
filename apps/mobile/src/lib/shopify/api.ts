@@ -3,6 +3,7 @@ import * as Q from './queries';
 import type {
   Cart,
   CartLine,
+  CollectionDetail,
   CollectionSummary,
   MenuItem,
   Money,
@@ -105,9 +106,17 @@ export async function fetchProductsByIds(ids: string[]): Promise<ProductCard[]> 
   return data.nodes.filter((n): n is RawProductCard => !!n && !!n.id).map(mapCard);
 }
 
+export async function fetchRecommendations(productId: string): Promise<ProductCard[]> {
+  const data = await storefront<{ productRecommendations: RawProductCard[] | null }>(Q.PRODUCT_RECOMMENDATIONS, {
+    productId,
+  });
+  return (data.productRecommendations ?? []).map(mapCard);
+}
+
 export async function fetchProduct(handle: string): Promise<ProductDetail | null> {
   const data = await storefront<{
     product: (RawProductCard & {
+      productType: string;
       description: string;
       descriptionHtml: string;
       tags: string[];
@@ -120,6 +129,7 @@ export async function fetchProduct(handle: string): Promise<ProductDetail | null
   if (!raw) return null;
   return {
     ...mapCard(raw),
+    productType: raw.productType,
     description: raw.description,
     descriptionHtml: raw.descriptionHtml,
     tags: raw.tags,
@@ -138,8 +148,8 @@ export async function fetchCollections(first = 100): Promise<CollectionSummary[]
   return data.collections.nodes;
 }
 
-export async function fetchCollection(handle: string): Promise<CollectionSummary | null> {
-  const data = await storefront<{ collection: CollectionSummary | null }>(Q.COLLECTION_BY_HANDLE, { handle });
+export async function fetchCollection(handle: string): Promise<CollectionDetail | null> {
+  const data = await storefront<{ collection: CollectionDetail | null }>(Q.COLLECTION_BY_HANDLE, { handle });
   return data.collection;
 }
 
