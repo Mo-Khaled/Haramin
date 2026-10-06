@@ -46,7 +46,15 @@
       "expo-secure-store",
       "expo-font",
       "expo-notifications",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://de.sentry.io/",
+          "organization": "haramin",
+          "project": "haramain-app"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

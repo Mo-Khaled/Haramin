@@ -18,9 +18,11 @@ import { CartProvider } from '@/features/cart/CartProvider';
 import { PushRegistrar } from '@/features/notifications/PushRegistrar';
 import { WishlistProvider } from '@/features/wishlist/WishlistProvider';
 import i18n, { restoreLanguage } from '@/i18n';
+import { initSentry, Sentry } from '@/lib/sentry';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { lightPalette, minTouch, radius, spacing } from '@/theme/tokens';
 
+initSentry();
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
@@ -40,7 +42,7 @@ function Navigator() {
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded] = useFonts({
     IBMPlexSans_400Regular,
     IBMPlexSans_500Medium,
@@ -84,11 +86,16 @@ export default function RootLayout() {
   );
 }
 
+export default Sentry.wrap(RootLayout);
+
 /**
  * Last-resort screen for a render crash. It sits outside the providers, so it uses plain
  * components and the light palette rather than the themed UI kit.
  */
-export function ErrorBoundary({ retry }: ErrorBoundaryProps) {
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
   return (
     <View style={errorStyles.root}>
       <Text style={errorStyles.title}>{i18n.t('common.error')}</Text>
