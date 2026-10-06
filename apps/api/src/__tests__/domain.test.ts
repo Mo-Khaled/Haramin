@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { buildDeliveryPayload, mapBostaState, type ShopifyOrderPayload } from '../domain/bosta.js';
 import { checkRedeem, pointsForSubtotal } from '../domain/loyalty.js';
+import { summarizeReviews, type JudgemeReview } from '../domain/reviews.js';
 import { classifyPayment } from '../domain/payment.js';
 import { isPriceDrop, minVariantPrice } from '../domain/pricing.js';
 
@@ -79,5 +80,39 @@ describe('bosta', () => {
   it('refuses to ship without an address or phone', () => {
     expect(buildDeliveryPayload({ ...order, shipping_address: null }, true)).toBeNull();
     expect(buildDeliveryPayload({ ...order, shipping_address: { address1: 'x', city: 'y' } }, true)).toBeNull();
+  });
+});
+
+describe('summarizeReviews', () => {
+  const review = (id: number, rating: number, extra: Partial<JudgemeReview> = {}): JudgemeReview => ({
+    id,
+    rating,
+    title: null,
+    body: ' Great ',
+    published: true,
+    hidden: false,
+    created_at: `2026-0${id}-01T00:00:00Z`,
+    reviewer: { name: 'Ali' },
+    ...extra,
+  });
+
+  it('averages only published, visible reviews and builds the histogram', () => {
+    const summary = summarizeReviews([review(1, 5), review(2, 4), review(3, 1, { hidden: true }), review(4, 2, { published: false })]);
+    expect(summary.count).toBe(2);
+    expect(summary.average).toBe(4.5);
+    expect(summary.histogram).toEqual([1, 1, 0, 0, 0]);
+  });
+
+  it('lists newest first with trimmed text and visible pictures only', () => {
+    const summary = summarizeReviews([
+      review(1, 5),
+      review(2, 3, { pictures: [{ urls: { compact: 'a.jpg' } }, { hidden: true, urls: { compact: 'b.jpg' } }] }),
+    ]);
+    expect(summary.reviews.map((r) => r.id)).toEqual([2, 1]);
+    expect(summary.reviews[0]).toMatchObject({ body: 'Great', pictures: ['a.jpg'], author: 'Ali' });
+  });
+
+  it('returns zeros when there are no reviews', () => {
+    expect(summarizeReviews([])).toEqual({ average: 0, count: 0, histogram: [0, 0, 0, 0, 0], reviews: [] });
   });
 });

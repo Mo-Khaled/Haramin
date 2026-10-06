@@ -315,5 +315,34 @@
         "body": "23 years of expertise behind every fragrance we carry."
       }
     }
+  },
+  "reviews": {
+    "title": "Ratings & reviews",
+    "summaryLabel": "Rated {{average}} out of 5 from {{count}} reviews",
+    "barLabel": "{{stars}} stars: {{count}} reviews",
+    "count_one": "{{count}} review",
+    "count_other": "{{count}} reviews",
+    "none": "No reviews yet. Be the first to share your thoughts.",
+    "write": "Write a review",
+    "showAll": "Show all {{count}} reviews",
+    "more": "Read more",
+    "less": "Show less",
+    "yourRating": "Your rating",
+    "stars_one": "{{count}} star",
+    "stars_other": "{{count}} stars",
+    "name": "Name",
+    "email": "Email",
+    "titleLabel": "Title (optional)",
+    "body": "Your review",
+    "submit": "Submit review",
+    "moderation": "Reviews are checked before they appear. Your email is never shown.",
+    "thanks": "Thank you! Your review will appear once approved.",
+    "errors": {
+      "rating": "Choose a star rating.",
+      "name": "Enter your name.",
+      "email": "Enter a valid email address.",
+      "body": "Write at least {{count}} characters.",
+      "send": "Couldn't send your review. Please try again."
+    }
   }
 }

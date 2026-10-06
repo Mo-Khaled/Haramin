@@ -37,6 +37,10 @@ function makeDeps() {
     enqueue: vi.fn().mockResolvedValue(undefined),
     verifyCustomer: vi.fn(async (token: string) => (token === 'good-token' ? CUSTOMER : null)),
     creditStoreCredit: vi.fn().mockResolvedValue(undefined),
+    reviews: {
+      getSummary: vi.fn().mockResolvedValue({ average: 4.5, count: 2, histogram: [1, 1, 0, 0, 0], reviews: [] }),
+      submit: vi.fn().mockResolvedValue(undefined),
+    },
   };
   return { deps, prisma, ledger };
 }
@@ -211,5 +215,63 @@ describe('bosta webhook', () => {
     });
     expect(ok.statusCode).toBe(200);
     expect(deps.enqueue).toHaveBeenCalledOnce();
+  });
+});
+
+describe('reviews', () => {
+  const review = {
+    productId: 'gid://shopify/Product/7639685496937',
+    handle: 'cream-velvet-100ml',
+    name: 'Sara',
+    email: 'sara@example.com',
+    rating: 5,
+    body: 'Lovely warm vanilla, lasts all day.',
+  };
+
+  it('returns the summary for a product handle without sign-in', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/reviews/cream-velvet-100ml' });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({ average: 4.5, count: 2 });
+  });
+
+  it('rejects malformed handles', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/reviews/Bad%20Handle' });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('reports 503 when Judge.me is not configured', async () => {
+    const { deps } = makeDeps();
+    const { ReviewsUnavailableError } = await import('../services/judgeme.js');
+    (deps.reviews.getSummary as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new ReviewsUnavailableError('no token'));
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/reviews/cream-velvet-100ml' });
+    expect(res.statusCode).toBe(503);
+  });
+
+  it('accepts a valid review and forwards it', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'POST', url: '/reviews', payload: review });
+    expect(res.statusCode).toBe(201);
+    expect(deps.reviews.submit).toHaveBeenCalledWith(review);
+  });
+
+  it('rejects invalid ratings, emails and short bodies', async () => {
+    const { deps } = makeDeps();
+    const app = buildServer(deps);
+    for (const bad of [{ rating: 6 }, { email: 'nope' }, { body: 'short' }]) {
+      const res = await app.inject({ method: 'POST', url: '/reviews', payload: { ...review, ...bad } });
+      expect(res.statusCode).toBe(400);
+    }
+    expect(deps.reviews.submit).not.toHaveBeenCalled();
+  });
+});
+
+describe('auth bridge', () => {
+  it('forwards the OAuth result to the app scheme unchanged', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/auth/callback?code=abc&state=xyz' });
+    expect(res.statusCode).toBe(302);
+    expect(res.headers.location).toBe('haramain://auth/callback?code=abc&state=xyz');
   });
 });

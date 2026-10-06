@@ -29,6 +29,34 @@ export interface RedeemResultDto {
   newBalance: number;
 }
 
+export interface ReviewDto {
+  id: number;
+  rating: number;
+  title: string | null;
+  body: string;
+  author: string;
+  createdAt: string;
+  pictures: string[];
+}
+
+export interface ReviewSummaryDto {
+  average: number;
+  count: number;
+  /** Count of reviews per star, index 0 = 5 stars ... index 4 = 1 star. */
+  histogram: [number, number, number, number, number];
+  reviews: ReviewDto[];
+}
+
+export interface CreateReviewDto {
+  productId: string;
+  handle: string;
+  name: string;
+  email: string;
+  rating: number;
+  title?: string;
+  body: string;
+}
+
 /** 1 point per 10 EGP spent; 100 points redeem for 50 EGP store credit. */
 export const LOYALTY = {
   egpPerPoint: 10,

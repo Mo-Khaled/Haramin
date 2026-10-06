@@ -25,6 +25,7 @@ import { useBrands } from '@/features/catalog/useBrands';
 import { useRecentlyViewed } from '@/features/catalog/useRecentlyViewed';
 import { findVariant, initialSelection, VariantPicker, type Selection } from '@/features/catalog/VariantPicker';
 import { POLICY_PAGES } from '@/features/info/policyDocuments';
+import { RatingLine, ReviewsSection } from '@/features/reviews/ReviewsSection';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent, formatMoney } from '@/lib/format';
 import { htmlToText } from '@/lib/html';
@@ -199,6 +200,7 @@ export default function ProductScreen() {
           <AppText variant="title" accessibilityRole="header">
             {product.title}
           </AppText>
+          <RatingLine handle={product.handle} />
           {product.productType ? <AppText muted>{product.productType}</AppText> : null}
           <View style={styles.priceRow}>
             <Price price={price} compareAt={compareAt} large />
@@ -226,6 +228,7 @@ export default function ProductScreen() {
           </View>
         </View>
 
+        <ReviewsSection productId={product.id} handle={product.handle} />
         <RelatedRails product={product} />
       </ScrollView>
 

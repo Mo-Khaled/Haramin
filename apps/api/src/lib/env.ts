@@ -16,6 +16,8 @@ const schema = z.object({
   SHOPIFY_ADMIN_TOKEN: z.string().optional(),
   /** Webhook signing secret; defaults to the app client secret, which signs app webhooks. */
   SHOPIFY_WEBHOOK_SECRET: z.string().optional(),
+  /** Judge.me private token: read/write, server-side only. */
+  JUDGEME_PRIVATE_TOKEN: z.string().optional(),
   BOSTA_API_KEY: z.string().optional(),
   BOSTA_BASE_URL: z.string().default('https://app.bosta.co'),
   BOSTA_WEBHOOK_SECRET: z.string().optional(),

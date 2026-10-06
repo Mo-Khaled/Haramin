@@ -7,14 +7,17 @@ import { prisma } from './lib/prisma.js';
 import { redis } from './lib/redis.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { enqueue } from './queues/index.js';
+import { authBridgeRoutes } from './routes/authBridge.js';
 import { deviceRoutes } from './routes/devices.js';
 import { loyaltyRoutes } from './routes/loyalty.js';
+import { reviewRoutes } from './routes/reviews.js';
 import { webhookRoutes } from './routes/webhooks.js';
 import { wishlistRoutes } from './routes/wishlist.js';
+import { createJudgemeService } from './services/judgeme.js';
 import { creditStoreCredit } from './services/shopifyAdmin.js';
 
 export function defaultDeps(): AppDeps {
-  return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit };
+  return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit, reviews: createJudgemeService() };
 }
 
 export function buildServer(deps: AppDeps = defaultDeps()) {
@@ -46,6 +49,8 @@ export function buildServer(deps: AppDeps = defaultDeps()) {
   wishlistRoutes(app, deps);
   loyaltyRoutes(app, deps);
   deviceRoutes(app, deps);
+  reviewRoutes(app, deps);
+  authBridgeRoutes(app);
   app.register(async (scope) => webhookRoutes(scope, deps));
 
   return app;
