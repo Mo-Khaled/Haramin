@@ -240,7 +240,7 @@
     "estimate": "Delivered in {{days}} business days across Egypt",
     "fee": "Standard via Bosta {{fee}} · free over {{threshold}}",
     "payment": "Cash on delivery, InstaPay or card at checkout",
-    "sameDay": "Same-day via Uber {{fee}}, subject to availability",
+    "sameDay": "Same-day via Uber {{fee}} in selected areas",
     "pickup": "Pick up from our El Ataba branch"
   },
   "info": {

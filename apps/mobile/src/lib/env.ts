@@ -4,8 +4,8 @@ export const env = {
   customerClientId: process.env.EXPO_PUBLIC_CUSTOMER_ACCOUNT_CLIENT_ID ?? '',
   apiUrl: process.env.EXPO_PUBLIC_API_URL ?? '',
   freeShippingThreshold: 2500,
-  /** Standard Bosta fee as charged at checkout (the website's delivery page still says 80 EGP). */
+  /** Matches Shopify shipping rates: Bosta 90 EGP everywhere (1–2 days locally, 2–3 elsewhere); Uber same-day 200 EGP in two governorates. */
   shippingFee: 90,
   sameDayFee: 200,
-  deliveryDays: '2–5',
+  deliveryDays: '1–3',
 } as const;
