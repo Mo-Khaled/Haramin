@@ -1,4 +1,5 @@
 import * as AuthSession from 'expo-auth-session';
+import * as Linking from 'expo-linking';
 import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -36,9 +37,16 @@ export interface OrderSummary {
   trackingUrl: string | null;
 }
 
-export const isSignInConfigured = env.customerClientId.length > 0;
+export const isSignInConfigured = env.customerClientId.length > 0 && env.apiUrl.length > 0;
 
-const redirectUri = AuthSession.makeRedirectUri({ scheme: 'haramain', path: 'auth/callback' });
+/**
+ * Shopify only accepts HTTPS callback URLs, so it redirects to our API's bridge, which forwards the
+ * result unchanged to the app's own scheme. The browser session closes when it sees APP_RETURN_URL.
+ */
+const redirectUri = `${env.apiUrl}/auth/callback`;
+const APP_RETURN_URL = 'haramain://auth/callback';
+
+export class SignInError extends Error {}
 
 function toSession(token: AuthSession.TokenResponse): Session {
   return {
@@ -91,12 +99,19 @@ export async function signIn(): Promise<Session | null> {
     usePKCE: true,
     responseType: AuthSession.ResponseType.Code,
   });
-  const result = await request.promptAsync(discovery);
+  const authUrl = await request.makeAuthUrlAsync(discovery);
+  const result = await WebBrowser.openAuthSessionAsync(authUrl, APP_RETURN_URL);
   if (result.type !== 'success') return null;
+
+  const params = Linking.parse(result.url).queryParams ?? {};
+  if (params.error) throw new SignInError(String(params.error_description ?? params.error));
+  if (params.state !== request.state || typeof params.code !== 'string') {
+    throw new SignInError('Sign-in response did not match the request');
+  }
   const token = await AuthSession.exchangeCodeAsync(
     {
       clientId: env.customerClientId,
-      code: result.params.code,
+      code: params.code,
       redirectUri,
       extraParams: { code_verifier: request.codeVerifier ?? '' },
     },
@@ -113,7 +128,7 @@ export async function signOut(session: Session): Promise<void> {
     const discovery = await AuthSession.fetchDiscoveryAsync(ISSUER);
     if (discovery.endSessionEndpoint && session.idToken) {
       const url = `${discovery.endSessionEndpoint}?id_token_hint=${encodeURIComponent(session.idToken)}&post_logout_redirect_uri=${encodeURIComponent(redirectUri)}`;
-      await WebBrowser.openAuthSessionAsync(url, redirectUri);
+      await WebBrowser.openAuthSessionAsync(url, APP_RETURN_URL);
     }
   } catch {
     // Local session is already cleared; remote logout is best-effort.

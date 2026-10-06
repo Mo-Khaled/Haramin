@@ -8,16 +8,15 @@ import { useToast } from '@/components/ui/Toast';
 import { haptics } from '@/lib/haptics';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
-import { PROMO } from './homeContent';
+import { useHomeContent } from './useHomeContent';
 
 export function PromoBanner() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { promo } = useHomeContent();
   const { colors } = useTheme();
   const showToast = useToast();
-  if (!PROMO) return null;
+  if (!promo) return null;
 
-  const promo = PROMO;
-  const message = i18n.language === 'ar' ? promo.message.ar : promo.message.en;
   const copy = async () => {
     await Clipboard.setStringAsync(promo.code);
     haptics.success();
@@ -32,7 +31,7 @@ export function PromoBanner() {
       style={({ pressed }) => [styles.banner, { backgroundColor: colors.surfaceAlt, borderColor: colors.primaryText, opacity: pressed ? 0.85 : 1 }]}>
       <Icon name="pricetag-outline" color={colors.primaryText} />
       <AppText variant="label" style={styles.text}>
-        {t('promo.code', { code: promo.code })} · {message}
+        {t('promo.code', { code: promo.code })} · {promo.message}
       </AppText>
       <Icon name="copy-outline" size="sm" color={colors.textSecondary} />
     </Pressable>

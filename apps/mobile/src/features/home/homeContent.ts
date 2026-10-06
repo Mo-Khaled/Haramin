@@ -1,8 +1,9 @@
 import type { IconName } from '@/components/ui/Icon';
+import type { BannerTarget } from './homeMetaobjects';
 
 /**
- * Home-screen content. Bundled for now; once a Storefront token with metaobject access exists, staff
- * will edit these in Shopify Admin and this module becomes the fallback.
+ * Built-in home-screen content. Banners and the promo are normally edited by staff in Shopify Admin
+ * (metaobjects, see homeMetaobjects.ts); these defaults show whenever no entries exist.
  */
 
 export interface CategoryTab {
@@ -20,13 +21,11 @@ export const CATEGORY_TABS: CategoryTab[] = [
   { labelKey: 'home.bestSellersTab', target: 'best-sellers' },
 ];
 
-export type HeroTarget = { collection: string } | { route: '/stores' };
-
 export interface HeroSlide {
   id: string;
   /** Banner artwork from the website's homepage slideshow (desktop 3.6:1; centre-cropped on phones). */
   image: string;
-  target: HeroTarget;
+  target: BannerTarget;
   labelKey: string;
 }
 
@@ -55,15 +54,6 @@ export const TRUST_ITEMS: TrustItem[] = [
   { icon: 'car-outline', labelKey: 'trust.freeShipping' },
   { icon: 'flash-outline', labelKey: 'trust.fastDelivery' },
 ];
-
-export interface Promo {
-  code: string;
-  /** Short line shown beside the code, per language. */
-  message: { en: string; ar: string };
-}
-
-/** No live promo code has been supplied yet; the banner stays hidden until one is set here. */
-export const PROMO: Promo | null = null;
 
 /** Brands featured as "worlds" rails on the home screen, in display order. */
 export const BRAND_WORLDS = ['lattafa', 'rasasi-perfumes', 'afnan-perfumes'];

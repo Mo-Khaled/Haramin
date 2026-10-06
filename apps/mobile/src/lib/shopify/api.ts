@@ -1,3 +1,11 @@
+import {
+  parseBanners,
+  parsePromo,
+  type Banner,
+  type MetaobjectNode,
+  type PromoContent,
+} from '@/features/home/homeMetaobjects';
+
 import { ShopifyError, storefront } from './client';
 import * as Q from './queries';
 import type {
@@ -184,6 +192,13 @@ export function handleFromUrl(url: string): string | null {
 export async function fetchPage(handle: string): Promise<Policy | null> {
   const data = await storefront<{ page: Policy | null }>(Q.PAGE, { handle });
   return data.page?.body ? data.page : null;
+}
+
+export async function fetchHomeContent(): Promise<{ banners: Banner[]; promo: PromoContent | null }> {
+  const data = await storefront<{ banners: { nodes: MetaobjectNode[] }; promos: { nodes: MetaobjectNode[] } }>(
+    Q.HOME_CONTENT,
+  );
+  return { banners: parseBanners(data.banners.nodes), promo: parsePromo(data.promos.nodes) };
 }
 
 export async function fetchPolicies(): Promise<Record<string, Policy | null>> {

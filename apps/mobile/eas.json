@@ -1,9 +1,33 @@
 {
-  "cli": { "version": ">= 12.0.0", "appVersionSource": "remote" },
-  "build": {
-    "development": { "developmentClient": true, "distribution": "internal" },
-    "preview": { "distribution": "internal" },
-    "production": { "autoIncrement": true }
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "remote"
   },
-  "submit": { "production": {} }
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "extends": "base"
+    },
+    "preview": {
+      "distribution": "internal",
+      "extends": "base"
+    },
+    "production": {
+      "autoIncrement": true,
+      "extends": "base"
+    },
+    "base": {
+      "env": {
+        "EXPO_PUBLIC_SHOPIFY_DOMAIN": "haramaineg.com",
+        "EXPO_PUBLIC_SHOPIFY_SHOP_ID": "59682848873",
+        "EXPO_PUBLIC_API_URL": "https://haramin-production-c1f1.up.railway.app",
+        "EXPO_PUBLIC_SHOPIFY_STOREFRONT_TOKEN": "bb585083291539a11b02125ad9261844",
+        "EXPO_PUBLIC_CUSTOMER_ACCOUNT_CLIENT_ID": "c2e03821-1594-4519-a9ab-c077a8398f42"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
 }

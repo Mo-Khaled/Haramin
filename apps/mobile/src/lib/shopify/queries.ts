@@ -118,6 +118,17 @@ export const PAGE = `
   }
 `;
 
+export const HOME_CONTENT = `
+  query HomeContent($language: LanguageCode!) @inContext(language: $language, country: EG) {
+    banners: metaobjects(type: "app_banner", first: 10) {
+      nodes { id fields { key value reference { ... on MediaImage { image { url } } } } }
+    }
+    promos: metaobjects(type: "app_promo", first: 5) {
+      nodes { id fields { key value } }
+    }
+  }
+`;
+
 export const POLICIES = `
   query Policies($language: LanguageCode!) @inContext(language: $language, country: EG) {
     shop {
