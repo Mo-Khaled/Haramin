@@ -29,6 +29,16 @@ export function buildServer(deps: AppDeps = defaultDeps()) {
     reply.status(500).send({ error: 'internal_error' });
   });
 
+  // Shopify opens the app URL (this root) after installing the backend app; confirm instead of 404ing.
+  app.get('/', async (_request, reply) =>
+    reply
+      .type('text/html')
+      .send('<!doctype html><meta name="viewport" content="width=device-width"><title>Haramain</title>' +
+        '<body style="font-family:system-ui;padding:2rem;color:#1E0B0C;background:#FBF9EE">' +
+        '<h1 style="color:#6E2931">Haramain backend is installed</h1>' +
+        '<p>You can close this tab and return to Shopify.</p></body>'),
+  );
+
   app.get('/health', async () => {
     const checks: Record<string, string> = {};
     if (env.DATABASE_URL) {
