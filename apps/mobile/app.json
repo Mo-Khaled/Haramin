@@ -8,7 +8,6 @@
     "scheme": "haramain",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.haramain.app",
       "supportsTablet": true,
       "infoPlist": {
@@ -34,11 +33,12 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FBF9EE",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76,
+          "imageWidth": 200,
+          "backgroundColor": "#FBF9EE",
           "dark": {
-            "backgroundColor": "#1E0B0C"
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#160E0E"
           }
         }
       ],
