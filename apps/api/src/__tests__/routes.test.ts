@@ -19,6 +19,7 @@ function makeDeps() {
       findMany: vi.fn().mockResolvedValue([{ productId: 'gid://shopify/Product/1' }]),
       upsert: vi.fn().mockResolvedValue({}),
       deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+      count: vi.fn().mockResolvedValue(0),
     },
     pointsLedger: {
       aggregate: vi.fn(async () => ({ _sum: { points: ledger.reduce((sum, row) => sum + row.points, 0) } })),
@@ -273,5 +274,61 @@ describe('auth bridge', () => {
     const res = await buildServer(deps).inject({ method: 'GET', url: '/auth/callback?code=abc&state=xyz' });
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toBe('haramain://auth/callback?code=abc&state=xyz');
+  });
+});
+
+describe('hardening', () => {
+  it('rate-limits review submissions per client IP', async () => {
+    const { deps } = makeDeps();
+    const app = buildServer(deps);
+    const payload = {
+      productId: '7639685496937',
+      handle: 'cream-velvet-100ml',
+      name: 'Sara',
+      email: 'sara@example.com',
+      rating: 5,
+      body: 'Lovely warm vanilla, lasts all day.',
+    };
+    const statuses: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      const res = await app.inject({ method: 'POST', url: '/reviews', payload, remoteAddress: '203.0.113.9' });
+      statuses.push(res.statusCode);
+    }
+    expect(statuses.slice(0, 5)).toEqual([201, 201, 201, 201, 201]);
+    expect(statuses[5]).toBe(429);
+    const other = await app.inject({ method: 'POST', url: '/reviews', payload, remoteAddress: '203.0.113.10' });
+    expect(other.statusCode).toBe(201);
+  });
+
+  it('answers malformed JSON with 400, not 500', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({
+      method: 'POST',
+      url: '/reviews',
+      headers: { 'content-type': 'application/json' },
+      payload: '{bad',
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({ error: 'bad_request' });
+  });
+
+  it('sends security headers', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/health' });
+    expect(res.headers['strict-transport-security']).toBeDefined();
+    expect(res.headers['x-content-type-options']).toBe('nosniff');
+  });
+
+  it('caps the wishlist size', async () => {
+    const { deps, prisma } = makeDeps();
+    prisma.wishlistItem.count.mockResolvedValueOnce(500);
+    const res = await buildServer(deps).inject({
+      method: 'POST',
+      url: '/wishlist',
+      headers: AUTH,
+      payload: { productId: 'gid://shopify/Product/9' },
+    });
+    expect(res.statusCode).toBe(409);
+    expect(prisma.wishlistItem.upsert).not.toHaveBeenCalled();
   });
 });

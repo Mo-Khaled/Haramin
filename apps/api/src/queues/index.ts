@@ -7,6 +7,8 @@ export const QUEUE_NAME = 'haramain-jobs';
 export type JobName =
   | 'order.created'
   | 'order.paid'
+  | 'order.cancelled'
+  | 'refund.created'
   | 'product.updated'
   | 'checkout.updated'
   | 'bosta.status'

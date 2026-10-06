@@ -1,4 +1,10 @@
-import { LOYALTY, type LoyaltyBalanceDto, type LoyaltyHistoryDto, type RedeemResultDto } from '@haramain/shared';
+import {
+  LOYALTY,
+  type LoyaltyBalanceDto,
+  type LoyaltyEntryDto,
+  type LoyaltyHistoryDto,
+  type RedeemResultDto,
+} from '@haramain/shared';
 import { Prisma } from '@prisma/client';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
@@ -40,7 +46,7 @@ export function loyaltyRoutes(app: FastifyInstance, deps: AppDeps): void {
       entries: rows.map((r) => ({
         id: r.id,
         points: r.points,
-        type: r.type as 'EARN' | 'REDEEM' | 'ADJUST',
+        type: r.type as LoyaltyEntryDto['type'],
         orderId: r.orderId,
         note: r.note,
         createdAt: r.createdAt.toISOString(),
@@ -48,7 +54,7 @@ export function loyaltyRoutes(app: FastifyInstance, deps: AppDeps): void {
     };
   });
 
-  app.post('/loyalty/redeem', { preHandler: auth }, async (request, reply) => {
+  app.post('/loyalty/redeem', { preHandler: auth, config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (request, reply) => {
     const parsed = redeemBody.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_amount' });
     const customerId = request.customerId;

@@ -6,6 +6,8 @@ import { numericId } from '../lib/hmac.js';
 
 const BASE_URL = 'https://judge.me/api/v1';
 const CACHE_TTL_MS = 10 * 60_000;
+/** Handles come from clients, so the cache is bounded; Map keeps insertion order, so the first key is the oldest. */
+const MAX_CACHED_PRODUCTS = 500;
 
 export class ReviewsUnavailableError extends Error {}
 
@@ -42,6 +44,7 @@ export function createJudgemeService(): ReviewsService {
             ?.reviews ?? [])
         : [];
       const value = summarizeReviews(reviews);
+      if (cache.size >= MAX_CACHED_PRODUCTS) cache.delete(cache.keys().next().value!);
       cache.set(handle, { value, expires: Date.now() + CACHE_TTL_MS });
       return value;
     },

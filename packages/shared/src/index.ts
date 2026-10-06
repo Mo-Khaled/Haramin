@@ -13,7 +13,7 @@ export interface LoyaltyBalanceDto {
 export interface LoyaltyEntryDto {
   id: string;
   points: number;
-  type: 'EARN' | 'REDEEM' | 'ADJUST';
+  type: 'EARN' | 'REDEEM' | 'ADJUST' | 'REVERSAL';
   orderId: string | null;
   note: string | null;
   createdAt: string;

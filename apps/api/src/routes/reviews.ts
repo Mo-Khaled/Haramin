@@ -29,7 +29,8 @@ export function reviewRoutes(app: FastifyInstance, deps: AppDeps): void {
     }
   });
 
-  app.post('/reviews', async (request, reply) => {
+  // Public and unauthenticated, so the tightest limit: a few reviews per hour per IP.
+  app.post('/reviews', { config: { rateLimit: { max: 5, timeWindow: '1 hour' } } }, async (request, reply) => {
     const parsed = createSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_review' });
     try {

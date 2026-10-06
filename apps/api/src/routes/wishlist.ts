@@ -6,6 +6,7 @@ import type { AppDeps } from '../deps.js';
 
 const productIdSchema = z.string().regex(/^gid:\/\/shopify\/Product\/\d+$/);
 const addBody = z.object({ productId: productIdSchema });
+const MAX_WISHLIST = 500;
 
 export function wishlistRoutes(app: FastifyInstance, deps: AppDeps): void {
   const auth = requireCustomer(deps.verifyCustomer);
@@ -23,6 +24,8 @@ export function wishlistRoutes(app: FastifyInstance, deps: AppDeps): void {
     const parsed = addBody.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_product_id' });
     const { productId } = parsed.data;
+    const count = await deps.prisma.wishlistItem.count({ where: { shopifyCustomerId: request.customerId } });
+    if (count >= MAX_WISHLIST) return reply.code(409).send({ error: 'wishlist_full' });
     await deps.prisma.wishlistItem.upsert({
       where: { shopifyCustomerId_productId: { shopifyCustomerId: request.customerId, productId } },
       create: { shopifyCustomerId: request.customerId, productId },

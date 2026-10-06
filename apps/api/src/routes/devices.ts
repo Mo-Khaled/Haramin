@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { requireCustomer } from '../auth/customerAuth.js';
 import type { AppDeps } from '../deps.js';
 
+/** A customer rarely has more phones than this; older registrations are dropped beyond it. */
+const MAX_DEVICES_PER_CUSTOMER = 10;
+
 const bodySchema = z.object({
   token: z.string().min(10).max(200),
   platform: z.string().max(20),
@@ -20,6 +23,13 @@ export function deviceRoutes(app: FastifyInstance, deps: AppDeps): void {
       create: { token, platform, language, shopifyCustomerId: request.customerId },
       update: { platform, language, shopifyCustomerId: request.customerId },
     });
+    const stale = await deps.prisma.deviceToken.findMany({
+      where: { shopifyCustomerId: request.customerId },
+      orderBy: { createdAt: 'desc' },
+      skip: MAX_DEVICES_PER_CUSTOMER,
+      select: { id: true },
+    });
+    if (stale.length) await deps.prisma.deviceToken.deleteMany({ where: { id: { in: stale.map((d) => d.id) } } });
     return { ok: true };
   });
 }

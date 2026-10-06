@@ -1,9 +1,12 @@
-import Fastify from 'fastify';
+import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
+import Fastify, { type FastifyInstance } from 'fastify';
 
 import { verifyWithShopify } from './auth/customerAuth.js';
 import type { AppDeps } from './deps.js';
 import { env } from './lib/env.js';
 import { prisma } from './lib/prisma.js';
+import { redactUrl } from './lib/redact.js';
 import { redis } from './lib/redis.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { enqueue } from './queues/index.js';
@@ -16,28 +19,19 @@ import { wishlistRoutes } from './routes/wishlist.js';
 import { createJudgemeService } from './services/judgeme.js';
 import { creditStoreCredit } from './services/shopifyAdmin.js';
 
+const LANDING_PAGE =
+  '<!doctype html><meta name="viewport" content="width=device-width"><title>Haramain</title>' +
+  '<body style="font-family:system-ui;padding:2rem;color:#1E0B0C;background:#FBF9EE">' +
+  '<h1 style="color:#6E2931">Haramain backend is installed</h1>' +
+  '<p>You can close this tab and return to Shopify.</p></body>';
+
 export function defaultDeps(): AppDeps {
   return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit, reviews: createJudgemeService() };
 }
 
-export function buildServer(deps: AppDeps = defaultDeps()) {
-  const app = Fastify({ logger: process.env.NODE_ENV !== 'test' });
-
-  app.setErrorHandler((error, request, reply) => {
-    Sentry.captureException(error);
-    request.log.error(error);
-    reply.status(500).send({ error: 'internal_error' });
-  });
-
+function infoRoutes(app: FastifyInstance, deps: AppDeps): void {
   // Shopify opens the app URL (this root) after installing the backend app; confirm instead of 404ing.
-  app.get('/', async (_request, reply) =>
-    reply
-      .type('text/html')
-      .send('<!doctype html><meta name="viewport" content="width=device-width"><title>Haramain</title>' +
-        '<body style="font-family:system-ui;padding:2rem;color:#1E0B0C;background:#FBF9EE">' +
-        '<h1 style="color:#6E2931">Haramain backend is installed</h1>' +
-        '<p>You can close this tab and return to Shopify.</p></body>'),
-  );
+  app.get('/', async (_request, reply) => reply.type('text/html').send(LANDING_PAGE));
 
   app.get('/health', async () => {
     const checks: Record<string, string> = {};
@@ -55,13 +49,53 @@ export function buildServer(deps: AppDeps = defaultDeps()) {
     }
     return { status: Object.values(checks).includes('down') ? 'degraded' : 'ok', ...checks };
   });
+}
 
-  wishlistRoutes(app, deps);
-  loyaltyRoutes(app, deps);
-  deviceRoutes(app, deps);
-  reviewRoutes(app, deps);
-  authBridgeRoutes(app);
-  app.register(async (scope) => webhookRoutes(scope, deps));
+export function buildServer(deps: AppDeps = defaultDeps()) {
+  const app = Fastify({
+    logger:
+      process.env.NODE_ENV === 'test'
+        ? false
+        : {
+            serializers: {
+              // Webhook secrets and OAuth codes travel in query strings; keep them out of the logs.
+              req: (request) => ({ method: request.method, url: redactUrl(request.url), ip: request.ip }),
+            },
+          },
+    // Railway's edge is exactly one proxy hop; trusting only it stops clients spoofing X-Forwarded-For.
+    trustProxy: (_address: string, hop: number) => hop === 0,
+  });
+
+  app.setErrorHandler((error, request, reply) => {
+    const status = (error as { statusCode?: number }).statusCode ?? 500;
+    if (status >= 400 && status < 500) {
+      request.log.warn({ statusCode: status }, 'client error');
+      return reply.status(status).send({ error: status === 429 ? 'rate_limited' : 'bad_request' });
+    }
+    Sentry.captureException(error);
+    request.log.error(error);
+    return reply.status(500).send({ error: 'internal_error' });
+  });
+
+  app.register(helmet);
+  app.register(rateLimit, {
+    max: 120,
+    timeWindow: '1 minute',
+    // Shared across API replicas when Redis is configured; in-memory otherwise (tests, local).
+    redis: redis ?? undefined,
+    nameSpace: 'haramain-rl-',
+  });
+
+  // Routes live in a child scope registered after the plugins so every route gets their hooks.
+  app.register(async (scope) => {
+    infoRoutes(scope, deps);
+    wishlistRoutes(scope, deps);
+    loyaltyRoutes(scope, deps);
+    deviceRoutes(scope, deps);
+    reviewRoutes(scope, deps);
+    authBridgeRoutes(scope);
+    scope.register(async (webhooks) => webhookRoutes(webhooks, deps));
+  });
 
   return app;
 }

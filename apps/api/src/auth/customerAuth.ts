@@ -45,6 +45,7 @@ export function requireCustomer(verify: CustomerVerifier) {
     const token = header?.startsWith('Bearer ') ? header.slice(7) : undefined;
     const customerId = token ? await verify(token).catch(() => null) : null;
     if (!customerId) {
+      request.log.warn({ hadToken: !!token }, 'customer auth rejected');
       await reply.code(401).send({ error: 'unauthorized' });
       return;
     }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildDeliveryPayload, mapBostaState, type ShopifyOrderPayload } from '../domain/bosta.js';
-import { checkRedeem, pointsForSubtotal } from '../domain/loyalty.js';
+import { checkRedeem, pointsForSubtotal, pointsToReverse, refundedSubtotal } from '../domain/loyalty.js';
 import { summarizeReviews, type JudgemeReview } from '../domain/reviews.js';
 import { classifyPayment } from '../domain/payment.js';
 import { isPriceDrop, minVariantPrice } from '../domain/pricing.js';
@@ -114,5 +114,19 @@ describe('summarizeReviews', () => {
 
   it('returns zeros when there are no reviews', () => {
     expect(summarizeReviews([])).toEqual({ average: 0, count: 0, histogram: [0, 0, 0, 0, 0], reviews: [] });
+  });
+});
+
+describe('loyalty reversal', () => {
+  it('reverses the requested points but never more than remain on the order', () => {
+    expect(pointsToReverse(100, 0, 40)).toBe(40);
+    expect(pointsToReverse(100, 80, 40)).toBe(20);
+    expect(pointsToReverse(100, 100, 40)).toBe(0);
+    expect(pointsToReverse(100, 30, 'all')).toBe(70);
+    expect(pointsToReverse(100, 0, -5)).toBe(0);
+  });
+
+  it('sums refunded line subtotals and ignores bad values', () => {
+    expect(refundedSubtotal([{ subtotal: '950.00' }, { subtotal: 50 }, { subtotal: 'x' }, {}])).toBe(1000);
   });
 });

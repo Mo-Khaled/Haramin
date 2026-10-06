@@ -1,13 +1,14 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
 
 import { mapBostaState, type ShopifyOrderPayload } from '../domain/bosta.js';
-import { pointsForSubtotal } from '../domain/loyalty.js';
+import { pointsForSubtotal, refundedSubtotal } from '../domain/loyalty.js';
 import { ABANDONED_CART_MESSAGE, ORDER_MESSAGES, POINTS_MESSAGE, PRICE_DROP_MESSAGE } from '../domain/messages.js';
 import { classifyPayment, PAYMENT_TAGS } from '../domain/payment.js';
 import { isPriceDrop, minVariantPrice } from '../domain/pricing.js';
 import { productGid } from '../lib/hmac.js';
 import type { JobName } from '../queues/index.js';
 import { createShipmentForOrder } from '../services/bosta.js';
+import { reverseOrderPoints } from '../services/loyaltyReversal.js';
 import { pushToCustomer, sendLocalizedPush } from '../services/push.js';
 import { addOrderTags } from '../services/shopifyAdmin.js';
 
@@ -74,6 +75,17 @@ export function createHandlers(prisma: PrismaClient): Record<JobName, JobHandler
     }
     await pushToCustomer(prisma, customerId, POINTS_MESSAGE(points));
   });
+
+  const onOrderCancelled = typed(async (order: { id: number }) => {
+    await reverseOrderPoints(prisma, String(order.id), 'cancel', 'all');
+  });
+
+  const onRefundCreated = typed(
+    async (refund: { id: number; order_id: number; refund_line_items?: { subtotal?: string | number | null }[] }) => {
+      const points = pointsForSubtotal(refundedSubtotal(refund.refund_line_items ?? []));
+      await reverseOrderPoints(prisma, String(refund.order_id), `refund:${refund.id}`, points);
+    },
+  );
 
   const onProductUpdated = typed(async (product: { id: number; title: string; variants: { price: string }[] }) => {
     const current = minVariantPrice(product.variants);
@@ -143,6 +155,8 @@ export function createHandlers(prisma: PrismaClient): Record<JobName, JobHandler
   return {
     'order.created': onOrderCreated,
     'order.paid': onOrderPaid,
+    'order.cancelled': onOrderCancelled,
+    'refund.created': onRefundCreated,
     'product.updated': onProductUpdated,
     'checkout.updated': onCheckoutUpdated,
     'bosta.status': onBostaStatus,

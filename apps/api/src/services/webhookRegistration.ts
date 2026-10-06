@@ -1,7 +1,15 @@
 import { env } from '../lib/env.js';
 import { adminGraphql } from './shopifyAdmin.js';
 
-const TOPICS = ['ORDERS_CREATE', 'ORDERS_PAID', 'PRODUCTS_UPDATE', 'CHECKOUTS_CREATE', 'CHECKOUTS_UPDATE'] as const;
+const TOPICS = [
+  'ORDERS_CREATE',
+  'ORDERS_PAID',
+  'ORDERS_CANCELLED',
+  'REFUNDS_CREATE',
+  'PRODUCTS_UPDATE',
+  'CHECKOUTS_CREATE',
+  'CHECKOUTS_UPDATE',
+] as const;
 
 interface ExistingSubscription {
   topic: string;
