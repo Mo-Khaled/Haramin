@@ -98,9 +98,11 @@ export default function LoyaltyScreen() {
           history.data.entries.map((entry) => (
             <View key={entry.id} style={[styles.entry, { borderColor: colors.border }]}>
               <View style={styles.flex}>
-                <AppText variant="label">{entry.note ?? entry.type}</AppText>
+                <AppText variant="label">{t(`loyalty.entry.${entry.type}`, { defaultValue: entry.type })}</AppText>
                 <AppText variant="caption" muted>
-                  {new Date(entry.createdAt).toLocaleDateString(i18n.language)}
+                  {[entry.orderId ? `#${entry.orderId.split(':')[0]}` : null, new Date(entry.createdAt).toLocaleDateString(i18n.language)]
+                    .filter(Boolean)
+                    .join(' · ')}
                 </AppText>
               </View>
               <AppText variant="bodyStrong" color={entry.points >= 0 ? colors.success : colors.danger}>

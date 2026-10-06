@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components/ui/AppText';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useBrands, type Brand } from '@/features/catalog/useBrands';
+import { useReadingStart } from '@/lib/direction';
 import { useTheme } from '@/theme/ThemeProvider';
 import { lightPalette, spacing } from '@/theme/tokens';
 
@@ -28,6 +29,7 @@ export function BrandLogo({ brand, size }: { brand: Brand; size: number }) {
 }
 
 export function BrandRail() {
+  const start = useReadingStart<FlatList<Brand>>();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { brands, isLoading } = useBrands();
@@ -56,6 +58,8 @@ export function BrandRail() {
         </View>
       ) : (
         <FlatList
+          ref={start.ref}
+          {...start.scrollProps}
           horizontal
           data={brands}
           keyExtractor={(brand) => brand.handle}

@@ -28,10 +28,10 @@ export function Accordion({ title, children, initiallyOpen = false }: Props) {
         accessibilityState={{ expanded: open }}
         onPress={toggle}
         style={styles.header}>
-        <AppText variant="heading" style={styles.title}>
+        <AppText variant="bodyStrong" style={styles.title}>
           {title}
         </AppText>
-        <Icon name={open ? 'chevron-up' : 'chevron-down'} size="sm" color={colors.textSecondary} />
+        <Icon name={open ? 'remove' : 'add'} color={colors.text} />
       </Pressable>
       {open ? <View style={styles.body}>{children}</View> : null}
     </View>
@@ -40,7 +40,7 @@ export function Accordion({ title, children, initiallyOpen = false }: Props) {
 
 const styles = StyleSheet.create({
   wrap: { borderBottomWidth: StyleSheet.hairlineWidth },
-  header: { minHeight: minTouch + 8, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  header: { minHeight: minTouch + 16, flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm },
   title: { flex: 1 },
   body: { paddingBottom: spacing.md, gap: spacing.sm },
 });

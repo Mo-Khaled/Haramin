@@ -7,6 +7,7 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 import { IconButton } from './IconButton';
+import { useDirectionStyle } from '@/lib/direction';
 
 interface Props {
   visible: boolean;
@@ -20,6 +21,7 @@ export function Sheet({ visible, title, onClose, children, footer }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const direction = useDirectionStyle();
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -28,7 +30,7 @@ export function Sheet({ visible, title, onClose, children, footer }: Props) {
         onPress={onClose}
         accessibilityLabel={t('common.close')}
       />
-      <View style={[styles.sheet, { backgroundColor: colors.background, paddingBottom: insets.bottom + spacing.md }]}>
+      <View style={[styles.sheet, direction, { backgroundColor: colors.background, paddingBottom: insets.bottom + spacing.md }]}>
         <View style={styles.header}>
           <AppText variant="heading" style={styles.title} accessibilityRole="header">
             {title}

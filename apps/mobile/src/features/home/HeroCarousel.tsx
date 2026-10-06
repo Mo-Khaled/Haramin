@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FlatList, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { PressableScale } from '@/components/ui/PressableScale';
+import { useReadingStart } from '@/lib/direction';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import type { Banner } from './homeMetaobjects';
@@ -22,12 +23,15 @@ export function HeroCarousel() {
   const { width: screenWidth } = useWindowDimensions();
   const { colors } = useTheme();
   const [index, setIndex] = useState(0);
+  const start = useReadingStart<FlatList<Banner>>();
   const slideWidth = screenWidth - spacing.md * 2;
   const step = slideWidth + spacing.sm;
 
   return (
     <View style={styles.wrap}>
       <FlatList
+        ref={start.ref}
+        {...start.scrollProps}
         horizontal
         data={banners}
         keyExtractor={(slide) => slide.id}
@@ -35,7 +39,10 @@ export function HeroCarousel() {
         snapToInterval={step}
         decelerationRate="fast"
         contentContainerStyle={styles.list}
-        onMomentumScrollEnd={(event) => setIndex(Math.round(Math.abs(event.nativeEvent.contentOffset.x) / step))}
+        onMomentumScrollEnd={(event) => {
+          const page = Math.round(Math.abs(event.nativeEvent.contentOffset.x) / step);
+          setIndex(start.mirrored ? banners.length - 1 - page : page);
+        }}
         renderItem={({ item }) => (
           <PressableScale
             accessibilityRole="link"

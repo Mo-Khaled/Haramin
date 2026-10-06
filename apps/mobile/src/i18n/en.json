@@ -17,7 +17,8 @@
     "loadingMore": "Loading more",
     "outOfStock": "Out of stock",
     "off": "{{percent}}% off",
-    "offline": "You are offline. Showing saved content."
+    "offline": "You are offline. Showing saved content.",
+    "cancel": "Cancel"
   },
   "home": {
     "tagline": "Authentic perfumes, oud & incense",
@@ -42,21 +43,19 @@
     "all": "All perfumes"
   },
   "collection": {
-    "sort": "Sort",
     "filter": "Filter",
     "empty": "No products found",
     "results_one": "{{count}} product",
     "results_other": "{{count}} products",
-    "clear": "Clear all",
     "showResults": "Show results",
-    "availability": "Availability",
-    "price": "Price",
-    "inStock": "In stock only",
     "sortFeatured": "Featured",
     "sortBest": "Best selling",
     "sortNewest": "Newest",
     "sortPriceAsc": "Price: low to high",
-    "sortPriceDesc": "Price: high to low"
+    "sortPriceDesc": "Price: high to low",
+    "sortBy": "Sort by",
+    "filterSort": "Filter / Sort",
+    "reset": "Reset"
   },
   "search": {
     "placeholder": "Search products",
@@ -90,7 +89,10 @@
     "empty": "Your wishlist is empty",
     "emptyHint": "Tap the heart on any product to save it here.",
     "browse": "Browse products",
-    "search": "Search for items"
+    "search": "Search for items",
+    "needSignIn": "Sign in to save perfumes to your wishlist and see them on any device.",
+    "signInTitle": "Sign in to save favourites",
+    "signInBody": "Your wishlist is kept in your account, so it follows you to every device."
   },
   "cart": {
     "title": "Your cart",
@@ -147,7 +149,8 @@
     "track": "Track my orders",
     "learnMore": "Learn more",
     "settings": "Settings",
-    "manage": "My account"
+    "manage": "My account",
+    "legal": "Policies & Privacy"
   },
   "orders": {
     "title": "My orders",
@@ -175,7 +178,13 @@
     "history": "History",
     "emptyHistory": "No activity yet",
     "redeemed": "Points redeemed. Store credit has been added to your account.",
-    "needSignIn": "Sign in to see your points"
+    "needSignIn": "Sign in to see your points",
+    "entry": {
+      "EARN": "Points earned",
+      "REDEEM": "Redeemed for credit",
+      "REVERSAL": "Points reversed (refund)",
+      "ADJUST": "Adjustment"
+    }
   },
   "language": {
     "title": "Language",

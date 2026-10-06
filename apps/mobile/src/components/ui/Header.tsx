@@ -2,11 +2,11 @@ import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { I18nManager } from 'react-native';
 
 import { spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 import { IconButton } from './IconButton';
+import { useIsRTL } from '@/lib/direction';
 
 interface Props {
   title?: string;
@@ -16,12 +16,13 @@ interface Props {
 
 export function Header({ title, right, showBack = true }: Props) {
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
   return (
     <View style={styles.row}>
       <View style={styles.side}>
         {showBack ? (
           <IconButton
-            name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'}
+            name={isRTL ? 'chevron-forward' : 'chevron-back'}
             label={t('common.back')}
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           />

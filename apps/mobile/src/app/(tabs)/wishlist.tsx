@@ -7,6 +7,8 @@ import { BottleIllustration } from '@/components/ui/BottleIllustration';
 import { ProductGridSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { TabScroll, useTabTopInset } from '@/components/ui/TabScroll';
+import { useAuth } from '@/features/auth/AuthProvider';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { useProductsByIds } from '@/features/catalog/hooks';
 import { ProductGrid } from '@/features/catalog/ProductGrid';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
@@ -14,6 +16,7 @@ import { spacing } from '@/theme/tokens';
 
 export default function WishlistScreen() {
   const { t } = useTranslation();
+  const { session } = useAuth();
   const { ids } = useWishlist();
   const query = useProductsByIds(ids);
   const topInset = useTabTopInset();
@@ -25,6 +28,15 @@ export default function WishlistScreen() {
       </AppText>
     </View>
   );
+
+  if (!session) {
+    return (
+      <TabScroll>
+        {title}
+        <SignInPrompt message={t('wishlist.needSignIn')} />
+      </TabScroll>
+    );
+  }
 
   if (ids.length > 0 && query.data) {
     return <ProductGrid products={query.data} header={title} topInset={topInset} />;

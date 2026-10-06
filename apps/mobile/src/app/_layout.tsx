@@ -21,6 +21,7 @@ import i18n, { restoreLanguage } from '@/i18n';
 import { initSentry, Sentry } from '@/lib/sentry';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { lightPalette, minTouch, radius, spacing } from '@/theme/tokens';
+import { useDirectionStyle } from '@/lib/direction';
 
 initSentry();
 SplashScreen.preventAutoHideAsync();
@@ -31,10 +32,11 @@ const queryClient = new QueryClient({
 
 function Navigator() {
   const { colors, isDark } = useTheme();
+  const direction = useDirectionStyle();
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background, ...direction } }}>
         <Stack.Screen name="checkout" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="order-confirmed" options={{ gestureEnabled: false }} />
       </Stack>

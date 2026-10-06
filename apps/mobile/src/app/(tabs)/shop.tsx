@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
@@ -16,6 +16,7 @@ import { useBrands, type Brand } from '@/features/catalog/useBrands';
 import { BrandLogo } from '@/features/home/BrandRail';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
+import { useIsRTL } from '@/lib/direction';
 
 type ShopView = 'brands' | 'categories';
 
@@ -72,13 +73,14 @@ function BrandsGrid() {
 
 function CategoryRow({ label, handle }: { label: string; handle: string }) {
   const { colors } = useTheme();
+  const isRTL = useIsRTL();
   return (
     <Pressable
       accessibilityRole="button"
       onPress={() => openCollection(handle)}
       style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
       <AppText style={styles.rowLabel}>{label}</AppText>
-      <Icon name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.textSecondary} size="sm" />
+      <Icon name={isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.textSecondary} size="sm" />
     </Pressable>
   );
 }

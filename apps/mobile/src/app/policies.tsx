@@ -1,52 +1,46 @@
-import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components/ui/AppText';
-import { Chip } from '@/components/ui/Chip';
 import { Header } from '@/components/ui/Header';
+import { ListRow } from '@/components/ui/ListRow';
+import { RowGroup } from '@/components/ui/RowGroup';
 import { Screen } from '@/components/ui/Screen';
-import { ErrorState, LoadingState } from '@/components/ui/States';
-import { POLICY_KEYS, usePolicyDocument, type PolicyKey } from '@/features/info/policyDocuments';
-import { htmlToText } from '@/lib/html';
+import { useAvailablePolicies, type PolicyKey } from '@/features/info/policyDocuments';
+import type { IconName } from '@/components/ui/Icon';
 import { spacing } from '@/theme/tokens';
 
+const ICONS: Record<PolicyKey, IconName> = {
+  shippingPolicy: 'car-outline',
+  refundPolicy: 'swap-horizontal-outline',
+  privacyPolicy: 'lock-closed-outline',
+  termsOfService: 'document-text-outline',
+};
+
+/** Index of the store's legal and service documents; each opens as collapsible sections. */
 export default function PoliciesScreen() {
   const { t } = useTranslation();
-  const params = useLocalSearchParams<{ policy?: PolicyKey }>();
-  const [selected, setSelected] = useState<PolicyKey>(
-    POLICY_KEYS.some((k) => k.key === params.policy) ? params.policy! : 'shippingPolicy',
-  );
-  const policyDoc = usePolicyDocument(selected);
+  const documents = useAvailablePolicies();
 
   return (
     <Screen>
-      <Header title={t('account.policies')} />
+      <Header title={t('account.legal')} />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.chips}>
-          {POLICY_KEYS.map((k) => (
-            <Chip key={k.key} label={t(k.label)} selected={selected === k.key} onPress={() => setSelected(k.key)} />
+        <RowGroup>
+          {documents.map(({ key, label }) => (
+            <ListRow
+              key={key}
+              icon={ICONS[key]}
+              label={t(label)}
+              onPress={() => router.push({ pathname: '/policy/[key]', params: { key } })}
+            />
           ))}
-        </View>
-        {policyDoc.isLoading ? (
-          <LoadingState />
-        ) : policyDoc.isError ? (
-          <ErrorState onRetry={() => policyDoc.refetch()} />
-        ) : policyDoc.data ? (
-          <>
-            <AppText variant="title" accessibilityRole="header">
-              {policyDoc.data.title}
-            </AppText>
-            <AppText muted>{htmlToText(policyDoc.data.body)}</AppText>
-          </>
-        ) : null}
+        </RowGroup>
       </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  content: { padding: spacing.md, paddingBottom: spacing.xxl },
 });

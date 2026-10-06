@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { toFilterInputs } from '../../features/catalog/filterInputs';
+import { countActive, NO_FILTERS, toFilterInputs, toggleValue } from '../../features/catalog/filterInputs';
 import { discountPercent, formatMoney } from '../format';
 import { htmlToText } from '../html';
 
@@ -39,12 +39,22 @@ describe('htmlToText', () => {
 });
 
 describe('toFilterInputs', () => {
-  it('encodes stock and open-ended price filters for the Storefront API', () => {
-    const inputs = toFilterInputs({ inStock: true, priceBand: { min: 2000, max: null } });
-    expect(inputs.map((i) => JSON.parse(i))).toEqual([{ available: true }, { price: { min: 2000 } }]);
+  const BRAND = 'filter.p.vendor';
+  const AJMAL = JSON.stringify({ productVendor: 'Ajmal' });
+  const AFNAN = JSON.stringify({ productVendor: 'Afnan' });
+
+  it('sends every ticked Shopify value plus an open-ended price band', () => {
+    const filters = { ...toggleValue(toggleValue(NO_FILTERS, BRAND, AJMAL), BRAND, AFNAN), priceBand: { min: 2000, max: null } };
+    expect(toFilterInputs(filters).map((i) => JSON.parse(i))).toEqual([
+      { productVendor: 'Ajmal' },
+      { productVendor: 'Afnan' },
+      { price: { min: 2000 } },
+    ]);
+    expect(countActive(filters)).toBe(3);
   });
 
-  it('returns nothing when no filters are active', () => {
-    expect(toFilterInputs({ inStock: false, priceBand: null })).toEqual([]);
+  it('unticks a value on the second toggle and sends nothing when empty', () => {
+    expect(toFilterInputs(toggleValue(toggleValue(NO_FILTERS, BRAND, AJMAL), BRAND, AJMAL))).toEqual([]);
+    expect(countActive(NO_FILTERS)).toBe(0);
   });
 });

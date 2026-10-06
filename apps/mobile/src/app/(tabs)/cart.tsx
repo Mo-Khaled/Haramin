@@ -125,7 +125,7 @@ function DiscountField() {
           autoCapitalize="characters"
           autoCorrect={false}
           accessibilityLabel={t('cart.discountPlaceholder')}
-          style={[styles.input, { color: colors.text, borderColor: invalid ? colors.danger : colors.border, backgroundColor: colors.surface }]}
+          style={[styles.input, { textAlign: 'left', color: colors.text, borderColor: invalid ? colors.danger : colors.border, backgroundColor: colors.surface }]}
         />
         <Button label={t('common.apply')} variant="secondary" onPress={apply} loading={cart.busy} />
       </View>

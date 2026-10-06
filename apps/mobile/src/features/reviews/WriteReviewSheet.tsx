@@ -36,6 +36,7 @@ function Field({ label, error, ...input }: TextInputProps & { label: string; err
         style={[
           styles.input,
           input.multiline && styles.multiline,
+          { textAlign: 'left' },
           { color: colors.text, backgroundColor: colors.surface, borderColor: error ? colors.danger : colors.border },
         ]}
       />

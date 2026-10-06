@@ -37,6 +37,8 @@ export function AppText({ variant = 'body', muted, color, style, ...rest }: Prop
     ...sizes[variant],
     fontFamily: resolveFamily(variant, i18n.language === 'ar'),
     color: color ?? (muted ? colors.textSecondary : colors.text),
+    // Fabric treats left/right as start/end of the node's layout direction, so 'left' is right in Arabic.
+    textAlign: 'left',
   };
   return <Text {...rest} style={[base, style]} />;
 }

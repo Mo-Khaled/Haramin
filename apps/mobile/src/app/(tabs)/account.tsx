@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { ListRow } from '@/components/ui/ListRow';
+import { RowGroup } from '@/components/ui/RowGroup';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { STORE_INFO, whatsappUrl } from '@/features/info/storeInfo';
@@ -26,7 +27,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <AppText variant="label" muted accessibilityRole="header">
         {title}
       </AppText>
-      <View>{children}</View>
+      <RowGroup>{children}</RowGroup>
     </View>
   );
 }
@@ -79,7 +80,6 @@ export default function AccountScreen() {
   const { t, i18n } = useTranslation();
   const { preference } = useTheme();
   const auth = useAuth();
-  const policy = (key: string) => go({ pathname: '/policies', params: { policy: key } });
 
   return (
     <TabScroll contentContainerStyle={styles.content}>
@@ -97,9 +97,7 @@ export default function AccountScreen() {
       <Section title={t('account.learnMore')}>
         <ListRow icon="storefront-outline" label={t('info.stores')} onPress={go('/stores')} />
         <ListRow icon="information-circle-outline" label={t('info.about')} onPress={go('/about')} />
-        <ListRow icon="car-outline" label={t('policies.shipping')} onPress={policy('shippingPolicy')} />
-        <ListRow icon="swap-horizontal-outline" label={t('policies.refund')} onPress={policy('refundPolicy')} />
-        <ListRow icon="lock-closed-outline" label={t('policies.privacy')} onPress={policy('privacyPolicy')} />
+        <ListRow icon="document-text-outline" label={t('account.legal')} onPress={go('/policies')} />
         <ListRow icon="chatbubbles-outline" label={t('info.contact')} onPress={go('/contact')} />
         <ListRow
           icon="logo-whatsapp"
@@ -126,7 +124,9 @@ export default function AccountScreen() {
       {auth.session ? (
         <>
           <Button label={t('account.signOut')} variant="secondary" onPress={() => auth.signOut()} />
-          <ListRow icon="trash-outline" label={t('deleteAccount.title')} onPress={go('/delete-account')} />
+          <RowGroup>
+            <ListRow icon="trash-outline" label={t('deleteAccount.title')} onPress={go('/delete-account')} />
+          </RowGroup>
         </>
       ) : null}
     </TabScroll>

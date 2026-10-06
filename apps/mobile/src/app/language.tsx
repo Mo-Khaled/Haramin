@@ -1,34 +1,36 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Header } from '@/components/ui/Header';
-import { Chip } from '@/components/ui/Chip';
 import { AppText } from '@/components/ui/AppText';
+import { Header } from '@/components/ui/Header';
+import { OptionList, type Option } from '@/components/ui/OptionList';
 import { Screen } from '@/components/ui/Screen';
 import { setLanguage, type AppLanguage } from '@/i18n';
 import { spacing } from '@/theme/tokens';
 
+/** Each language is named in its own script so it can always be found, whichever language is active. */
+const LANGUAGES: Option<AppLanguage>[] = [
+  { value: 'en', label: 'English' },
+  { value: 'ar', label: 'العربية' },
+];
+
 export default function LanguageScreen() {
   const { t, i18n } = useTranslation();
-  const choose = (language: AppLanguage) => {
-    if (language !== i18n.language) setLanguage(language);
-  };
+  const current: AppLanguage = i18n.language === 'ar' ? 'ar' : 'en';
 
   return (
     <Screen>
       <Header title={t('language.title')} />
-      <View style={styles.body}>
-        <View style={styles.row}>
-          <Chip label={t('language.english')} selected={i18n.language === 'en'} onPress={() => choose('en')} />
-          <Chip label={t('language.arabic')} selected={i18n.language === 'ar'} onPress={() => choose('ar')} />
-        </View>
-        <AppText muted>{t('language.restartBody')}</AppText>
-      </View>
+      <ScrollView contentContainerStyle={styles.body}>
+        <OptionList options={LANGUAGES} selected={current} onSelect={(language) => language !== current && setLanguage(language)} />
+        <AppText variant="caption" muted>
+          {t('language.restartBody')}
+        </AppText>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   body: { padding: spacing.md, gap: spacing.md },
-  row: { flexDirection: 'row', gap: spacing.sm },
 });

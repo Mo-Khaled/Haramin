@@ -1,9 +1,10 @@
-import { I18nManager, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 import { Icon, type IconName } from './Icon';
+import { useIsRTL } from '@/lib/direction';
 
 interface Props {
   icon: IconName;
@@ -15,6 +16,7 @@ interface Props {
 /** Settings-style navigation row: leading icon, label, optional detail, trailing chevron. */
 export function ListRow({ icon, label, detail, onPress }: Props) {
   const { colors } = useTheme();
+  const isRTL = useIsRTL();
   return (
     <Pressable
       accessibilityRole="button"
@@ -28,7 +30,7 @@ export function ListRow({ icon, label, detail, onPress }: Props) {
           {detail}
         </AppText>
       ) : null}
-      <Icon name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size="sm" color={colors.textSecondary} />
+      <Icon name={isRTL ? 'chevron-back' : 'chevron-forward'} size="sm" color={colors.textSecondary} />
     </Pressable>
   );
 }

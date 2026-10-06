@@ -3,6 +3,7 @@ import { Platform, ScrollView, StyleSheet, type RefreshControlProps, type ViewSt
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/ThemeProvider';
+import { useDirectionStyle } from '@/lib/direction';
 
 /**
  * Top padding a tab screen must add itself. iOS native tabs adjust the first scroll view for the
@@ -34,9 +35,10 @@ export function TabScroll({
 }: Props) {
   const { colors } = useTheme();
   const topInset = useTabTopInset();
+  const direction = useDirectionStyle();
   return (
     <ScrollView
-      style={[styles.root, { backgroundColor: colors.background }]}
+      style={[styles.root, direction, { backgroundColor: colors.background }]}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[styles.content, { paddingTop: topInset }, contentContainerStyle]}
       refreshControl={refreshControl}

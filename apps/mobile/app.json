@@ -42,7 +42,7 @@
           }
         }
       ],
-      "expo-localization",
+      ["expo-localization", { "supportsRTL": true }],
       "expo-secure-store",
       "expo-font",
       "expo-notifications",
@@ -61,6 +61,7 @@
       "reactCompiler": true
     },
     "extra": {
+      "supportsRTL": true,
       "eas": {}
     }
   }

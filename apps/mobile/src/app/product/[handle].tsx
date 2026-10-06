@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, I18nManager, Pressable, ScrollView, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
@@ -33,21 +33,28 @@ import { SHOP_URL } from '@/lib/shopify/client';
 import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { useIsRTL, useReadingStart } from '@/lib/direction';
 
 function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
   const [index, setIndex] = useState(0);
+  const start = useReadingStart<FlatList<ShopImage>>();
 
   return (
     <View>
       <FlatList
+        ref={start.ref}
+        {...start.scrollProps}
         data={images}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(img) => img.url}
-        onMomentumScrollEnd={(e) => setIndex(Math.round(Math.abs(e.nativeEvent.contentOffset.x) / width))}
+        onMomentumScrollEnd={(e) => {
+          const page = Math.round(Math.abs(e.nativeEvent.contentOffset.x) / width);
+          setIndex(start.mirrored ? images.length - 1 - page : page);
+        }}
         renderItem={({ item }) => (
           <Image
             source={{ uri: item.url }}
@@ -158,9 +165,12 @@ export default function ProductScreen() {
   const insets = useSafeAreaInsets();
   const { add, busy } = useAddToCart();
   const wishlist = useWishlist();
+  const isRTL = useIsRTL();
   const query = useProduct(handle);
   const product = query.data;
   const [selection, setSelection] = useState<Selection>({});
+  // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
+  const [barHeight, setBarHeight] = useState(0);
 
   useEffect(() => {
     if (product) setSelection(initialSelection(product));
@@ -189,7 +199,9 @@ export default function ProductScreen() {
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <ScrollView
         contentInsetAdjustmentBehavior="never"
-        contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
+        contentContainerStyle={{ paddingBottom: barHeight + spacing.md }}
+        bounces={false}
+        overScrollMode="never"
         showsVerticalScrollIndicator={false}>
         <Gallery images={images} title={product.title} />
 
@@ -232,10 +244,12 @@ export default function ProductScreen() {
         <RelatedRails product={product} />
       </ScrollView>
 
+      {/* Keeps scrolled content from running under the clock and battery icons. */}
+      <View style={[styles.statusBackdrop, { height: insets.top, backgroundColor: colors.background }]} />
       <View style={[styles.topBar, { top: insets.top + spacing.xs }]} pointerEvents="box-none">
         <IconButton
           filled
-          name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'}
+          name={isRTL ? 'chevron-forward' : 'chevron-back'}
           label={t('common.back')}
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         />
@@ -245,6 +259,7 @@ export default function ProductScreen() {
       </View>
 
       <View
+        onLayout={(event) => setBarHeight(event.nativeEvent.layout.height)}
         style={[
           styles.bottomBar,
           { backgroundColor: colors.background, borderColor: colors.border, paddingBottom: insets.bottom + spacing.sm },
@@ -292,6 +307,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topActions: { flexDirection: 'row', gap: spacing.sm },
+  statusBackdrop: { position: 'absolute', top: 0, start: 0, end: 0 },
   bottomBar: {
     position: 'absolute',
     start: 0,
