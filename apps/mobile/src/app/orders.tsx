@@ -33,7 +33,7 @@ function OrderRow({ order }: { order: OrderSummary }) {
       </AppText>
       <AppText variant="label">{formatMoney(order.total.amount, i18n.language, order.total.currencyCode)}</AppText>
       {order.trackingUrl ? (
-        <Pressable accessibilityRole="link" onPress={() => Linking.openURL(order.trackingUrl!)} style={styles.track}>
+        <Pressable accessibilityRole="link" onPress={() => openTrackingUrl(order.trackingUrl!)} style={styles.track}>
           <AppText variant="label" color={colors.primaryText}>
             {t('orders.track')}
           </AppText>
@@ -41,6 +41,11 @@ function OrderRow({ order }: { order: OrderSummary }) {
       ) : null}
     </View>
   );
+}
+
+/** Tracking links come from fulfillment data, so only plain web links may open (never tel:, intent: or app schemes). */
+function openTrackingUrl(url: string): void {
+  if (/^https:\/\//i.test(url)) Linking.openURL(url).catch(() => undefined);
 }
 
 export default function OrdersScreen() {

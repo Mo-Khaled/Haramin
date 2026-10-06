@@ -63,3 +63,11 @@ export const LOYALTY = {
   redeemStep: 100,
   redeemStepValueEgp: 50,
 } as const;
+
+/**
+ * Result of an in-app account deletion. `requested`: our data is deleted and Shopify was asked to erase
+ * the customer; `manual_review`: our data is deleted and the store operator must finish Shopify's side.
+ */
+export interface AccountDeletionDto {
+  status: 'requested' | 'manual_review';
+}

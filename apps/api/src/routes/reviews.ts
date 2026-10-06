@@ -7,7 +7,7 @@ import { ReviewsUnavailableError } from '../services/judgeme.js';
 const handleSchema = z.string().regex(/^[a-z0-9-]{1,255}$/);
 
 const createSchema = z.object({
-  productId: z.string().regex(/^(gid:\/\/shopify\/Product\/)?\d+$/),
+  productId: z.string().regex(/^(gid:\/\/shopify\/Product\/)?\d{1,15}$/),
   handle: handleSchema,
   name: z.string().trim().min(1).max(80),
   email: z.string().trim().email().max(200),
@@ -18,7 +18,8 @@ const createSchema = z.object({
 
 /** Public endpoints: anyone browsing a product can read and write reviews, as on the website. */
 export function reviewRoutes(app: FastifyInstance, deps: AppDeps): void {
-  app.get('/reviews/:handle', async (request, reply) => {
+  // Each uncached handle costs the shop's Judge.me quota, so reads get their own tighter per-IP budget.
+  app.get('/reviews/:handle', { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (request, reply) => {
     const parsed = handleSchema.safeParse((request.params as { handle: string }).handle);
     if (!parsed.success) return reply.code(400).send({ error: 'invalid_handle' });
     try {

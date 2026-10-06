@@ -5,3 +5,25 @@ node_modules
 dist
 .expo
 *.log
+
+# Key material and credentials
+*.pem
+*.key
+*.p8
+*.p12
+credentials*.json
+
+# Build output and caches
+coverage
+*.tsbuildinfo
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea
+
+# Local AI tooling (not part of the product); per-user Claude settings
+/.agents/
+/.claude/
+skills-lock.json
+**/.claude/settings.local.json

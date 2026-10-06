@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { unregisterDevice } from '@/features/notifications/registeredDevice';
 import {
   fetchProfile,
   isSignInConfigured,
@@ -47,7 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [hydrate]);
 
   const signOut = useCallback(async () => {
-    if (session) await signOutRequest(session);
+    if (session) {
+      await unregisterDevice(session.accessToken);
+      await signOutRequest(session);
+    }
     await hydrate(null);
   }, [session, hydrate]);
 

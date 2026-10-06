@@ -1,5 +1,8 @@
+import { z } from 'zod';
+
 export type ShipmentStatus =
   | 'created'
+  | 'cancelled'
   | 'picked_up'
   | 'in_transit'
   | 'out_for_delivery'
@@ -29,6 +32,7 @@ export interface ShopifyOrderPayload {
   financial_status?: string;
   payment_gateway_names?: string[];
   checkout_id?: number | null;
+  cancelled_at?: string | null;
   note?: string | null;
   customer?: { id: number; first_name?: string | null; last_name?: string | null; phone?: string | null } | null;
   shipping_address?: {
@@ -97,4 +101,21 @@ export function buildDeliveryPayload(
       email: order.email ?? undefined,
     },
   };
+}
+
+const identifier = z.union([z.string(), z.number()]).transform(String).pipe(z.string().regex(/^[A-Za-z0-9_-]{1,64}$/));
+
+/** Runtime shape of a Bosta webhook body: identifiers are plain scalars, never Prisma filter objects. */
+export const bostaEventSchema = z
+  .object({
+    _id: identifier.optional(),
+    trackingNumber: identifier.optional(),
+    state: z.union([z.number().int(), z.object({ code: z.number().int() })]),
+  })
+  .refine((event) => event._id !== undefined || event.trackingNumber !== undefined);
+
+export type BostaEvent = z.infer<typeof bostaEventSchema>;
+
+export function bostaStateCode(event: BostaEvent): number {
+  return typeof event.state === 'object' ? event.state.code : event.state;
 }

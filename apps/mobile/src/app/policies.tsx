@@ -15,7 +15,9 @@ import { spacing } from '@/theme/tokens';
 export default function PoliciesScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ policy?: PolicyKey }>();
-  const [selected, setSelected] = useState<PolicyKey>(params.policy ?? 'shippingPolicy');
+  const [selected, setSelected] = useState<PolicyKey>(
+    POLICY_KEYS.some((k) => k.key === params.policy) ? params.policy! : 'shippingPolicy',
+  );
   const policyDoc = usePolicyDocument(selected);
 
   return (

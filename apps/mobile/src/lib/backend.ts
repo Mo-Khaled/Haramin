@@ -1,4 +1,5 @@
 import type {
+  AccountDeletionDto,
   CreateReviewDto,
   LoyaltyBalanceDto,
   LoyaltyHistoryDto,
@@ -50,6 +51,10 @@ export const backend = {
   async registerDevice(token: string, deviceToken: string, platform: string, language: string): Promise<void> {
     await request('/devices', { method: 'POST', body: JSON.stringify({ token: deviceToken, platform, language }) }, token);
   },
+  async unregisterDevice(token: string, deviceToken: string): Promise<void> {
+    await request(`/devices/${encodeURIComponent(deviceToken)}`, { method: 'DELETE' }, token);
+  },
+  deleteAccount: (token: string) => request<AccountDeletionDto>('/account', { method: 'DELETE' }, token),
   getReviews: (handle: string) => request<ReviewSummaryDto>(`/reviews/${encodeURIComponent(handle)}`),
   async submitReview(review: CreateReviewDto): Promise<void> {
     await request('/reviews', { method: 'POST', body: JSON.stringify(review) });

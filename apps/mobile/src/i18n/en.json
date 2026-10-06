@@ -344,5 +344,25 @@
       "body": "Write at least {{count}} characters.",
       "send": "Couldn't send your review. Please try again."
     }
+  },
+  "deleteAccount": {
+    "title": "Delete account",
+    "intro": "This permanently deletes your Haramain account data. It cannot be undone.",
+    "removedTitle": "What gets deleted",
+    "removed": {
+      "wishlist": "Your wishlist",
+      "points": "Your loyalty points and history",
+      "devices": "Notifications on your devices",
+      "profile": "Your profile, which we ask Shopify to erase"
+    },
+    "orders": "Past orders are kept as required for accounting and tax, without linking them to your profile in this app.",
+    "button": "Delete my account",
+    "confirmTitle": "Delete your account?",
+    "confirmBody": "Your points and wishlist will be lost for good.",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "failed": "We could not delete your account. Please try again.",
+    "doneTitle": "Account deleted",
+    "doneBody": "Your account data has been deleted. Profile erasure at Shopify can take a few days."
   }
 }

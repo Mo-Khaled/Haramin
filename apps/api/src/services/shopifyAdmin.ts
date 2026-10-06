@@ -44,6 +44,29 @@ export async function creditStoreCredit(customerId: string, amountEgp: number): 
   assertNoUserErrors(data.storeCreditAccountCredit, 'Store credit');
 }
 
+/** Takes store credit back from the customer's balance; Shopify rejects it when the balance is too low. */
+export async function debitStoreCredit(customerId: string, amountEgp: number): Promise<void> {
+  const data = await adminGraphql<{ storeCreditAccountDebit: UserErrors }>(
+    `mutation Debit($id: ID!, $input: StoreCreditAccountDebitInput!) {
+      storeCreditAccountDebit(id: $id, debitInput: $input) { userErrors { message } }
+    }`,
+    {
+      id: customerGid(customerId),
+      input: { debitAmount: { amount: amountEgp.toFixed(2), currencyCode: 'EGP' } },
+    },
+  );
+  assertNoUserErrors(data.storeCreditAccountDebit, 'Store credit debit');
+}
+
+/** Asks Shopify to erase the customer's personal data (it honours its own legal retention rules for orders). */
+export async function requestCustomerErasure(customerId: string): Promise<void> {
+  const data = await adminGraphql<{ customerRequestDataErasure: UserErrors }>(
+    `mutation Erase($id: ID!) { customerRequestDataErasure(customerId: $id) { userErrors { message } } }`,
+    { id: customerGid(customerId) },
+  );
+  assertNoUserErrors(data.customerRequestDataErasure, 'Customer erasure request');
+}
+
 export async function addOrderTags(orderId: string | number, tags: string[]): Promise<void> {
   const data = await adminGraphql<{ tagsAdd: UserErrors }>(
     `mutation Tag($id: ID!, $tags: [String!]!) { tagsAdd(id: $id, tags: $tags) { userErrors { message } } }`,

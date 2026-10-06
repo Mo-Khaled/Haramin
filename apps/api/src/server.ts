@@ -10,6 +10,7 @@ import { redactUrl } from './lib/redact.js';
 import { redis } from './lib/redis.js';
 import { initSentry, Sentry } from './lib/sentry.js';
 import { enqueue } from './queues/index.js';
+import { accountRoutes } from './routes/account.js';
 import { authBridgeRoutes } from './routes/authBridge.js';
 import { deviceRoutes } from './routes/devices.js';
 import { loyaltyRoutes } from './routes/loyalty.js';
@@ -17,7 +18,7 @@ import { reviewRoutes } from './routes/reviews.js';
 import { webhookRoutes } from './routes/webhooks.js';
 import { wishlistRoutes } from './routes/wishlist.js';
 import { createJudgemeService } from './services/judgeme.js';
-import { creditStoreCredit } from './services/shopifyAdmin.js';
+import { creditStoreCredit, requestCustomerErasure } from './services/shopifyAdmin.js';
 
 const LANDING_PAGE =
   '<!doctype html><meta name="viewport" content="width=device-width"><title>Haramain</title>' +
@@ -26,7 +27,7 @@ const LANDING_PAGE =
   '<p>You can close this tab and return to Shopify.</p></body>';
 
 export function defaultDeps(): AppDeps {
-  return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit, reviews: createJudgemeService() };
+  return { prisma, enqueue, verifyCustomer: verifyWithShopify, creditStoreCredit, requestCustomerErasure, reviews: createJudgemeService() };
 }
 
 function infoRoutes(app: FastifyInstance, deps: AppDeps): void {
@@ -77,6 +78,12 @@ export function buildServer(deps: AppDeps = defaultDeps()) {
     return reply.status(500).send({ error: 'internal_error' });
   });
 
+  // Fastify's default 404 logs the raw URL, which could carry ?secret= from a misconfigured webhook.
+  app.setNotFoundHandler((request, reply) => {
+    request.log.warn({ url: redactUrl(request.url) }, 'route not found');
+    return reply.code(404).send({ error: 'not_found' });
+  });
+
   app.register(helmet);
   app.register(rateLimit, {
     max: 120,
@@ -92,6 +99,7 @@ export function buildServer(deps: AppDeps = defaultDeps()) {
     wishlistRoutes(scope, deps);
     loyaltyRoutes(scope, deps);
     deviceRoutes(scope, deps);
+    accountRoutes(scope, deps);
     reviewRoutes(scope, deps);
     authBridgeRoutes(scope);
     scope.register(async (webhooks) => webhookRoutes(webhooks, deps));

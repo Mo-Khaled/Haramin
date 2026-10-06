@@ -21,10 +21,12 @@ export function classifyCheckoutUrl(url: string, shopDomain: string): CheckoutNa
   const match = URL_PATTERN.exec(url);
   if (!match) return 'exit';
   const [, scheme, host = '', path = '/'] = match;
-  if (scheme.toLowerCase() !== 'https' && scheme.toLowerCase() !== 'http') return 'exit';
-  if (COMPLETE_PATH.test(path)) return 'complete';
+  // Checkout and payment pages are always HTTPS; anything else is never legitimate here.
+  if (scheme.toLowerCase() !== 'https') return 'exit';
+  const trusted = isShopHost(host, shopDomain) || SHOPIFY_PLATFORM_HOST.test(host);
+  // Only the store and Shopify can finish a checkout; a third-party page must not be able to clear the cart.
+  if (trusted && COMPLETE_PATH.test(path)) return 'complete';
   if (isShopHost(host, shopDomain)) return CHECKOUT_PATH.test(path) ? 'allow' : 'exit';
-  if (SHOPIFY_PLATFORM_HOST.test(host)) return 'allow';
-  // Card issuers' 3-D Secure pages and wallet providers live on their own domains.
+  // Shopify platform pages, card issuers' 3-D Secure pages and wallet providers live on their own domains.
   return 'allow';
 }

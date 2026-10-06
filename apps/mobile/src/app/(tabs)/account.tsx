@@ -123,7 +123,12 @@ export default function AccountScreen() {
         />
       </Section>
 
-      {auth.session ? <Button label={t('account.signOut')} variant="secondary" onPress={() => auth.signOut()} /> : null}
+      {auth.session ? (
+        <>
+          <Button label={t('account.signOut')} variant="secondary" onPress={() => auth.signOut()} />
+          <ListRow icon="trash-outline" label={t('deleteAccount.title')} onPress={go('/delete-account')} />
+        </>
+      ) : null}
     </TabScroll>
   );
 }

@@ -32,4 +32,11 @@ export function deviceRoutes(app: FastifyInstance, deps: AppDeps): void {
     if (stale.length) await deps.prisma.deviceToken.deleteMany({ where: { id: { in: stale.map((d) => d.id) } } });
     return { ok: true };
   });
+
+  // Called on sign-out so a shared phone stops receiving the previous customer's order pushes.
+  app.delete('/devices/:token', { preHandler: requireCustomer(deps.verifyCustomer) }, async (request) => {
+    const { token } = request.params as { token: string };
+    await deps.prisma.deviceToken.deleteMany({ where: { token, shopifyCustomerId: request.customerId } });
+    return { ok: true };
+  });
 }

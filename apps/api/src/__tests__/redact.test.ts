@@ -16,4 +16,9 @@ describe('redactUrl', () => {
   it('matches parameter names case-insensitively, including bare flags', () => {
     expect(redactUrl('/x?SECRET=1&token')).toBe('/x?SECRET=[redacted]&token=[redacted]');
   });
+
+  it('never throws on malformed percent-encoding and still redacts what it can read', () => {
+    expect(() => redactUrl('/health?%')).not.toThrow();
+    expect(redactUrl('/x?a=1&%zz=2&secret=s')).toBe('/x?a=1&%zz=2&secret=[redacted]');
+  });
 });

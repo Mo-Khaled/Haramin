@@ -6,6 +6,8 @@ import { backend } from '@/lib/backend';
 import { haptics } from '@/lib/haptics';
 
 const STORAGE_KEY = 'haramain.wishlist';
+/** Set while the stored list belongs to a signed-in customer, so it is discarded if that session ends. */
+const OWNED_KEY = 'haramain.wishlist.owned';
 
 interface WishlistContextValue {
   ids: string[];
@@ -16,7 +18,7 @@ interface WishlistContextValue {
 const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const { session } = useAuth();
+  const { session, loading } = useAuth();
   const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -24,6 +26,24 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       .then((raw) => raw && setIds(JSON.parse(raw) as string[]))
       .catch(() => undefined);
   }, []);
+
+  // A signed-in customer's list is theirs alone: once their session ends (sign-out, or expiry while the
+  // app was closed), drop it so the next account never inherits it. Guest lists survive and still merge.
+  useEffect(() => {
+    if (loading) return;
+    (async () => {
+      try {
+        if (session) {
+          await AsyncStorage.setItem(OWNED_KEY, 'true');
+        } else if ((await AsyncStorage.getItem(OWNED_KEY)) === 'true') {
+          setIds([]);
+          await AsyncStorage.multiRemove([STORAGE_KEY, OWNED_KEY]);
+        }
+      } catch {
+        // Storage is best effort; the worst case is a stale local list until the next sign-out.
+      }
+    })();
+  }, [session, loading]);
 
   // On sign-in, merge the guest wishlist into the server copy, then adopt the merged result.
   useEffect(() => {

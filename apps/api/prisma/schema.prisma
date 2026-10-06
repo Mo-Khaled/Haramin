@@ -64,6 +64,24 @@ model ProcessedWebhook {
   id          String   @id
   topic       String
   processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
+
+/** Orders cancelled in Shopify: stops late-arriving paid/created jobs from earning points or shipping. */
+model CancelledOrder {
+  orderId   String   @id
+  createdAt DateTime @default(now())
+}
+
+/** A partial refund processed before the order's points were earned, applied when the earn lands. */
+model PendingReversal {
+  orderId   String
+  key       String
+  points    Int
+  createdAt DateTime @default(now())
+
+  @@id([orderId, key])
 }
 
 model ProductPrice {
@@ -80,4 +98,5 @@ model AbandonedCheckout {
   notifiedAt        DateTime?
 
   @@index([notifiedAt, completedAt, createdAt])
+  @@index([createdAt])
 }

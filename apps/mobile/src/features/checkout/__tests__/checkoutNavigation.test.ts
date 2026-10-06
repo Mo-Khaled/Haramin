@@ -35,6 +35,13 @@ describe('classifyCheckoutUrl', () => {
     expect(classify('about:blank')).toBe('allow');
   });
 
+  it('does not let a third-party page complete the checkout or downgrade to plain HTTP', () => {
+    expect(classify('https://3ds.bank.example/thank_you')).toBe('allow');
+    expect(classify('https://evil.example/orders/abc123')).toBe('allow');
+    expect(classify('http://3ds.bank.example/challenge')).toBe('exit');
+    expect(classify('http://haramaineg.com/checkouts/cn/abc')).toBe('exit');
+  });
+
   it('exits on non-web schemes and malformed URLs', () => {
     expect(classify('intent://scan#Intent;end')).toBe('exit');
     expect(classify('javascript:alert(1)')).toBe('exit');

@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 
+import { bostaEventSchema, bostaStateCode } from '../domain/bosta.js';
 import type { AppDeps } from '../deps.js';
 import { env, shopifyWebhookSecret } from '../lib/env.js';
 import { verifyShopifyHmac } from '../lib/hmac.js';
@@ -21,6 +22,14 @@ function safeEqual(a: string, b: string): boolean {
   const left = Buffer.from(a);
   const right = Buffer.from(b);
   return left.length === right.length && timingSafeEqual(left, right);
+}
+
+function parseBostaBody(body: Buffer) {
+  try {
+    return bostaEventSchema.safeParse(JSON.parse(body.toString('utf8')));
+  } catch {
+    return { success: false as const };
+  }
 }
 
 /** Webhook endpoints need the raw body for signature checks, so they live in their own plugin scope. */
@@ -66,8 +75,11 @@ export function webhookRoutes(app: FastifyInstance, deps: AppDeps): void {
       request.log.warn('rejected Bosta webhook: bad secret');
       return reply.code(401).send({ error: 'unauthorized' });
     }
-    const event = JSON.parse((request.body as Buffer).toString('utf8')) as { _id?: string; state?: unknown };
-    const jobId = `bosta-${event._id ?? 'unknown'}-${JSON.stringify(event.state)}`;
+    const parsed = parseBostaBody(request.body as Buffer);
+    if (!parsed.success) return reply.code(400).send({ error: 'invalid_event' });
+    const event = parsed.data;
+    // Only validated scalars reach the queue: the job id and the handler's database lookup both use them.
+    const jobId = `bosta-${event._id ?? event.trackingNumber}-${bostaStateCode(event)}`;
     await deps.enqueue('bosta.status', event, jobId);
     return reply.code(200).send({ ok: true });
   });

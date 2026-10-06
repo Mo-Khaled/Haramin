@@ -12,7 +12,8 @@ export type JobName =
   | 'product.updated'
   | 'checkout.updated'
   | 'bosta.status'
-  | 'cron.abandoned-checkouts';
+  | 'cron.abandoned-checkouts'
+  | 'cron.cleanup';
 
 export type Enqueue = (name: JobName, data: unknown, jobId: string) => Promise<void>;
 
@@ -32,4 +33,5 @@ export const enqueue: Enqueue = async (name, data, jobId) => {
 export async function scheduleRecurringJobs(): Promise<void> {
   if (!jobsQueue) return;
   await jobsQueue.upsertJobScheduler('abandoned-checkouts', { every: 15 * 60_000 }, { name: 'cron.abandoned-checkouts' });
+  await jobsQueue.upsertJobScheduler('cleanup', { every: 24 * 60 * 60_000 }, { name: 'cron.cleanup' });
 }

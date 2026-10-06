@@ -8,6 +8,8 @@ import i18n from '@/i18n';
 import { backend } from '@/lib/backend';
 import { env } from '@/lib/env';
 
+import { rememberRegisteredDevice } from './registeredDevice';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
@@ -38,6 +40,7 @@ export function PushRegistrar() {
         const token = await getPushToken();
         if (token && !cancelled) {
           await backend.registerDevice(session.accessToken, token, Platform.OS, i18n.language === 'ar' ? 'ar' : 'en');
+          rememberRegisteredDevice(token);
         }
       } catch {
         // Push is optional; failing to register must never block the app.

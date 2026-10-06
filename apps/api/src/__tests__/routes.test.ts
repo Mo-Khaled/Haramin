@@ -29,7 +29,7 @@ function makeDeps() {
       }),
       findMany: vi.fn().mockResolvedValue([]),
     },
-    deviceToken: { upsert: vi.fn().mockResolvedValue({}) },
+    deviceToken: { upsert: vi.fn().mockResolvedValue({}), deleteMany: vi.fn().mockResolvedValue({ count: 1 }), findMany: vi.fn().mockResolvedValue([]) },
     processedWebhook: { create: vi.fn().mockResolvedValue({}), delete: vi.fn().mockResolvedValue({}) },
     $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma)),
   };
@@ -38,6 +38,7 @@ function makeDeps() {
     enqueue: vi.fn().mockResolvedValue(undefined),
     verifyCustomer: vi.fn(async (token: string) => (token === 'good-token' ? CUSTOMER : null)),
     creditStoreCredit: vi.fn().mockResolvedValue(undefined),
+    requestCustomerErasure: vi.fn().mockResolvedValue(undefined),
     reviews: {
       getSummary: vi.fn().mockResolvedValue({ average: 4.5, count: 2, histogram: [1, 1, 0, 0, 0], reviews: [] }),
       submit: vi.fn().mockResolvedValue(undefined),
@@ -201,6 +202,46 @@ describe('shopify webhooks', () => {
   });
 });
 
+describe('account deletion', () => {
+  const withDeletes = () => {
+    const made = makeDeps();
+    const prisma = made.prisma as unknown as Record<string, Record<string, unknown>>;
+    prisma.wishlistItem!.deleteMany = vi.fn().mockResolvedValue({ count: 1 });
+    prisma.abandonedCheckout = { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) };
+    prisma.pointsLedger!.deleteMany = vi.fn().mockResolvedValue({ count: 2 });
+    prisma.shipmentMap = { updateMany: vi.fn().mockResolvedValue({ count: 1 }) };
+    made.prisma.$transaction = vi.fn(async (steps: unknown) => Promise.all(steps as Promise<unknown>[])) as never;
+    return { ...made, prisma: prisma as never };
+  };
+
+  it('requires sign-in', async () => {
+    const { deps } = withDeletes();
+    expect((await buildServer(deps).inject({ method: 'DELETE', url: '/account' })).statusCode).toBe(401);
+  });
+
+  it('deletes the caller\'s own data and asks Shopify to erase the customer', async () => {
+    const { deps, prisma } = withDeletes();
+    const res = await buildServer(deps).inject({ method: 'DELETE', url: '/account', headers: AUTH });
+    expect(res.json()).toEqual({ status: 'requested' });
+    const owner = { where: { shopifyCustomerId: CUSTOMER } };
+    expect((prisma as never as { wishlistItem: { deleteMany: ReturnType<typeof vi.fn> } }).wishlistItem.deleteMany).toHaveBeenCalledWith(owner);
+    expect((prisma as never as { pointsLedger: { deleteMany: ReturnType<typeof vi.fn> } }).pointsLedger.deleteMany).toHaveBeenCalledWith(owner);
+    expect((prisma as never as { shipmentMap: { updateMany: ReturnType<typeof vi.fn> } }).shipmentMap.updateMany).toHaveBeenCalledWith({
+      ...owner,
+      data: { shopifyCustomerId: null },
+    });
+    expect(deps.requestCustomerErasure).toHaveBeenCalledWith(CUSTOMER);
+  });
+
+  it('still reports success, flagged for manual review, when Shopify refuses the erasure request', async () => {
+    const { deps } = withDeletes();
+    (deps.requestCustomerErasure as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('missing scope'));
+    const res = await buildServer(deps).inject({ method: 'DELETE', url: '/account', headers: AUTH });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ status: 'manual_review' });
+  });
+});
+
 describe('bosta webhook', () => {
   it('requires the shared secret', async () => {
     const { deps } = makeDeps();
@@ -216,6 +257,48 @@ describe('bosta webhook', () => {
     });
     expect(ok.statusCode).toBe(200);
     expect(deps.enqueue).toHaveBeenCalledOnce();
+    expect(deps.enqueue).toHaveBeenCalledWith('bosta.status', { _id: 'b1', state: 45 }, 'bosta-b1-45');
+  });
+
+  it('rejects bodies whose identifiers are objects, so they can never become Prisma filters', async () => {
+    const { deps } = makeDeps();
+    const app = buildServer(deps);
+    const headers = { 'content-type': 'application/json' };
+    const url = '/webhooks/bosta?secret=test-bosta-secret';
+    for (const payload of [
+      { trackingNumber: { not: 'x' }, state: 45 },
+      { _id: { startsWith: '' }, state: 45 },
+      { _id: 'b1' },
+      { state: 45 },
+      null,
+      'text',
+    ]) {
+      const res = await app.inject({ method: 'POST', url, headers, payload: JSON.stringify(payload) });
+      expect(res.statusCode).toBe(400);
+    }
+    expect((await app.inject({ method: 'POST', url, headers, payload: '{bad' })).statusCode).toBe(400);
+    expect(deps.enqueue).not.toHaveBeenCalled();
+  });
+
+  it('accepts a numeric tracking number and a nested state code', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({
+      method: 'POST',
+      url: '/webhooks/bosta?secret=test-bosta-secret',
+      headers: { 'content-type': 'application/json' },
+      payload: JSON.stringify({ trackingNumber: 12345, state: { code: 41 } }),
+    });
+    expect(res.statusCode).toBe(200);
+    expect(deps.enqueue).toHaveBeenCalledWith('bosta.status', { trackingNumber: '12345', state: { code: 41 } }, 'bosta-12345-41');
+  });
+});
+
+describe('devices', () => {
+  it('unregisters only the caller\'s own device token', async () => {
+    const { deps, prisma } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'DELETE', url: '/devices/ExponentPushToken[abc]', headers: AUTH });
+    expect(res.statusCode).toBe(200);
+    expect(prisma.deviceToken.deleteMany).toHaveBeenCalledWith({ where: { token: 'ExponentPushToken[abc]', shopifyCustomerId: CUSTOMER } });
   });
 });
 
@@ -310,6 +393,12 @@ describe('hardening', () => {
     });
     expect(res.statusCode).toBe(400);
     expect(res.json()).toEqual({ error: 'bad_request' });
+  });
+
+  it('survives malformed percent-encoding in the query string instead of crashing the logger', async () => {
+    const { deps } = makeDeps();
+    const res = await buildServer(deps).inject({ method: 'GET', url: '/health?%' });
+    expect(res.statusCode).toBe(200);
   });
 
   it('sends security headers', async () => {

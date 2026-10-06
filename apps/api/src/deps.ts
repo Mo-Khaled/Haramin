@@ -9,5 +9,6 @@ export interface AppDeps {
   enqueue: Enqueue;
   verifyCustomer: CustomerVerifier;
   creditStoreCredit: (customerId: string, amountEgp: number) => Promise<void>;
+  requestCustomerErasure: (customerId: string) => Promise<void>;
   reviews: ReviewsService;
 }
