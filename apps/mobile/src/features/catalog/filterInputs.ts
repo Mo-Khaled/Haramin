@@ -1,3 +1,5 @@
+import type { FilterValue } from '@/lib/shopify/types';
+
 export interface PriceBand {
   min: number;
   max: number | null;
@@ -39,6 +41,26 @@ export function toFilterInputs(filters: ActiveFilters): string[] {
     inputs.push(JSON.stringify({ price: max === null ? { min } : { min, max } }));
   }
   return inputs;
+}
+
+const ARABIC_LETTER = /[؀-ۿ]/;
+
+/**
+ * Shopify's filter index keeps a product's old untranslated value next to its new Arabic one, so an Arabic list
+ * can show "Perfume" beside "عطر", or "للرجال" twice. Once a list has any Arabic option, drop the Latin-only
+ * ones and keep one option per label (the one covering the most products). The Arabic options already cover the
+ * same products. Lists that are all Latin, like brand names, are left untouched.
+ */
+export function visibleFilterValues(values: FilterValue[]): FilterValue[] {
+  const translated = values.some((value) => ARABIC_LETTER.test(value.label));
+  const best = new Map<string, FilterValue>();
+  for (const value of values) {
+    if (translated && !ARABIC_LETTER.test(value.label)) continue;
+    const label = value.label.trim();
+    const kept = best.get(label);
+    if (!kept || value.count > kept.count) best.set(label, value);
+  }
+  return values.filter((value) => best.get(value.label.trim()) === value);
 }
 
 export function countActive(filters: ActiveFilters): number {

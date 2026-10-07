@@ -13,7 +13,7 @@ import { formatMoney } from '@/lib/format';
 import type { FilterValue, ProductFilter, SortKey } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, spacing } from '@/theme/tokens';
-import { isSelected, NO_FILTERS, PRICE_BANDS, toggleValue, type ActiveFilters, type PriceBand } from './filterInputs';
+import { isSelected, NO_FILTERS, PRICE_BANDS, toggleValue, visibleFilterValues, type ActiveFilters, type PriceBand } from './filterInputs';
 
 export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'FEATURED', label: 'collection.sortFeatured' },
@@ -62,7 +62,7 @@ function FilterGroup({ filter, draft, onChange }: { filter: ProductFilter; draft
       {filter.type === 'PRICE_RANGE' ? (
         <PriceBands selected={draft.priceBand} onSelect={(priceBand) => onChange({ ...draft, priceBand })} />
       ) : (
-        filter.values.map((value) => (
+        visibleFilterValues(filter.values).map((value) => (
           <CheckRow
             key={value.id}
             value={value}
