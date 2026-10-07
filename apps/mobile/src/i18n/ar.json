@@ -41,7 +41,11 @@
     "gender": "تسوق حسب النوع",
     "collections": "المجموعات",
     "brands": "الماركات",
-    "all": "كل العطور"
+    "all": "كل العطور",
+    "groupPicks": "اختياراتنا",
+    "groupLines": "التشكيلات",
+    "groupSeasons": "حسب الموسم",
+    "groupHome": "المنزل والبخور"
   },
   "collection": {
     "filter": "تصفية",

@@ -41,7 +41,11 @@
     "gender": "Shop by gender",
     "collections": "Collections",
     "brands": "Brands",
-    "all": "All perfumes"
+    "all": "All perfumes",
+    "groupPicks": "Our picks",
+    "groupLines": "Collections",
+    "groupSeasons": "By season",
+    "groupHome": "Home & incense"
   },
   "collection": {
     "filter": "Filter",

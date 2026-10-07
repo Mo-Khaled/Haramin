@@ -1,10 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
-import { Icon, type IconName } from '@/components/ui/Icon';
+import { Chip } from '@/components/ui/Chip';
+import type { IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
@@ -16,9 +17,9 @@ import { useCollections } from '@/features/catalog/hooks';
 import { useBrands, type Brand } from '@/features/catalog/useBrands';
 import { BrandMark } from '@/features/home/BrandRail';
 import { CollectionTile } from '@/features/home/CollectionTile';
+import { SHOP_COLLECTION_GROUPS, type CollectionGroup } from '@/features/home/homeContent';
 import { useTheme } from '@/theme/ThemeProvider';
-import { minTouch, radius, spacing } from '@/theme/tokens';
-import { useIsRTL } from '@/lib/direction';
+import { radius, spacing } from '@/theme/tokens';
 
 type ShopView = 'brands' | 'categories';
 
@@ -76,27 +77,30 @@ function BrandsGrid() {
   );
 }
 
-function CategoryRow({ label, handle }: { label: string; handle: string }) {
-  const { colors } = useTheme();
-  const isRTL = useIsRTL();
+function CollectionGroupChips({ group, titles }: { group: CollectionGroup; titles: Map<string, string> }) {
+  const { t } = useTranslation();
+  const available = group.handles.filter((handle) => titles.has(handle));
+  if (available.length === 0) return null;
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={() => openCollection(handle)}
-      style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
-      <AppText style={styles.rowLabel}>{label}</AppText>
-      <Icon name={isRTL ? 'chevron-back' : 'chevron-forward'} color={colors.textSecondary} size="sm" />
-    </Pressable>
+    <View style={styles.group}>
+      <AppText variant="heading" accessibilityRole="header">
+        {t(group.titleKey)}
+      </AppText>
+      <View style={styles.chips}>
+        {available.map((handle) => (
+          <Chip key={handle} label={titles.get(handle) ?? handle} onPress={() => openCollection(handle)} />
+        ))}
+      </View>
+    </View>
   );
 }
 
 function Categories() {
   const { t } = useTranslation();
   const collections = useCollections();
-  const { brands } = useBrands();
-  const brandHandles = new Set(brands.map((b) => b.handle));
-  // The hardcoded "all" row below already opens all-perfumes, so the collection itself is not listed twice.
-  const others = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle) && c.handle !== 'all-perfumes');
+  const { width: screenWidth } = useWindowDimensions();
+  const halfWidth = (screenWidth - spacing.md * 2 - spacing.sm) / 2;
+  const titles = new Map((collections.data ?? []).map((c) => [c.handle, c.title]));
 
   return (
     <View style={styles.categories}>
@@ -108,7 +112,7 @@ function Categories() {
             image={collections.data?.find((c) => c.handle === tile.handle)?.image ?? null}
             fallbackIcon={tile.icon}
             onPress={() => openCollection(tile.handle)}
-            style={tile.wide ? styles.wideTile : styles.halfTile}
+            style={tile.wide ? styles.wideTile : { width: halfWidth }}
           />
         ))}
       </View>
@@ -117,12 +121,7 @@ function Categories() {
       ) : collections.isLoading ? (
         <Skeleton height={200} />
       ) : (
-        <View>
-          <CategoryRow label={t('shop.all')} handle="all-perfumes" />
-          {others.map((c) => (
-            <CategoryRow key={c.id} label={c.title} handle={c.handle} />
-          ))}
-        </View>
+        SHOP_COLLECTION_GROUPS.map((group) => <CollectionGroupChips key={group.titleKey} group={group} titles={titles} />)
       )}
     </View>
   );
@@ -157,7 +156,7 @@ export default function ShopScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl },
+  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl * 2 },
   center: { textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.xs },
   gridCell: { width: '50%', padding: spacing.xs },
@@ -172,12 +171,7 @@ const styles = StyleSheet.create({
   categories: { gap: spacing.md },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   halfTile: { flexBasis: '48%', flexGrow: 1 },
-  wideTile: { width: '100%', aspectRatio: 2 },
-  row: {
-    minHeight: minTouch + 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  rowLabel: { flex: 1 },
+  wideTile: { width: '100%', aspectRatio: 3.2 },
+  group: { gap: spacing.sm },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

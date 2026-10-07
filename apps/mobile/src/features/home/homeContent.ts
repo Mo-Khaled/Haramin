@@ -59,4 +59,20 @@ export const TRUST_ITEMS: TrustItem[] = [
 export const BRAND_WORLDS = ['lattafa', 'rasasi-perfumes', 'afnan-perfumes'];
 
 /** Collections shown as big tiles in the home "New in" row, in display order. */
+export interface CollectionGroup {
+  titleKey: string;
+  handles: string[];
+}
+
+/** The Shop tab's collections, grouped so the long Shopify list stays scannable; handles missing from the store are skipped. */
+export const SHOP_COLLECTION_GROUPS: CollectionGroup[] = [
+  { titleKey: 'shop.groupPicks', handles: ['all-perfumes', 'new-arrivals', 'best-sellers', 'under-300-egp', 'bundles', 'gift-bags', 'made-in-saudi'] },
+  {
+    titleKey: 'shop.groupLines',
+    handles: ['supremacy-collection', 'qasida-collection-1', 'amjad-line', 'arrogate-pink-line', 'island-collection', 'faan', 'velvet-collection', 'shiyaaka-collection', 'diamond-collection', 'curated-oud-collection'],
+  },
+  { titleKey: 'shop.groupSeasons', handles: ['winter-fragrances', 'summer-fragrances'] },
+  { titleKey: 'shop.groupHome', handles: ['home-and-ambiance', 'air-fresheners-1', 'oudh-incense', 'nabeels-incense-collection', 'khadlajs-incense-collection', 'deodorant'] },
+];
+
 export const NEW_IN_COLLECTIONS = ['arrogate-pink-line', 'amjad-line', 'qasida-collection-1', 'island-collection', 'supremacy-collection'];
