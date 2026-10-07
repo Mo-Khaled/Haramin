@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { FlatList, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { PressableScale } from '@/components/ui/PressableScale';
-import { useActiveIndex } from '@/lib/direction';
+import { usePagedList } from '@/lib/direction';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import type { Banner } from './homeMetaobjects';
@@ -21,16 +21,17 @@ export function HeroCarousel() {
   const { banners } = useHomeContent();
   const { width: screenWidth } = useWindowDimensions();
   const { colors } = useTheme();
-  const { index, viewabilityProps } = useActiveIndex();
   const slideWidth = screenWidth - spacing.md * 2;
   const step = slideWidth + spacing.sm;
+  const { data, index, listProps } = usePagedList(banners, step);
 
   return (
     <View style={styles.wrap}>
       <FlatList
-        {...viewabilityProps}
+        {...listProps}
+        key={data.length}
         horizontal
-        data={banners}
+        data={data}
         keyExtractor={(slide) => slide.id}
         showsHorizontalScrollIndicator={false}
         snapToInterval={step}

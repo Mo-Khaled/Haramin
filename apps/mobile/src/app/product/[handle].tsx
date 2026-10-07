@@ -34,18 +34,18 @@ import { SHOP_URL } from '@/lib/shopify/client';
 import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { useActiveIndex, useIsRTL } from '@/lib/direction';
+import { usePagedList, useIsRTL } from '@/lib/direction';
 
 function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
-  const { index, viewabilityProps } = useActiveIndex();
+  const { data, index, listProps } = usePagedList(images, width);
 
   return (
     <View>
       <FlatList
-        {...viewabilityProps}
-        data={images}
+        {...listProps}
+        data={data}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}

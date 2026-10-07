@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
@@ -14,7 +14,7 @@ import { TabScroll } from '@/components/ui/TabScroll';
 import { useBrandName } from '@/features/catalog/brandNames';
 import { useCollections } from '@/features/catalog/hooks';
 import { useBrands, type Brand } from '@/features/catalog/useBrands';
-import { BrandLogo } from '@/features/home/BrandRail';
+import { BrandMark } from '@/features/home/BrandRail';
 import { CollectionTile } from '@/features/home/CollectionTile';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
@@ -35,13 +35,15 @@ function openCollection(handle: string) {
 function BrandCard({ brand }: { brand: Brand }) {
   const { colors } = useTheme();
   const name = useBrandName(brand.title);
+  const { width: screenWidth } = useWindowDimensions();
+  const markWidth = (screenWidth - spacing.md * 2) / 2 - spacing.xs * 2 - spacing.sm * 2;
   return (
     <PressableScale
       accessibilityRole="button"
       accessibilityLabel={name}
       onPress={() => openCollection(brand.handle)}
       style={[styles.brandCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <BrandLogo brand={brand} size={88} />
+      <BrandMark brand={brand} width={markWidth} />
       <AppText variant="label" numberOfLines={1} style={styles.center}>
         {name}
       </AppText>
@@ -93,7 +95,8 @@ function Categories() {
   const collections = useCollections();
   const { brands } = useBrands();
   const brandHandles = new Set(brands.map((b) => b.handle));
-  const others = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle));
+  // The hardcoded "all" row below already opens all-perfumes, so the collection itself is not listed twice.
+  const others = (collections.data ?? []).filter((c) => !brandHandles.has(c.handle) && c.handle !== 'all-perfumes');
 
   return (
     <View style={styles.categories}>
@@ -161,7 +164,7 @@ const styles = StyleSheet.create({
   brandCard: {
     alignItems: 'center',
     gap: spacing.sm,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth,
