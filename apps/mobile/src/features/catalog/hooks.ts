@@ -14,6 +14,7 @@ import {
   fetchSearchSuggestions,
   searchProducts,
 } from '@/lib/shopify/api';
+import { spellingVariants } from '@/lib/arabicSpelling';
 import type { SortKey } from '@/lib/shopify/types';
 
 const MINUTE = 60_000;
@@ -33,13 +34,31 @@ export function useCollectionProducts(handle: string, sort: SortKey, filterInput
   });
 }
 
+interface SearchCursor {
+  query: string;
+  after: string;
+}
+
+/** Tries each spelling of the query until one finds products; later pages keep the spelling that matched. */
+async function searchAnySpelling(query: string) {
+  const [typed, ...alternatives] = spellingVariants(query);
+  let page = { ...(await searchProducts(typed)), query: typed };
+  for (const spelling of alternatives) {
+    if (page.products.length > 0) break;
+    page = { ...(await searchProducts(spelling)), query: spelling };
+  }
+  return page;
+}
+
 export function useSearch(query: string) {
   const language = useLanguage();
   return useInfiniteQuery({
     queryKey: ['search', language, query],
-    queryFn: ({ pageParam }) => searchProducts(query, pageParam),
-    initialPageParam: null as string | null,
-    getNextPageParam: (last) => (last.hasNextPage ? last.endCursor : undefined),
+    queryFn: async ({ pageParam }) =>
+      pageParam ? { ...(await searchProducts(pageParam.query, pageParam.after)), query: pageParam.query } : searchAnySpelling(query),
+    initialPageParam: null as SearchCursor | null,
+    getNextPageParam: (last): SearchCursor | undefined =>
+      last.hasNextPage && last.endCursor ? { query: last.query, after: last.endCursor } : undefined,
     enabled: query.trim().length >= 2,
     staleTime: MINUTE,
   });
