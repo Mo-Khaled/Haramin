@@ -57,3 +57,6 @@ export const TRUST_ITEMS: TrustItem[] = [
 
 /** Brands featured as "worlds" rails on the home screen, in display order. */
 export const BRAND_WORLDS = ['lattafa', 'rasasi-perfumes', 'afnan-perfumes'];
+
+/** Collections shown as big tiles in the home "New in" row, in display order. */
+export const NEW_IN_COLLECTIONS = ['arrogate-pink-line', 'amjad-line', 'qasida-collection-1', 'island-collection', 'supremacy-collection'];

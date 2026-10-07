@@ -3,7 +3,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Chip } from '@/components/ui/Chip';
-import { useReadingStart } from '@/lib/direction';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { CATEGORY_TABS, type CategoryTab } from './homeContent';
@@ -17,10 +16,9 @@ function open(tab: CategoryTab) {
 export function CategoryTabs() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const start = useReadingStart<ScrollView>();
   return (
     <View style={{ backgroundColor: colors.background }}>
-      <ScrollView ref={start.ref} {...start.scrollProps} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         {CATEGORY_TABS.map((tab) => (
           <Chip key={tab.target} label={t(tab.labelKey)} onPress={() => open(tab)} />
         ))}

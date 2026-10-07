@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
 import { Icon } from '@/components/ui/Icon';
 import { Sheet } from '@/components/ui/Sheet';
-import { useReadingStart } from '@/lib/direction';
 import { formatMoney } from '@/lib/format';
 import type { FilterValue, ProductFilter, SortKey } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -90,7 +89,6 @@ export function FilterSortSheet({ visible, sort, filters, available, onApply, on
   const { t } = useTranslation();
   const [draftSort, setDraftSort] = useState(sort);
   const [draft, setDraft] = useState(filters);
-  const sortStart = useReadingStart<ScrollView>();
 
   useEffect(() => {
     if (!visible) return;
@@ -122,7 +120,7 @@ export function FilterSortSheet({ visible, sort, filters, available, onApply, on
           <Button label={t('collection.showResults')} onPress={apply} style={styles.primary} />
         </View>
       }>
-      <ScrollView ref={sortStart.ref} {...sortStart.scrollProps} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
         {SORT_OPTIONS.map((option) => (
           <Chip key={option.key} label={t(option.label)} selected={draftSort === option.key} onPress={() => setDraftSort(option.key)} />
         ))}

@@ -7,11 +7,13 @@ import { AppText } from '@/components/ui/AppText';
 import { Logo } from '@/components/ui/Logo';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { TabScroll } from '@/components/ui/TabScroll';
+import { localizedBrandName } from '@/features/catalog/brandNames';
 import { ProductRail } from '@/features/catalog/ProductRail';
 import { useBrands } from '@/features/catalog/useBrands';
 import { BrandRail } from '@/features/home/BrandRail';
 import { CategoryTabs } from '@/features/home/CategoryTabs';
 import { HeroCarousel } from '@/features/home/HeroCarousel';
+import { NewIn } from '@/features/home/NewIn';
 import { BRAND_WORLDS } from '@/features/home/homeContent';
 import { PromoBanner } from '@/features/home/PromoBanner';
 import { TrustStrip } from '@/features/home/TrustStrip';
@@ -23,13 +25,13 @@ import { spacing } from '@/theme/tokens';
 const STICKY_TABS = Platform.OS === 'ios' ? [1] : undefined;
 
 function BrandWorlds() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { brands } = useBrands();
   return (
     <>
       {BRAND_WORLDS.map((handle) => {
         const brand = brands.find((b) => b.handle === handle);
-        return brand ? <ProductRail key={handle} title={t('home.brandWorld', { brand: brand.title })} handle={handle} /> : null;
+        return brand ? <ProductRail key={handle} title={t('home.brandWorld', { brand: localizedBrandName(brand.title, i18n.language) })} handle={handle} /> : null;
       })}
     </>
   );
@@ -67,7 +69,7 @@ export default function HomeScreen() {
         <PromoBanner />
         <HeroCarousel />
         <TrustStrip />
-        <ProductRail title={t('home.newArrivals')} handle="new-arrivals" />
+        <NewIn />
         <BrandRail />
         <ProductRail title={t('home.bestSellers')} handle="best-sellers" />
         <BrandWorlds />

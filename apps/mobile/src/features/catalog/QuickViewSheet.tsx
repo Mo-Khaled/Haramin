@@ -13,6 +13,7 @@ import { useAddToCart } from '@/features/cart/useAddToCart';
 import type { ProductCard } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { useBrandName } from './brandNames';
 import { useProduct } from './hooks';
 import { findVariant, initialSelection, VariantPicker, type Selection } from './VariantPicker';
 
@@ -35,6 +36,7 @@ export function QuickViewSheet({ product, onClose }: Props) {
   }, [detail.data]);
 
   const data = product ? detail.data : null;
+  const vendor = useBrandName(data?.vendor ?? '');
   const variant = data ? findVariant(data, selection) : undefined;
 
   const add = async () => {
@@ -87,7 +89,7 @@ export function QuickViewSheet({ product, onClose }: Props) {
             ) : null}
             <View style={styles.meta}>
               <AppText variant="caption" muted>
-                {data.vendor}
+                {vendor}
               </AppText>
               <Price price={variant?.price ?? data.price} compareAt={variant?.compareAtPrice ?? data.compareAtPrice} large />
             </View>

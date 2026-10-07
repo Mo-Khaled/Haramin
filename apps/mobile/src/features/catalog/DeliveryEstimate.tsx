@@ -26,7 +26,7 @@ function Line({ icon, title, detail }: { icon: IconName; title: string; detail?:
   );
 }
 
-/** Delivery options as stated on the store's delivery policy page. */
+/** Delivery and returns in a few lines; the full wording lives in the policies screens. */
 export function DeliveryEstimate() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
@@ -44,6 +44,10 @@ export function DeliveryEstimate() {
         <Line icon="storefront-outline" title={t('delivery.pickup')} />
       </Pressable>
       <Line icon="cash-outline" title={t('delivery.payment')} />
+      <Line icon="refresh-outline" title={t('delivery.returns')} />
+      <Pressable accessibilityRole="link" onPress={() => router.push('/policies')}>
+        <Line icon="document-text-outline" title={t('delivery.policies')} />
+      </Pressable>
     </View>
   );
 }

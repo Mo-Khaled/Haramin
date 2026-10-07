@@ -33,7 +33,8 @@
     "freeShipping": "Free shipping on orders over {{amount}}",
     "under300": "Under 300 EGP",
     "bestSellersTab": "Best Sellers",
-    "brandWorld": "{{brand}}'s World"
+    "brandWorld": "{{brand}}'s World",
+    "newIn": "New in"
   },
   "shop": {
     "title": "Shop",
@@ -78,7 +79,6 @@
     "quickAdd": "Quick add",
     "selectOption": "Select {{name}}",
     "share": "Share",
-    "deliveryReturns": "Delivery & returns",
     "aboutBrand": "About the brand",
     "viewBrand": "View all {{brand}}",
     "recentlyViewed": "Recently viewed",
@@ -250,7 +250,9 @@
     "fee": "Standard via Bosta {{fee}} · free over {{threshold}}",
     "payment": "Cash on delivery, InstaPay or card at checkout",
     "sameDay": "Same-day via Uber {{fee}} in selected areas",
-    "pickup": "Pick up from our El Ataba branch"
+    "pickup": "Pick up from our El Ataba branch",
+    "returns": "Returns only for damaged or wrong items, within 24 hours",
+    "policies": "Shipping & return policies"
   },
   "info": {
     "stores": "Our stores",

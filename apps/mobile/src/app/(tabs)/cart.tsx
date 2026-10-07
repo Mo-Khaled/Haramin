@@ -11,6 +11,7 @@ import { IconButton } from '@/components/ui/IconButton';
 import { EmptyState, LoadingState } from '@/components/ui/States';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { FreeShippingBar } from '@/features/cart/FreeShippingBar';
+import { useBrandName } from '@/features/catalog/brandNames';
 import { useCart } from '@/features/cart/CartProvider';
 import { formatMoney } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
@@ -22,6 +23,7 @@ function LineItem({ line }: { line: CartLine }) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const cart = useCart();
+  const vendor = useBrandName(line.vendor);
   const showVariant = line.variantTitle && line.variantTitle !== 'Default Title';
 
   return (
@@ -36,7 +38,7 @@ function LineItem({ line }: { line: CartLine }) {
           accessibilityRole="link"
           onPress={() => router.push({ pathname: '/product/[handle]', params: { handle: line.productHandle } })}>
           <AppText variant="caption" muted>
-            {line.vendor}
+            {vendor}
           </AppText>
           <AppText variant="label" numberOfLines={2}>
             {line.productTitle}

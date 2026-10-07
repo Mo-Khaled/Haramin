@@ -33,16 +33,16 @@ export const lightPalette: Palette = {
 };
 
 export const darkPalette: Palette = {
-  background: '#160E0E',
-  surface: '#211616',
-  surfaceAlt: '#2C1E1E',
+  background: '#120B0D',
+  surface: '#2A1F25',
+  surfaceAlt: '#352930',
   text: '#F6EEE6',
   textSecondary: '#BFAEA8',
-  primary: '#93404B',
+  primary: '#8A3A46',
   onPrimary: '#FBF5EE',
-  primaryText: '#E8A7B0',
-  border: '#3E2C2C',
-  danger: '#FF8F8F',
+  primaryText: '#E3A3AE',
+  border: '#524047',
+  danger: '#F2938F',
   success: '#7FD39A',
   overlay: 'rgba(0, 0, 0, 0.6)',
   onOverlay: '#FFFFFF',

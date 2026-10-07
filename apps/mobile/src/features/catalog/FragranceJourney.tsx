@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
+import { localizedNote } from './noteNames';
 import { hasScentNotes } from '@/lib/shopify/scentNotes';
 import type { ScentNotes } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -13,7 +14,7 @@ const TIER_OPACITY: Record<keyof ScentNotes, number> = { top: 0.4, heart: 0.7, b
 const DOT = 11;
 
 function Stage({ tier, notes, last }: { tier: keyof ScentNotes; notes: string[]; last: boolean }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const accent = { backgroundColor: colors.primaryText, opacity: TIER_OPACITY[tier] };
 
@@ -34,7 +35,7 @@ function Stage({ tier, notes, last }: { tier: keyof ScentNotes; notes: string[];
           {notes.map((note) => (
             <View key={note} style={[styles.note, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={[styles.noteDot, accent]} />
-              <AppText variant="label">{note}</AppText>
+              <AppText variant="label">{localizedNote(note, i18n.language)}</AppText>
             </View>
           ))}
         </View>

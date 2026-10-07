@@ -13,14 +13,12 @@ import { useSearch, useSearchSuggestions } from '@/features/catalog/hooks';
 import { ProductGrid } from '@/features/catalog/ProductGrid';
 import { CATEGORY_TABS } from '@/features/home/homeContent';
 import { useRecentSearches } from '@/features/search/recentSearches';
-import { useReadingStart } from '@/lib/direction';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
 
 const DEBOUNCE_MS = 300;
 
 function ChipRow({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
-  const start = useReadingStart<ScrollView>();
   return (
     <View style={styles.group}>
       <View style={styles.groupHeader}>
@@ -29,7 +27,7 @@ function ChipRow({ title, action, children }: { title: string; action?: React.Re
         </AppText>
         {action}
       </View>
-      <ScrollView ref={start.ref} {...start.scrollProps} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
         {children}
       </ScrollView>
     </View>

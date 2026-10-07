@@ -47,3 +47,14 @@ describe.each([
     expect(contrast(palette.success, palette.surface)).toBeGreaterThanOrEqual(BODY_TEXT);
   });
 });
+
+describe('dark palette character', () => {
+  it('keeps button text strongly legible on the wine fill', () => {
+    expect(contrast(darkPalette.onPrimary, darkPalette.primary)).toBeGreaterThanOrEqual(5.5);
+  });
+
+  it('lets cards stand out from the page and borders from cards', () => {
+    expect(contrast(darkPalette.surface, darkPalette.background)).toBeGreaterThanOrEqual(1.2);
+    expect(contrast(darkPalette.border, darkPalette.surface)).toBeGreaterThanOrEqual(1.6);
+  });
+});

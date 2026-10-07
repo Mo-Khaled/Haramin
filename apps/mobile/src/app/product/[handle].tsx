@@ -16,16 +16,16 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAddToCart } from '@/features/cart/useAddToCart';
 import { BestForChips } from '@/features/catalog/BestForChips';
+import { useBrandName } from '@/features/catalog/brandNames';
 import { FragranceJourney } from '@/features/catalog/FragranceJourney';
 import { findBrandHandle } from '@/features/catalog/brandMatch';
 import { DeliveryEstimate } from '@/features/catalog/DeliveryEstimate';
-import { useCollectionOptional, usePage, useProduct, useProductsByIds, useRecommendations } from '@/features/catalog/hooks';
+import { useCollectionOptional, useProduct, useProductsByIds, useRecommendations } from '@/features/catalog/hooks';
 import { ProductCarousel } from '@/features/catalog/ProductCarousel';
 import { parseBestFor } from '@/features/catalog/productTags';
 import { useBrands } from '@/features/catalog/useBrands';
 import { useRecentlyViewed } from '@/features/catalog/useRecentlyViewed';
 import { findVariant, initialSelection, VariantPicker, type Selection } from '@/features/catalog/VariantPicker';
-import { POLICY_PAGES } from '@/features/info/policyDocuments';
 import { RatingLine, ReviewsSection } from '@/features/reviews/ReviewsSection';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent, formatMoney } from '@/lib/format';
@@ -34,29 +34,22 @@ import { SHOP_URL } from '@/lib/shopify/client';
 import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { useIsRTL, useReadingStart } from '@/lib/direction';
+import { useActiveIndex, useIsRTL } from '@/lib/direction';
 
 function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
   const { width } = useWindowDimensions();
   const { colors } = useTheme();
-  const [index, setIndex] = useState(0);
-  const start = useReadingStart<FlatList<ShopImage>>();
+  const { index, viewabilityProps } = useActiveIndex();
 
   return (
     <View>
       <FlatList
-        ref={start.ref}
-        {...start.scrollProps}
+        {...viewabilityProps}
         data={images}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(img) => img.url}
-        scrollEventThrottle={32}
-        onScroll={(e) => {
-          const page = Math.min(images.length - 1, Math.max(0, Math.round(Math.abs(e.nativeEvent.contentOffset.x) / width)));
-          setIndex(start.mirrored ? images.length - 1 - page : page);
-        }}
         renderItem={({ item }) => (
           <Image
             source={{ uri: item.url }}
@@ -100,24 +93,6 @@ function BrandSection({ product }: { product: ProductDetail }) {
           {t('product.viewBrand', { brand: collection.data.title })}
         </AppText>
       </Pressable>
-    </Accordion>
-  );
-}
-
-function DeliveryReturns() {
-  const { t } = useTranslation();
-  const delivery = usePage(POLICY_PAGES.shippingPolicy);
-  const returns = usePage(POLICY_PAGES.refundPolicy);
-  const sections = [delivery.data, returns.data].filter((page): page is NonNullable<typeof page> => !!page);
-  if (sections.length === 0) return null;
-  return (
-    <Accordion title={t('product.deliveryReturns')}>
-      {sections.map((page) => (
-        <View key={page.title} style={styles.policy}>
-          <AppText variant="bodyStrong">{page.title}</AppText>
-          <AppText muted>{htmlToText(page.body)}</AppText>
-        </View>
-      ))}
     </Accordion>
   );
 }
@@ -170,6 +145,7 @@ export default function ProductScreen() {
   const isRTL = useIsRTL();
   const query = useProduct(handle);
   const product = query.data;
+  const vendor = useBrandName(product?.vendor ?? '');
   const [selection, setSelection] = useState<Selection>({});
   // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
   const [barHeight, setBarHeight] = useState(0);
@@ -209,7 +185,7 @@ export default function ProductScreen() {
 
         <View style={styles.info}>
           <AppText variant="label" color={colors.primaryText} style={styles.vendor}>
-            {product.vendor}
+            {vendor}
           </AppText>
           <AppText variant="title" accessibilityRole="header">
             {product.title}
@@ -238,7 +214,6 @@ export default function ProductScreen() {
                 <AppText muted>{htmlToText(product.descriptionHtml)}</AppText>
               </Accordion>
             ) : null}
-            <DeliveryReturns />
             <BrandSection product={product} />
           </View>
         </View>
@@ -300,7 +275,6 @@ const styles = StyleSheet.create({
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.sm },
   link: { minHeight: 44, justifyContent: 'center' },
-  policy: { gap: spacing.xs },
   rails: { gap: spacing.xl, paddingTop: spacing.md },
   topBar: {
     position: 'absolute',

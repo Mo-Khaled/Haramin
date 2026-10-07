@@ -23,6 +23,7 @@ import type {
   ShopImage,
   SortKey,
 } from './types';
+import { selectableOptions } from './options';
 import { toScentNotes } from './scentNotes';
 
 interface RawProductCard {
@@ -160,7 +161,7 @@ export async function fetchProduct(handle: string): Promise<ProductDetail | null
     tags: raw.tags,
     notes: toScentNotes(raw.notes),
     images: raw.images.nodes,
-    options: raw.options.filter((o) => !(o.name === 'Title' && o.values[0] === 'Default Title')),
+    options: selectableOptions(raw.options),
     variants: raw.variants.nodes.map((v) => ({
       ...v,
       compareAtPrice:

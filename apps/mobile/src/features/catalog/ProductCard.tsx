@@ -10,6 +10,7 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Price } from '@/components/ui/Price';
 import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent } from '@/lib/format';
+import { useBrandName } from './brandNames';
 import type { ProductCard as ProductCardData } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -23,6 +24,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const wishlist = useWishlist();
+  const vendor = useBrandName(product.vendor);
   const saved = wishlist.has(product.id);
   const percent = discountPercent(product.price.amount, product.compareAtPrice?.amount);
 
@@ -52,6 +54,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
         <View style={styles.heart}>
           <IconButton
             filled
+            size="compact"
             name={saved ? 'heart' : 'heart-outline'}
             color={saved ? colors.danger : colors.text}
             label={t(saved ? 'product.removeFromWishlist' : 'product.addToWishlist')}
@@ -68,7 +71,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
       </View>
       <View style={styles.info}>
         <AppText variant="caption" muted numberOfLines={1}>
-          {product.vendor}
+          {vendor}
         </AppText>
         <AppText variant="label" numberOfLines={2} style={styles.title}>
           {product.title}
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radius.sm,
   },
-  heart: { position: 'absolute', top: 0, end: 0 },
+  heart: { position: 'absolute', top: spacing.sm, end: spacing.sm },
   soldOut: { position: 'absolute', bottom: 0, start: 0, end: 0, alignItems: 'center', paddingVertical: spacing.xs },
   info: { padding: spacing.sm, gap: 2 },
   title: { minHeight: 40 },

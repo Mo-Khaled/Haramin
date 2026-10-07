@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { I18nManager, type ViewStyle } from 'react-native';
+import { useRef, useState } from 'react';
+import type { ViewStyle, ViewToken } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -16,28 +16,19 @@ export function useDirectionStyle(): ViewStyle {
   return { direction: useIsRTL() ? 'rtl' : 'ltr' };
 }
 
-interface ScrollsToEnd {
-  scrollToEnd(params?: { animated?: boolean }): void;
-}
+/** A page counts as "current" once most of it is on screen; stable so FlatList never sees a new config. */
+const PAGE_VIEWABILITY = { itemVisiblePercentThreshold: 60 };
 
 /**
- * In a JS-mirrored layout a horizontal list's first item sits at the right end of its content, but the native
- * scroll view still opens at the left. Until the customer scrolls, keep the list at that right end.
- * `mirrored` also tells paging carousels that offsets now count from the last item.
+ * Index of the page a paging FlatList is showing, taken from FlatList's own viewability callback so it is a data
+ * index in any layout direction. Raw scroll offsets are not: RN reports them differently when the layout is
+ * mirrored, which is why nothing here does offset math or scrolls programmatically.
  */
-export function useReadingStart<T extends ScrollsToEnd>() {
-  const ref = useRef<T>(null);
-  const userScrolled = useRef(false);
-  const mirrored = useIsRTL() && !I18nManager.isRTL;
-  const scrollProps = mirrored
-    ? {
-        onContentSizeChange: () => {
-          if (!userScrolled.current) ref.current?.scrollToEnd({ animated: false });
-        },
-        onScrollBeginDrag: () => {
-          userScrolled.current = true;
-        },
-      }
-    : {};
-  return { ref, mirrored, scrollProps };
+export function useActiveIndex() {
+  const [index, setIndex] = useState(0);
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const first = viewableItems[0];
+    if (first?.index != null) setIndex(first.index);
+  }).current;
+  return { index, viewabilityProps: { viewabilityConfig: PAGE_VIEWABILITY, onViewableItemsChanged } };
 }

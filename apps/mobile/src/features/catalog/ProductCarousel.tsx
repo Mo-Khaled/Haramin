@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { RailSkeleton } from '@/components/ui/Skeleton';
-import { useReadingStart } from '@/lib/direction';
 import type { ProductCard } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
@@ -20,7 +19,6 @@ interface Props {
 
 /** Titled horizontal row of product cards; renders nothing once loaded with no products. */
 export function ProductCarousel({ title, products, loading, onViewAll }: Props) {
-  const start = useReadingStart<FlatList<ProductCard>>();
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [quickView, setQuickView] = useState<ProductCard | null>(null);
@@ -45,8 +43,6 @@ export function ProductCarousel({ title, products, loading, onViewAll }: Props) 
         <RailSkeleton />
       ) : (
         <FlatList
-          ref={start.ref}
-          {...start.scrollProps}
           horizontal
           showsHorizontalScrollIndicator={false}
           data={products}

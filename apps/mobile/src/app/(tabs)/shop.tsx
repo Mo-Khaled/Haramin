@@ -11,19 +11,21 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/States';
 import { TabScroll } from '@/components/ui/TabScroll';
+import { useBrandName } from '@/features/catalog/brandNames';
 import { useCollections } from '@/features/catalog/hooks';
 import { useBrands, type Brand } from '@/features/catalog/useBrands';
 import { BrandLogo } from '@/features/home/BrandRail';
+import { CollectionTile } from '@/features/home/CollectionTile';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
 import { useIsRTL } from '@/lib/direction';
 
 type ShopView = 'brands' | 'categories';
 
-const GENDER_TILES: { labelKey: string; handle: string; icon: IconName }[] = [
+const MAIN_CATEGORIES: { labelKey: string; handle: string; icon: IconName; wide?: true }[] = [
   { labelKey: 'home.forHer', handle: 'for-her', icon: 'flower-outline' },
   { labelKey: 'home.forHim', handle: 'for-him', icon: 'water-outline' },
-  { labelKey: 'home.homeIncense', handle: 'insence', icon: 'flame-outline' },
+  { labelKey: 'home.homeIncense', handle: 'insence', icon: 'flame-outline', wide: true },
 ];
 
 function openCollection(handle: string) {
@@ -32,15 +34,16 @@ function openCollection(handle: string) {
 
 function BrandCard({ brand }: { brand: Brand }) {
   const { colors } = useTheme();
+  const name = useBrandName(brand.title);
   return (
     <PressableScale
       accessibilityRole="button"
-      accessibilityLabel={brand.title}
+      accessibilityLabel={name}
       onPress={() => openCollection(brand.handle)}
       style={[styles.brandCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <BrandLogo brand={brand} size={88} />
       <AppText variant="label" numberOfLines={1} style={styles.center}>
-        {brand.title}
+        {name}
       </AppText>
     </PressableScale>
   );
@@ -87,7 +90,6 @@ function CategoryRow({ label, handle }: { label: string; handle: string }) {
 
 function Categories() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const collections = useCollections();
   const { brands } = useBrands();
   const brandHandles = new Set(brands.map((b) => b.handle));
@@ -96,18 +98,15 @@ function Categories() {
   return (
     <View style={styles.categories}>
       <View style={styles.tiles}>
-        {GENDER_TILES.map((tile) => (
-          <PressableScale
+        {MAIN_CATEGORIES.map((tile) => (
+          <CollectionTile
             key={tile.handle}
-            accessibilityRole="button"
-            accessibilityLabel={t(tile.labelKey)}
+            title={t(tile.labelKey)}
+            image={collections.data?.find((c) => c.handle === tile.handle)?.image ?? null}
+            fallbackIcon={tile.icon}
             onPress={() => openCollection(tile.handle)}
-            style={[styles.tile, { backgroundColor: colors.primary }]}>
-            <Icon name={tile.icon} color={colors.onPrimary} size="lg" />
-            <AppText variant="label" color={colors.onPrimary} style={styles.center}>
-              {t(tile.labelKey)}
-            </AppText>
-          </PressableScale>
+            style={tile.wide ? styles.wideTile : styles.halfTile}
+          />
         ))}
       </View>
       {collections.isError ? (
@@ -168,16 +167,9 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   categories: { gap: spacing.md },
-  tiles: { flexDirection: 'row', gap: spacing.sm },
-  tile: {
-    flex: 1,
-    minHeight: 96,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    padding: spacing.sm,
-  },
+  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  halfTile: { flexBasis: '48%', flexGrow: 1 },
+  wideTile: { width: '100%', aspectRatio: 2 },
   row: {
     minHeight: minTouch + 8,
     flexDirection: 'row',

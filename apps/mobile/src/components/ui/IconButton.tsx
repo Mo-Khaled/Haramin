@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeProvider';
-import { minTouch, radius } from '@/theme/tokens';
+import { minTouch, radius, spacing } from '@/theme/tokens';
 import { Icon, type IconName } from './Icon';
 
 interface Props {
@@ -11,10 +11,15 @@ interface Props {
   color?: string;
   filled?: boolean;
   disabled?: boolean;
+  /** `compact` draws a small disc (for overlays on images) but keeps the full touch target through hitSlop. */
+  size?: 'regular' | 'compact';
 }
 
-export function IconButton({ name, label, onPress, color, filled, disabled }: Props) {
+const COMPACT = 32;
+
+export function IconButton({ name, label, onPress, color, filled, disabled, size = 'regular' }: Props) {
   const { colors } = useTheme();
+  const compact = size === 'compact';
   return (
     <Pressable
       accessibilityRole="button"
@@ -22,16 +27,17 @@ export function IconButton({ name, label, onPress, color, filled, disabled }: Pr
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
       onPress={onPress}
-      hitSlop={4}
+      hitSlop={compact ? (minTouch - COMPACT) / 2 : spacing.xs}
       style={({ pressed }) => [
-        styles.base,
+        compact ? styles.compact : styles.base,
         { backgroundColor: filled ? colors.surface : 'transparent', opacity: disabled ? 0.4 : pressed ? 0.7 : 1 },
       ]}>
-      <Icon name={name} color={color} />
+      <Icon name={name} color={color} size={compact ? 'sm' : undefined} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   base: { width: minTouch, height: minTouch, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
+  compact: { width: COMPACT, height: COMPACT, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
 });
