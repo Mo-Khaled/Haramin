@@ -64,7 +64,7 @@ function FilterGroup({ filter, draft, onChange }: { filter: ProductFilter; draft
       ) : (
         visibleFilterValues(filter.values).map((value) => (
           <CheckRow
-            key={value.id}
+            key={value.input}
             value={value}
             checked={isSelected(draft, filter.id, value.input)}
             onPress={() => onChange(toggleValue(draft, filter.id, value.input))}
