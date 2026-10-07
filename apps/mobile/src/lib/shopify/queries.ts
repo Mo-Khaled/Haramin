@@ -52,6 +52,7 @@ export const PRODUCT_DETAIL = `
       description
       descriptionHtml
       tags
+      notes: metafields(identifiers: [{ namespace: "custom", key: "top_notes_1" }, { namespace: "custom", key: "top_notes_2" }, { namespace: "custom", key: "top_notes_3" }, { namespace: "custom", key: "top_notes_4" }, { namespace: "custom", key: "heart_notes_1" }, { namespace: "custom", key: "heart_notes_2" }, { namespace: "custom", key: "heart_notes_3" }, { namespace: "custom", key: "heart_notes_4" }, { namespace: "custom", key: "base_notes_1" }, { namespace: "custom", key: "base_notes_2" }, { namespace: "custom", key: "base_notes_3" }, { namespace: "custom", key: "base_notes_4" }]) { key value }
       images(first: 10) { nodes { ${IMAGE} } }
       options { name values }
       variants(first: 50) {

@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
 import { useAddToCart } from '@/features/cart/useAddToCart';
 import { BestForChips } from '@/features/catalog/BestForChips';
+import { FragranceJourney } from '@/features/catalog/FragranceJourney';
 import { findBrandHandle } from '@/features/catalog/brandMatch';
 import { DeliveryEstimate } from '@/features/catalog/DeliveryEstimate';
 import { useCollectionOptional, usePage, useProduct, useProductsByIds, useRecommendations } from '@/features/catalog/hooks';
@@ -51,8 +52,9 @@ function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         keyExtractor={(img) => img.url}
-        onMomentumScrollEnd={(e) => {
-          const page = Math.round(Math.abs(e.nativeEvent.contentOffset.x) / width);
+        scrollEventThrottle={32}
+        onScroll={(e) => {
+          const page = Math.min(images.length - 1, Math.max(0, Math.round(Math.abs(e.nativeEvent.contentOffset.x) / width)));
           setIndex(start.mirrored ? images.length - 1 - page : page);
         }}
         renderItem={({ item }) => (
@@ -226,6 +228,7 @@ export default function ProductScreen() {
           </View>
 
           <VariantPicker product={product} selection={selection} onChange={setSelection} />
+          <FragranceJourney notes={product.notes} />
           <BestForChips bestFor={parseBestFor(product.tags)} />
           <DeliveryEstimate />
 

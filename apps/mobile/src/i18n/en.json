@@ -373,5 +373,23 @@
     "failed": "We could not delete your account. Please try again.",
     "doneTitle": "Account deleted",
     "doneBody": "Your account data has been deleted. Profile erasure at Shopify can take a few days."
+  },
+  "journey": {
+    "title": "FRAGRANCE JOURNEY",
+    "top": {
+      "label": "TOP NOTES",
+      "time": "0–15 min",
+      "title": "The First Impression"
+    },
+    "heart": {
+      "label": "HEART NOTES",
+      "time": "15–60 min",
+      "title": "The Character"
+    },
+    "base": {
+      "label": "BASE NOTES",
+      "time": "1h+ lasting",
+      "title": "The Memory"
+    }
   }
 }

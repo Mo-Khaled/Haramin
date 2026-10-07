@@ -42,6 +42,13 @@ export interface ProductOption {
   values: string[];
 }
 
+/** The scent pyramid: notes noticed first, at the heart, and in the long dry-down. */
+export interface ScentNotes {
+  top: string[];
+  heart: string[];
+  base: string[];
+}
+
 export interface ProductDetail extends ProductCard {
   productType: string;
   descriptionHtml: string;
@@ -50,6 +57,7 @@ export interface ProductDetail extends ProductCard {
   images: ShopImage[];
   options: ProductOption[];
   variants: ProductVariant[];
+  notes: ScentNotes;
 }
 
 export interface FilterValue {

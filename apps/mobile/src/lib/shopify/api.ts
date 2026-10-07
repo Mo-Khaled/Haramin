@@ -23,6 +23,7 @@ import type {
   ShopImage,
   SortKey,
 } from './types';
+import { toScentNotes } from './scentNotes';
 
 interface RawProductCard {
   id: string;
@@ -143,6 +144,7 @@ export async function fetchProduct(handle: string): Promise<ProductDetail | null
       description: string;
       descriptionHtml: string;
       tags: string[];
+      notes: ({ key: string; value: string } | null)[];
       images: { nodes: ShopImage[] };
       options: { name: string; values: string[] }[];
       variants: { nodes: ProductDetail['variants'] };
@@ -156,6 +158,7 @@ export async function fetchProduct(handle: string): Promise<ProductDetail | null
     description: raw.description,
     descriptionHtml: raw.descriptionHtml,
     tags: raw.tags,
+    notes: toScentNotes(raw.notes),
     images: raw.images.nodes,
     options: raw.options.filter((o) => !(o.name === 'Title' && o.values[0] === 'Default Title')),
     variants: raw.variants.nodes.map((v) => ({
