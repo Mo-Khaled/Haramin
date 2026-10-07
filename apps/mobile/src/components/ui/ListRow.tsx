@@ -7,7 +7,7 @@ import { Icon, type IconName } from './Icon';
 import { useIsRTL } from '@/lib/direction';
 
 interface Props {
-  icon: IconName;
+  icon?: IconName;
   label: string;
   detail?: string;
   onPress: () => void;
@@ -23,7 +23,7 @@ export function ListRow({ icon, label, detail, onPress }: Props) {
       accessibilityLabel={detail ? `${label}, ${detail}` : label}
       onPress={onPress}
       style={({ pressed }) => [styles.row, { borderColor: colors.border, opacity: pressed ? 0.7 : 1 }]}>
-      <Icon name={icon} color={colors.primaryText} />
+      {icon ? <Icon name={icon} color={colors.primaryText} /> : null}
       <AppText style={styles.label}>{label}</AppText>
       {detail ? (
         <AppText variant="caption" muted>

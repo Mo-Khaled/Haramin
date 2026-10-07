@@ -12,6 +12,11 @@ export function useIsRTL(): boolean {
   return i18n.language === 'ar';
 }
 
+/** Letter-spacing is for Latin capitals; in Arabic it breaks the joined letters apart, so it is dropped. */
+export function useTracking(spacing: number): number {
+  return useIsRTL() ? 0 : spacing;
+}
+
 export function useDirectionStyle(): ViewStyle {
   return { direction: useIsRTL() ? 'rtl' : 'ltr' };
 }

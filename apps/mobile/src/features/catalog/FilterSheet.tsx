@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Accordion } from '@/components/ui/Accordion';
@@ -7,12 +7,13 @@ import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
 import { Icon } from '@/components/ui/Icon';
+import { RangeSlider } from '@/components/ui/RangeSlider';
 import { Sheet } from '@/components/ui/Sheet';
 import { formatMoney } from '@/lib/format';
 import type { FilterValue, ProductFilter, SortKey } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, spacing } from '@/theme/tokens';
-import { isSelected, NO_FILTERS, PRICE_BANDS, toggleValue, visibleFilterValues, type ActiveFilters, type PriceBand } from './filterInputs';
+import { isSelected, NO_FILTERS, PRICE_RANGE, toggleValue, visibleFilterValues, type ActiveFilters, type PriceBand } from './filterInputs';
 
 export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'FEATURED', label: 'collection.sortFeatured' },
@@ -40,16 +41,28 @@ function CheckRow({ value, checked, onPress }: { value: FilterValue; checked: bo
   );
 }
 
-function PriceBands({ selected, onSelect }: { selected: PriceBand | null; onSelect: (band: PriceBand | null) => void }) {
-  const { i18n } = useTranslation();
+function PriceSlider({ selected, onSelect }: { selected: PriceBand | null; onSelect: (band: PriceBand | null) => void }) {
+  const { t, i18n } = useTranslation();
   const money = (amount: number) => formatMoney(amount, i18n.language);
+  const low = selected?.min ?? PRICE_RANGE.min;
+  const high = selected?.max ?? PRICE_RANGE.max;
+  const highText = high >= PRICE_RANGE.max ? `${money(PRICE_RANGE.max)}+` : money(high);
+
+  const change = (range: { low: number; high: number }) => {
+    const unbounded = range.low === PRICE_RANGE.min && range.high >= PRICE_RANGE.max;
+    onSelect(unbounded ? null : { min: range.low, max: range.high >= PRICE_RANGE.max ? null : range.high });
+  };
+
   return (
-    <View style={styles.wrap}>
-      {PRICE_BANDS.map((band) => {
-        const active = selected?.min === band.min && selected?.max === band.max;
-        const label = band.max === null ? `${money(band.min)}+` : `${money(band.min)} – ${money(band.max)}`;
-        return <Chip key={band.min} label={label} selected={active} onPress={() => onSelect(active ? null : band)} />;
-      })}
+    <View>
+      <AppText variant="label" style={styles.priceValue}>{`${money(low)} – ${highText}`}</AppText>
+      <RangeSlider
+        {...PRICE_RANGE}
+        value={{ low, high }}
+        onChange={change}
+        lowLabel={t('collection.priceMin')}
+        highLabel={t('collection.priceMax')}
+      />
     </View>
   );
 }
@@ -59,7 +72,7 @@ function FilterGroup({ filter, draft, onChange }: { filter: ProductFilter; draft
   return (
     <Accordion title={filter.label} initiallyOpen={hasSelection}>
       {filter.type === 'PRICE_RANGE' ? (
-        <PriceBands selected={draft.priceBand} onSelect={(priceBand) => onChange({ ...draft, priceBand })} />
+        <PriceSlider selected={draft.priceBand} onSelect={(priceBand) => onChange({ ...draft, priceBand })} />
       ) : (
         visibleFilterValues(filter.values).map((value) => (
           <CheckRow
@@ -120,11 +133,11 @@ export function FilterSortSheet({ visible, sort, filters, available, onApply, on
           <Button label={t('collection.showResults')} onPress={apply} style={styles.primary} />
         </View>
       }>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
+      <View style={styles.sortRow}>
         {SORT_OPTIONS.map((option) => (
           <Chip key={option.key} label={t(option.label)} selected={draftSort === option.key} onPress={() => setDraftSort(option.key)} />
         ))}
-      </ScrollView>
+      </View>
       {available.length ? (
         <View>
           <AppText variant="heading" accessibilityRole="header" style={styles.filterTitle}>
@@ -143,8 +156,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   primary: { flex: 2 },
   footer: { flexDirection: 'row', gap: spacing.sm },
-  sortRow: { gap: spacing.sm },
   filterTitle: { marginTop: spacing.sm },
-  wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  sortRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  priceValue: { marginBottom: spacing.xs },
   check: { minHeight: minTouch, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

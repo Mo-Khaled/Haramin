@@ -4,9 +4,10 @@ import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
-import { Chip } from '@/components/ui/Chip';
+import { ListRow } from '@/components/ui/ListRow';
 import type { IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
+import { RowGroup } from '@/components/ui/RowGroup';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -86,11 +87,11 @@ function CollectionGroupChips({ group, titles }: { group: CollectionGroup; title
       <AppText variant="heading" accessibilityRole="header">
         {t(group.titleKey)}
       </AppText>
-      <View style={styles.chips}>
+      <RowGroup>
         {available.map((handle) => (
-          <Chip key={handle} label={titles.get(handle) ?? handle} onPress={() => openCollection(handle)} />
+          <ListRow key={handle} label={titles.get(handle) ?? handle} onPress={() => openCollection(handle)} />
         ))}
-      </View>
+      </RowGroup>
     </View>
   );
 }
@@ -168,10 +169,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  categories: { gap: spacing.md },
+  categories: { gap: spacing.lg },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   halfTile: { flexBasis: '48%', flexGrow: 1 },
   wideTile: { width: '100%', aspectRatio: 3.2 },
   group: { gap: spacing.sm },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
 });

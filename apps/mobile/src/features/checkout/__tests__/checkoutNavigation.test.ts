@@ -13,6 +13,13 @@ describe('classifyCheckoutUrl', () => {
     expect(classify('https://b970ef-9d.myshopify.com/checkouts/cn/abc')).toBe('allow');
   });
 
+  it('allows the locale-prefixed cart permalink the Arabic storefront returns', () => {
+    expect(classify('https://haramaineg.com/ar/cart/c/abc123?key=xyz')).toBe('allow');
+    expect(classify('https://haramaineg.com/ar/checkouts/cn/abc/ar-eg')).toBe('allow');
+    expect(classify('https://haramaineg.com/ar')).toBe('exit');
+    expect(classify('https://haramaineg.com/ar/products/oud')).toBe('exit');
+  });
+
   it('completes on thank-you and order-status pages', () => {
     expect(classify('https://haramaineg.com/checkouts/cn/abc/thank_you')).toBe('complete');
     expect(classify('https://haramaineg.com/checkouts/cn/abc/thank-you')).toBe('complete');

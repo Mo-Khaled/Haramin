@@ -16,12 +16,8 @@ export interface ActiveFilters {
 
 export const NO_FILTERS: ActiveFilters = { values: {}, priceBand: null };
 
-export const PRICE_BANDS: PriceBand[] = [
-  { min: 0, max: 500 },
-  { min: 500, max: 1000 },
-  { min: 1000, max: 2000 },
-  { min: 2000, max: null },
-];
+/** The price slider's span; dragging the upper thumb to `max` means "no upper limit". */
+export const PRICE_RANGE = { min: 0, max: 3000, step: 50 } as const;
 
 export function isSelected(filters: ActiveFilters, filterId: string, input: string): boolean {
   return filters.values[filterId]?.includes(input) ?? false;

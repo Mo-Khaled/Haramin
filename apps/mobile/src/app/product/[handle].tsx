@@ -34,7 +34,7 @@ import { SHOP_URL } from '@/lib/shopify/client';
 import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
-import { usePagedList, useIsRTL } from '@/lib/direction';
+import { usePagedList, useIsRTL, useTracking } from '@/lib/direction';
 
 function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
   const { width } = useWindowDimensions();
@@ -146,6 +146,7 @@ export default function ProductScreen() {
   const query = useProduct(handle);
   const product = query.data;
   const vendor = useBrandName(product?.vendor ?? '');
+  const vendorTracking = useTracking(1);
   const [selection, setSelection] = useState<Selection>({});
   // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
   const [barHeight, setBarHeight] = useState(0);
@@ -184,7 +185,7 @@ export default function ProductScreen() {
         <Gallery images={images} title={product.title} />
 
         <View style={styles.info}>
-          <AppText variant="label" color={colors.primaryText} style={styles.vendor}>
+          <AppText variant="label" color={colors.primaryText} style={{ letterSpacing: vendorTracking }}>
             {vendor}
           </AppText>
           <AppText variant="title" accessibilityRole="header">
@@ -271,7 +272,6 @@ const styles = StyleSheet.create({
   progressTrack: { height: 2, marginHorizontal: spacing.md, marginTop: spacing.sm, borderRadius: radius.pill, overflow: 'hidden' },
   progressFill: { position: 'absolute', top: 0, bottom: 0, borderRadius: radius.pill },
   info: { padding: spacing.md, gap: spacing.md },
-  vendor: { letterSpacing: 1 },
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.sm },
   link: { minHeight: 44, justifyContent: 'center' },

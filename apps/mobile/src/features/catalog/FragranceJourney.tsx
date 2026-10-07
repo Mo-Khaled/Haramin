@@ -7,15 +7,18 @@ import { hasScentNotes } from '@/lib/shopify/scentNotes';
 import type { ScentNotes } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { useTracking } from '@/lib/direction';
 
 const TIERS: (keyof ScentNotes)[] = ['top', 'heart', 'base'];
 /** Dots deepen from top to base so the eye reads the scent moving from light to lasting. */
 const TIER_OPACITY: Record<keyof ScentNotes, number> = { top: 0.4, heart: 0.7, base: 1 };
 const DOT = 11;
+const EYEBROW_TRACKING = 1.2;
 
 function Stage({ tier, notes, last }: { tier: keyof ScentNotes; notes: string[]; last: boolean }) {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
+  const tracking = useTracking(EYEBROW_TRACKING);
   const accent = { backgroundColor: colors.primaryText, opacity: TIER_OPACITY[tier] };
 
   return (
@@ -25,7 +28,7 @@ function Stage({ tier, notes, last }: { tier: keyof ScentNotes; notes: string[];
         {last ? null : <View style={[styles.line, { backgroundColor: colors.border }]} />}
       </View>
       <View style={[styles.body, !last && styles.bodySpaced]}>
-        <AppText variant="caption" muted style={styles.eyebrow}>
+        <AppText variant="caption" muted style={{ letterSpacing: tracking }}>
           {`${t(`journey.${tier}.label`)} · ${t(`journey.${tier}.time`)}`}
         </AppText>
         <AppText variant="title" style={styles.stageTitle}>
@@ -49,12 +52,13 @@ export function FragranceJourney({ notes }: { notes: ScentNotes }) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   if (!hasScentNotes(notes)) return null;
+  const tracking = useTracking(EYEBROW_TRACKING);
   const tiers = TIERS.filter((tier) => notes[tier].length > 0);
 
   return (
     <View style={styles.wrap} accessibilityRole="summary">
       <View style={styles.heading}>
-        <AppText variant="label" muted style={styles.eyebrow} accessibilityRole="header">
+        <AppText variant="label" muted style={{ letterSpacing: tracking }} accessibilityRole="header">
           {t('journey.title')}
         </AppText>
         <View style={[styles.rule, { backgroundColor: colors.border }]} />
@@ -70,7 +74,6 @@ const styles = StyleSheet.create({
   wrap: { gap: spacing.md },
   heading: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   rule: { flex: 1, height: StyleSheet.hairlineWidth },
-  eyebrow: { letterSpacing: 1.2 },
   stage: { flexDirection: 'row', gap: spacing.md },
   rail: { width: DOT, alignItems: 'center', paddingTop: 4 },
   dot: { width: DOT, height: DOT, borderRadius: DOT / 2 },

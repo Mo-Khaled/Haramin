@@ -59,6 +59,8 @@
     "sortPriceAsc": "Price: low to high",
     "sortPriceDesc": "Price: high to low",
     "sortBy": "Sort by",
+    "priceMin": "Minimum price",
+    "priceMax": "Maximum price",
     "filterSort": "Filter / Sort",
     "reset": "Reset"
   },

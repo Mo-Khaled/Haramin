@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import { minTouch, radius, spacing } from '@/theme/tokens';
+import { useDirectionStyle } from '@/lib/direction';
 import { AppText } from './AppText';
 
 interface ToastOptions {
@@ -24,6 +25,7 @@ const VISIBLE_MS = 3200;
 export function ToastProvider({ children }: { children: ReactNode }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const direction = useDirectionStyle();
   const [toast, setToast] = useState<ToastOptions | null>(null);
   const progress = useRef(new Animated.Value(0)).current;
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -54,7 +56,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {toast ? (
         <Animated.View
           pointerEvents="box-none"
-          style={[styles.host, { top: insets.top + spacing.sm, opacity: progress, transform: [{ translateY }] }]}>
+          style={[styles.host, direction, { top: insets.top + spacing.sm, opacity: progress, transform: [{ translateY }] }]}>
           <View
             accessibilityLiveRegion="polite"
             accessibilityRole="alert"
