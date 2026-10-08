@@ -134,7 +134,7 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.md, gap: spacing.lg, paddingBottom: spacing.xxl },
+  content: { padding: spacing.md, gap: spacing.lg },
   card: { padding: spacing.md, borderRadius: radius.md, gap: spacing.sm },
   section: { gap: spacing.xs },
 });

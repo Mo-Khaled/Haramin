@@ -7,6 +7,7 @@ import { OptionList, type Option } from '@/components/ui/OptionList';
 import { Screen } from '@/components/ui/Screen';
 import { setLanguage, type AppLanguage } from '@/i18n';
 import { spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 /** Each language is named in its own script so it can always be found, whichever language is active. */
 const LANGUAGES: Option<AppLanguage>[] = [
@@ -21,7 +22,7 @@ export default function LanguageScreen() {
   return (
     <Screen>
       <Header title={t('language.title')} />
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.body}>
         <OptionList options={LANGUAGES} selected={current} onSelect={(language) => language !== current && setLanguage(language)} />
         <AppText variant="caption" muted>
           {t('language.restartBody')}

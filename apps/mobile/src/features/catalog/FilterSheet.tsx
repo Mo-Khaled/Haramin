@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Accordion } from '@/components/ui/Accordion';
 import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
 import { Icon } from '@/components/ui/Icon';
 import { RangeSlider } from '@/components/ui/RangeSlider';
 import { Sheet } from '@/components/ui/Sheet';
@@ -22,6 +21,24 @@ export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'PRICE_DESC', label: 'collection.sortPriceDesc' },
   { key: 'PRICE_ASC', label: 'collection.sortPriceAsc' },
 ];
+
+function SortOption({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.sortOption,
+        { borderColor: selected ? colors.primary : colors.text, backgroundColor: selected ? colors.primary : 'transparent', opacity: pressed ? 0.7 : 1 },
+      ]}>
+      <AppText variant="label" color={selected ? colors.onPrimary : colors.text}>
+        {label}
+      </AppText>
+    </Pressable>
+  );
+}
 
 function CheckRow({ value, checked, onPress }: { value: FilterValue; checked: boolean; onPress: () => void }) {
   const { colors } = useTheme();
@@ -133,11 +150,11 @@ export function FilterSortSheet({ visible, sort, filters, available, onApply, on
           <Button label={t('collection.showResults')} onPress={apply} style={styles.primary} />
         </View>
       }>
-      <View style={styles.sortRow}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.sortScroll} contentContainerStyle={styles.sortRow}>
         {SORT_OPTIONS.map((option) => (
-          <Chip key={option.key} label={t(option.label)} selected={draftSort === option.key} onPress={() => setDraftSort(option.key)} />
+          <SortOption key={option.key} label={t(option.label)} selected={draftSort === option.key} onPress={() => setDraftSort(option.key)} />
         ))}
-      </View>
+      </ScrollView>
       {available.length ? (
         <View>
           <AppText variant="heading" accessibilityRole="header" style={styles.filterTitle}>
@@ -157,7 +174,10 @@ const styles = StyleSheet.create({
   primary: { flex: 2 },
   footer: { flexDirection: 'row', gap: spacing.sm },
   filterTitle: { marginTop: spacing.sm },
-  sortRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  // The sheet body is padded; the row spans its full width so options scroll edge to edge.
+  sortScroll: { marginHorizontal: -spacing.md },
+  sortRow: { gap: spacing.sm, paddingHorizontal: spacing.md },
+  sortOption: { minHeight: minTouch - 8, justifyContent: 'center', paddingHorizontal: spacing.md, borderWidth: 1 },
   priceValue: { marginBottom: spacing.xs },
   check: { minHeight: minTouch, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
 });

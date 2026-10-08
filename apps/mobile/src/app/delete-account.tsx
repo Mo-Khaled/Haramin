@@ -11,6 +11,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { backend } from '@/lib/backend';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 const REMOVED_ITEMS = ['wishlist', 'points', 'devices', 'profile'] as const;
 
@@ -47,7 +48,7 @@ export default function DeleteAccountScreen() {
   return (
     <Screen>
       <Header title={t('deleteAccount.title')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <AppText>{t('deleteAccount.intro')}</AppText>
         <View style={[styles.card, { backgroundColor: colors.surfaceAlt }]}>
           <AppText variant="label">{t('deleteAccount.removedTitle')}</AppText>

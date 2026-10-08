@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
 import { isPolicyKey, POLICY_KEYS, usePolicyDocument, type PolicyKey } from '@/features/info/policyDocuments';
 import { parseRichText, splitSections } from '@/lib/richText';
 import { spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 function PolicyBody({ policyKey }: { policyKey: PolicyKey }) {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ function PolicyBody({ policyKey }: { policyKey: PolicyKey }) {
   if (!intro.length && !sections.length) return <EmptyState message={t('common.error')} />;
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
       {intro.length ? <RichText blocks={intro} /> : null}
       <View>
         {sections.map((section) => (

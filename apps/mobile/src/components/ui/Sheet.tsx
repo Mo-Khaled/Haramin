@@ -8,6 +8,7 @@ import { radius, spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 import { IconButton } from './IconButton';
 import { useDirectionStyle } from '@/lib/direction';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 interface Props {
   visible: boolean;
@@ -37,7 +38,7 @@ export function Sheet({ visible, title, onClose, children, footer }: Props) {
           </AppText>
           <IconButton name="close" label={t('common.close')} onPress={onClose} />
         </View>
-        <ScrollView contentContainerStyle={styles.body}>{children}</ScrollView>
+        <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.body}>{children}</ScrollView>
         {footer ? <View style={styles.footer}>{footer}</View> : null}
       </View>
     </Modal>

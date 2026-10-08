@@ -14,6 +14,7 @@ import { backend } from '@/lib/backend';
 import { formatMoney } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 export default function LoyaltyScreen() {
   const { t, i18n } = useTranslation();
@@ -60,7 +61,7 @@ export default function LoyaltyScreen() {
   return (
     <Screen>
       <Header title={t('loyalty.title')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <View style={[styles.card, { backgroundColor: colors.primary }]}>
           <AppText variant="label" color={colors.onPrimary}>
             {t('loyalty.balance')}

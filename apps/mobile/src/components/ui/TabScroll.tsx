@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import { useDirectionStyle } from '@/lib/direction';
+import { NO_OVERSCROLL, useTopOnlyBounce } from '@/lib/scroll';
 
 /** Pull-to-refresh can drag content this far down; the brand fill above the content covers it. */
 const PULL_FILL = 1000;
@@ -35,8 +36,10 @@ export function TabScroll({ children, header, contentContainerStyle, refreshCont
   const { colors } = useTheme();
   const topInset = useTabTopInset();
   const direction = useDirectionStyle();
+  const topBounce = useTopOnlyBounce();
   return (
     <ScrollView
+      {...(refreshControl ? topBounce : NO_OVERSCROLL)}
       style={[styles.root, direction, { backgroundColor: colors.background, marginTop: topInset }]}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={[styles.content, contentContainerStyle]}

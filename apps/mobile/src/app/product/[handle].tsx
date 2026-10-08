@@ -36,6 +36,7 @@ import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { usePagedList, useIsRTL, useTracking } from '@/lib/direction';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
   const { width } = useWindowDimensions();
@@ -200,8 +201,7 @@ export default function ProductScreen() {
             setCollapsed(event.nativeEvent.contentOffset.y > fadeEnd - COMPACT_FADE / 2),
         })}
         contentContainerStyle={{ paddingBottom: barHeight + spacing.md }}
-        bounces={false}
-        overScrollMode="never"
+        {...NO_OVERSCROLL}
         showsVerticalScrollIndicator={false}>
         <Gallery images={images} title={product.title} />
 

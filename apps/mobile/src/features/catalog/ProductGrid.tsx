@@ -5,6 +5,7 @@ import type { ProductCard } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { ProductCardItem } from './ProductCard';
+import { NO_OVERSCROLL, useTopOnlyBounce } from '@/lib/scroll';
 import { QuickViewSheet } from './QuickViewSheet';
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, stickyHeaderIndices, refreshing, onRefresh }: Props) {
   const { colors } = useTheme();
   const [quickView, setQuickView] = useState<ProductCard | null>(null);
+  const topBounce = useTopOnlyBounce();
 
   const renderItem = useCallback(
     ({ item }: { item: ProductCard }) => (
@@ -36,6 +38,7 @@ export function ProductGrid({ products, header, empty, onEndReached, loadingMore
   return (
     <>
       <FlatList
+        {...(onRefresh ? topBounce : NO_OVERSCROLL)}
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}

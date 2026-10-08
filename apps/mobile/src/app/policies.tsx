@@ -9,6 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { useAvailablePolicies, type PolicyKey } from '@/features/info/policyDocuments';
 import type { IconName } from '@/components/ui/Icon';
 import { spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 const ICONS: Record<PolicyKey, IconName> = {
   shippingPolicy: 'car-outline',
@@ -25,7 +26,7 @@ export default function PoliciesScreen() {
   return (
     <Screen>
       <Header title={t('account.legal')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <RowGroup>
           {documents.map(({ key, label }) => (
             <ListRow

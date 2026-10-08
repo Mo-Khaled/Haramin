@@ -160,7 +160,7 @@ export default function ShopScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl },
+  page: { padding: spacing.md, gap: spacing.md },
   center: { textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.xs },
   gridCell: { width: '50%', padding: spacing.xs },

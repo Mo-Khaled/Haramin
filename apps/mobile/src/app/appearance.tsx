@@ -6,6 +6,7 @@ import { OptionList, type Option } from '@/components/ui/OptionList';
 import { Screen } from '@/components/ui/Screen';
 import { useTheme, type ThemePreference } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 const THEMES: ThemePreference[] = ['system', 'light', 'dark'];
 
@@ -17,7 +18,7 @@ export default function AppearanceScreen() {
   return (
     <Screen>
       <Header title={t('appearance.title')} />
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.body}>
         <OptionList options={options} selected={preference} onSelect={setPreference} />
       </ScrollView>
     </Screen>

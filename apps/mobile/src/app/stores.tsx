@@ -9,6 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { STORE_LOCATIONS, whatsappUrl } from '@/features/info/storeInfo';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 export default function StoresScreen() {
   const { t, i18n } = useTranslation();
@@ -18,7 +19,7 @@ export default function StoresScreen() {
   return (
     <Screen>
       <Header title={t('info.stores')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <AppText muted>{t('info.storesIntro')}</AppText>
         {STORE_LOCATIONS.map((store) => (
           <View key={store.mapsUrl} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>

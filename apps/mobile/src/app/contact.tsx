@@ -8,6 +8,7 @@ import { RowGroup } from '@/components/ui/RowGroup';
 import { Screen } from '@/components/ui/Screen';
 import { STORE_INFO, whatsappUrl } from '@/features/info/storeInfo';
 import { spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 export default function ContactScreen() {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ export default function ContactScreen() {
   return (
     <Screen>
       <Header title={t('info.contact')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <AppText muted style={styles.intro}>
           {t('info.contactIntro')}
         </AppText>

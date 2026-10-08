@@ -10,6 +10,7 @@ import { Logo } from '@/components/ui/Logo';
 import { Screen } from '@/components/ui/Screen';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 const STATS = ['years', 'brands', 'fragrances', 'authentic'] as const;
 const TIMELINE = ['2002', 'import', '2020', '2025'] as const;
@@ -28,7 +29,7 @@ export default function AboutScreen() {
   return (
     <Screen>
       <Header title={t('info.about')} />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.content}>
         <View style={styles.hero}>
           <Logo />
           <AppText variant="title" style={styles.center}>

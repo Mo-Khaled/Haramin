@@ -12,6 +12,7 @@ import { fetchOrders, type OrderSummary } from '@/lib/customerAccount';
 import { formatMoney } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
+import { NO_OVERSCROLL } from '@/lib/scroll';
 
 function OrderRow({ order }: { order: OrderSummary }) {
   const { t, i18n } = useTranslation();
@@ -69,7 +70,7 @@ export default function OrdersScreen() {
       ) : !query.data?.length ? (
         <EmptyState message={t('orders.empty')} />
       ) : (
-        <ScrollView contentContainerStyle={styles.list}>
+        <ScrollView {...NO_OVERSCROLL} contentContainerStyle={styles.list}>
           {query.data.map((order) => (
             <OrderRow key={order.id} order={order} />
           ))}
