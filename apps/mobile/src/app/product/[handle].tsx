@@ -1,7 +1,8 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, FlatList, Pressable, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +54,7 @@ function Gallery({ images, title }: { images: ShopImage[]; title: string }) {
         renderItem={({ item }) => (
           <Image
             source={{ uri: item.url }}
-            style={{ width, height: width * 1.05, backgroundColor: colors.surface }}
+            style={{ width, height: width * GALLERY_RATIO, backgroundColor: colors.surface }}
             contentFit="contain"
             transition={150}
             accessibilityLabel={item.altText ?? title}
@@ -120,26 +121,35 @@ function RelatedRails({ product }: { product: ProductDetail }) {
   );
 }
 
+/** Gallery photos are drawn at this height-to-width ratio; the compact bar fades in as the photo scrolls away. */
+const GALLERY_RATIO = 1.05;
+const COMPACT_FADE = 80;
+
+function goBack() {
+  if (router.canGoBack()) router.back();
+  else router.replace('/');
+}
+
 function LoadingProduct() {
   const { width } = useWindowDimensions();
   return (
-    <Screen>
-      <Header />
-      <Skeleton width={width} height={width} borderRadius={0} />
+    <View style={styles.root}>
+      <Skeleton width={width} height={width * GALLERY_RATIO} borderRadius={0} />
       <View style={styles.info}>
         <Skeleton width="30%" height={14} />
         <Skeleton width="80%" height={28} />
         <Skeleton width="40%" height={20} />
       </View>
-    </Screen>
+    </View>
   );
 }
 
 export default function ProductScreen() {
   const { handle } = useLocalSearchParams<{ handle: string }>();
   const { t, i18n } = useTranslation();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const { add, busy } = useAddToCart();
   const wishlist = useWishlist();
   const isRTL = useIsRTL();
@@ -150,6 +160,10 @@ export default function ProductScreen() {
   const [selection, setSelection] = useState<Selection>({});
   // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
   const [barHeight, setBarHeight] = useState(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [collapsed, setCollapsed] = useState(false);
+  const fadeEnd = width * GALLERY_RATIO - insets.top;
+  const compactOpacity = scrollY.interpolate({ inputRange: [fadeEnd - COMPACT_FADE, fadeEnd], outputRange: [0, 1], extrapolate: 'clamp' });
 
   useEffect(() => {
     if (product) setSelection(initialSelection(product));
@@ -176,8 +190,15 @@ export default function ProductScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <ScrollView
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Animated.ScrollView
         contentInsetAdjustmentBehavior="never"
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+          listener: (event: { nativeEvent: { contentOffset: { y: number } } }) =>
+            setCollapsed(event.nativeEvent.contentOffset.y > fadeEnd - COMPACT_FADE / 2),
+        })}
         contentContainerStyle={{ paddingBottom: barHeight + spacing.md }}
         bounces={false}
         overScrollMode="never"
@@ -185,9 +206,12 @@ export default function ProductScreen() {
         <Gallery images={images} title={product.title} />
 
         <View style={styles.info}>
-          <AppText variant="label" color={colors.primaryText} style={{ letterSpacing: vendorTracking }}>
-            {vendor}
-          </AppText>
+          <View style={styles.vendorRow}>
+            <AppText variant="label" color={colors.primaryText} style={[styles.vendor, { letterSpacing: vendorTracking }]}>
+              {vendor}
+            </AppText>
+            <IconButton name="share-outline" label={t('product.share')} color={colors.text} onPress={share} />
+          </View>
           <AppText variant="title" accessibilityRole="header">
             {product.title}
           </AppText>
@@ -221,19 +245,21 @@ export default function ProductScreen() {
 
         <ReviewsSection productId={product.id} handle={product.handle} />
         <RelatedRails product={product} />
-      </ScrollView>
+      </Animated.ScrollView>
 
-      <View style={[styles.topBar, { top: insets.top + spacing.xs }]} pointerEvents="box-none">
-        <IconButton
-          filled
-          name={isRTL ? 'chevron-forward' : 'chevron-back'}
-          label={t('common.back')}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
-        />
-        <View style={styles.topActions}>
-          <IconButton filled name="share-outline" label={t('product.share')} onPress={share} />
-        </View>
+      <View style={[styles.floatingBack, { top: insets.top + spacing.xs }]}>
+        <IconButton filled name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} onPress={goBack} />
       </View>
+
+      <Animated.View
+        pointerEvents={collapsed ? 'auto' : 'none'}
+        style={[styles.compactBar, { paddingTop: insets.top, backgroundColor: colors.background, opacity: compactOpacity }]}>
+        <IconButton name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} color={colors.text} onPress={goBack} />
+        <AppText variant="bodyStrong" numberOfLines={1} style={styles.compactTitle}>
+          {product.title}
+        </AppText>
+        <IconButton name="bag-outline" label={t('tabs.cart')} color={colors.text} onPress={() => router.push('/cart')} />
+      </Animated.View>
 
       <View
         onLayout={(event) => setBarHeight(event.nativeEvent.layout.height)}
@@ -274,14 +300,25 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: spacing.sm, paddingVertical: 2, borderRadius: radius.sm },
   link: { minHeight: 44, justifyContent: 'center' },
   rails: { gap: spacing.xl, paddingTop: spacing.md },
-  topBar: {
+  vendorRow: { flexDirection: 'row', alignItems: 'center', marginVertical: -spacing.sm },
+  vendor: { flex: 1 },
+  floatingBack: { position: 'absolute', start: spacing.sm },
+  compactBar: {
     position: 'absolute',
-    start: spacing.sm,
-    end: spacing.sm,
+    top: 0,
+    start: 0,
+    end: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingBottom: spacing.xs,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
   },
-  topActions: { flexDirection: 'row', gap: spacing.sm },
+  compactTitle: { flex: 1, textAlign: 'center' },
   bottomBar: {
     position: 'absolute',
     start: 0,
