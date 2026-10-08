@@ -24,10 +24,9 @@ import { radius, spacing } from '@/theme/tokens';
 
 type ShopView = 'brands' | 'categories';
 
-const MAIN_CATEGORIES: { labelKey: string; handle: string; icon: IconName; wide?: true }[] = [
+const MAIN_CATEGORIES: { labelKey: string; handle: string; icon: IconName }[] = [
   { labelKey: 'home.forHer', handle: 'for-her', icon: 'flower-outline' },
   { labelKey: 'home.forHim', handle: 'for-him', icon: 'water-outline' },
-  { labelKey: 'home.homeIncense', handle: 'insence', icon: 'flame-outline', wide: true },
 ];
 
 function openCollection(handle: string) {
@@ -113,7 +112,7 @@ function Categories() {
             image={collections.data?.find((c) => c.handle === tile.handle)?.image ?? null}
             fallbackIcon={tile.icon}
             onPress={() => openCollection(tile.handle)}
-            style={tile.wide ? styles.wideTile : { width: halfWidth }}
+            style={{ width: halfWidth }}
           />
         ))}
       </View>
@@ -172,6 +171,5 @@ const styles = StyleSheet.create({
   categories: { gap: spacing.lg },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   halfTile: { flexBasis: '48%', flexGrow: 1 },
-  wideTile: { width: '100%', aspectRatio: 3.2 },
   group: { gap: spacing.sm },
 });

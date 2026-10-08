@@ -11,6 +11,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { StatusBarBand } from '@/components/ui/StatusBarBand';
 import { OfflineBanner } from '@/components/ui/OfflineBanner';
 import { ToastProvider } from '@/components/ui/Toast';
 import { AuthProvider } from '@/features/auth/AuthProvider';
@@ -31,15 +32,16 @@ const queryClient = new QueryClient({
 });
 
 function Navigator() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const direction = useDirectionStyle();
   return (
     <>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background, ...direction } }}>
         <Stack.Screen name="checkout" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="order-confirmed" options={{ gestureEnabled: false }} />
       </Stack>
+      <StatusBarBand />
     </>
   );
 }

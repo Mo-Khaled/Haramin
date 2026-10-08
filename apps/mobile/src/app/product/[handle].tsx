@@ -223,8 +223,6 @@ export default function ProductScreen() {
         <RelatedRails product={product} />
       </ScrollView>
 
-      {/* Keeps scrolled content from running under the clock and battery icons. */}
-      <View style={[styles.statusBackdrop, { height: insets.top, backgroundColor: colors.background }]} />
       <View style={[styles.topBar, { top: insets.top + spacing.xs }]} pointerEvents="box-none">
         <IconButton
           filled
@@ -284,7 +282,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topActions: { flexDirection: 'row', gap: spacing.sm },
-  statusBackdrop: { position: 'absolute', top: 0, start: 0, end: 0 },
   bottomBar: {
     position: 'absolute',
     start: 0,
