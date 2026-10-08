@@ -16,4 +16,12 @@ export function initSentry(): void {
   });
 }
 
+/**
+ * For best-effort work (saving a preference, registering for push, opening a link): the app carries on without it,
+ * but the failure is still recorded instead of disappearing.
+ */
+export function reportFailure(error: unknown): void {
+  Sentry.captureException(error);
+}
+
 export { Sentry };

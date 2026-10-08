@@ -7,6 +7,7 @@ import { initReactI18next } from 'react-i18next';
 
 import ar from './ar.json';
 import en from './en.json';
+import { reportFailure } from '@/lib/sentry';
 
 export type AppLanguage = 'en' | 'ar';
 
@@ -50,8 +51,9 @@ async function reloadApp(): Promise<void> {
       const Updates = await import('expo-updates');
       await Updates.reloadAsync();
       return;
-    } catch {
+    } catch (error) {
       // Fall through to the JS reload.
+      reportFailure(error);
     }
   }
   DevSettings.reload();

@@ -25,6 +25,7 @@ export default function CollectionScreen() {
   const [sort, setSort] = useState<SortKey>('FEATURED');
   const [filters, setFilters] = useState<ActiveFilters>(NO_FILTERS);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const collection = useCollection(handle);
   const inputs = useMemo(() => toFilterInputs(filters), [filters]);
@@ -36,7 +37,7 @@ export default function CollectionScreen() {
 
   const sortLabel = t(SORT_OPTIONS.find((option) => option.key === sort)!.label);
   const toolbar = (
-    <View style={styles.toolbar}>
+    <View style={[styles.toolbar, { backgroundColor: colors.background }, scrolled && styles.toolbarRaised]}>
       <Pressable
         accessibilityRole="button"
         onPress={() => setSheetOpen(true)}
@@ -56,6 +57,7 @@ export default function CollectionScreen() {
         title={collection.data?.title}
         right={<IconButton name="search" label={t('search.placeholder')} color={colors.onHeader} onPress={() => router.push('/search')} />}
       />
+      {toolbar}
       {query.isLoading ? (
         <ProductGridSkeleton />
       ) : query.isError ? (
@@ -63,7 +65,7 @@ export default function CollectionScreen() {
       ) : (
         <ProductGrid
           products={products}
-          header={toolbar}
+          onScrolledChange={setScrolled}
           empty={
             <View style={styles.empty}>
               <EmptyState message={t('collection.empty')} />
@@ -91,7 +93,15 @@ export default function CollectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  toolbar: { flexDirection: 'row', justifyContent: 'flex-end', paddingBottom: spacing.sm },
+  // Pinned above the grid; the shadow appears once products slide underneath it.
+  toolbar: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: spacing.md, paddingBottom: spacing.xs, zIndex: 1 },
+  toolbarRaised: {
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
+  },
   control: { minHeight: minTouch, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   empty: { height: 300 },
 });

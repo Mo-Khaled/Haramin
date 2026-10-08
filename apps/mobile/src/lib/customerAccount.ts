@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as WebBrowser from 'expo-web-browser';
 
 import { env } from './env';
+import { reportFailure } from '@/lib/sentry';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -130,8 +131,9 @@ export async function signOut(session: Session): Promise<void> {
       const url = `${discovery.endSessionEndpoint}?id_token_hint=${encodeURIComponent(session.idToken)}&post_logout_redirect_uri=${encodeURIComponent(redirectUri)}`;
       await WebBrowser.openAuthSessionAsync(url, APP_RETURN_URL);
     }
-  } catch {
+  } catch (error) {
     // Local session is already cleared; remote logout is best-effort.
+    reportFailure(error);
   }
 }
 

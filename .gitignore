@@ -22,8 +22,8 @@ coverage
 Thumbs.db
 .idea
 
-# Local AI tooling (not part of the product); per-user Claude settings
+# Local AI tooling (not part of the product), including per-app Claude settings
 /.agents/
 /.claude/
+**/.claude/
 skills-lock.json
-**/.claude/settings.local.json

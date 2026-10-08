@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { Appearance, useColorScheme } from 'react-native';
 
 import { darkPalette, lightPalette, type Palette } from './tokens';
+import { reportFailure } from '@/lib/sentry';
 
 export type ThemePreference = 'system' | 'light' | 'dark';
 
@@ -34,13 +35,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           applyToNative(stored);
         }
       })
-      .catch(() => undefined);
+      .catch(reportFailure);
   }, []);
 
   const setPreference = useCallback((next: ThemePreference) => {
     setPreferenceState(next);
     applyToNative(next);
-    AsyncStorage.setItem(STORAGE_KEY, next).catch(() => undefined);
+    AsyncStorage.setItem(STORAGE_KEY, next).catch(reportFailure);
   }, []);
 
   const isDark = preference === 'system' ? scheme === 'dark' : preference === 'dark';

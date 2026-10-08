@@ -104,9 +104,6 @@ importers:
       expo-dev-client:
         specifier: ~57.0.19
         version: 57.0.19(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))
-      expo-device:
-        specifier: ~57.0.2
-        version: 57.0.2(expo@57.0.26)
       expo-font:
         specifier: ~57.0.4
         version: 57.0.4(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)
@@ -152,12 +149,6 @@ importers:
       expo-web-browser:
         specifier: ~57.0.3
         version: 57.0.3(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))
-      graphql:
-        specifier: ^17.0.2
-        version: 17.0.2
-      graphql-request:
-        specifier: ^7.4.0
-        version: 7.4.0(graphql@17.0.2)
       i18next:
         specifier: ^26.4.2
         version: 26.4.2(typescript@6.0.3)
@@ -1123,11 +1114,6 @@ packages:
 
   '@fastify/rate-limit@10.3.0':
     resolution: {integrity: sha512-eIGkG9XKQs0nyynatApA3EVrojHOuq4l6fhB4eeCk4PIOeadvOJz9/4w3vGI44Go17uaXOWEcPkaD8kuKm7g6Q==}
-
-  '@graphql-typed-document-node/core@3.2.0':
-    resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
-    peerDependencies:
-      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
   '@ioredis/commands@1.10.0':
     resolution: {integrity: sha512-UmeW7z4LfctwoQ5wkhVzgq8tXkreED2xZGpX+Bg+zA+WJFZCT6c062AfCK/Dfk81xZnnwdhJCUMkitihRaoC2Q==}
@@ -2764,11 +2750,6 @@ packages:
       expo: '*'
       react-native: '*'
 
-  expo-device@57.0.2:
-    resolution: {integrity: sha512-1A0/FICR3CgrH43FeiDQP3l5eHDmiMoh4EjXfhfoHHkMgdBQdyD0kwDWskiGZlQ3E0Nd0LHkCFH6vJ1ofm/jow==}
-    peerDependencies:
-      expo: '*'
-
   expo-eas-client@57.0.4:
     resolution: {integrity: sha512-VSPi6Kldu0EpPkC2e3bv3QNAUVDogbz1tTj7KgcdbsuUySt0hu24g4f1fJ/YjYzCw9G1l755x4QQctcX1j7UEA==}
 
@@ -3109,15 +3090,6 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
-
-  graphql-request@7.4.0:
-    resolution: {integrity: sha512-xfr+zFb/QYbs4l4ty0dltqiXIp07U6sl+tOKAb0t50/EnQek6CVVBLjETXi+FghElytvgaAWtIOt3EV7zLzIAQ==}
-    peerDependencies:
-      graphql: 14 - 16
-
-  graphql@17.0.2:
-    resolution: {integrity: sha512-FRWbddMxfkjiB7z+aQDWIR+E34xo9I8c9mtK2RPv8PmMzKRvrdsreHL/Ui/TmwHJfhHChEtsFPyMHKI+xuarQQ==}
-    engines: {node: ^22.0.0 || ^24.0.0 || ^25.0.0 || >=26.0.0}
 
   has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
@@ -4406,10 +4378,6 @@ packages:
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
-    hasBin: true
-
-  ua-parser-js@0.7.41:
-    resolution: {integrity: sha512-O3oYyCMPYgNNHuO7Jjk3uacJWZF8loBgwrfd/5LE/HyZ3lUIOdniQ7DNXJcIgZbwioZxk0fLfI4EVnetdiX5jg==}
     hasBin: true
 
   ua-parser-js@1.0.41:
@@ -5728,10 +5696,6 @@ snapshots:
       '@lukeed/ms': 2.0.2
       fastify-plugin: 5.1.0
       toad-cache: 3.7.4
-
-  '@graphql-typed-document-node/core@3.2.0(graphql@17.0.2)':
-    dependencies:
-      graphql: 17.0.2
 
   '@ioredis/commands@1.10.0': {}
 
@@ -7495,11 +7459,6 @@ snapshots:
       expo-dev-menu-interface: 57.0.0(expo@57.0.26)
       react-native: 0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3)
 
-  expo-device@57.0.2(expo@57.0.26):
-    dependencies:
-      expo: 57.0.26(@babel/core@7.29.7)(@expo/dom-webview@57.0.1)(@expo/metro-runtime@57.0.16)(expo-router@57.0.24)(react-dom@19.2.3(react@19.2.3))(react-native-web@0.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native-webview@13.16.1(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3))(react-native-worklets@0.10.1(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)
-      ua-parser-js: 0.7.41
-
   expo-eas-client@57.0.4: {}
 
   expo-file-system@57.0.7(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.7)(@react-native/metro-config@0.86.3(@babel/core@7.29.7))(@types/react@19.2.18)(react@19.2.3)):
@@ -7910,13 +7869,6 @@ snapshots:
       path-scurry: 2.0.2
 
   graceful-fs@4.2.11: {}
-
-  graphql-request@7.4.0(graphql@17.0.2):
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@17.0.2)
-      graphql: 17.0.2
-
-  graphql@17.0.2: {}
 
   has-flag@3.0.0: {}
 
@@ -9379,8 +9331,6 @@ snapshots:
   type-fest@0.7.1: {}
 
   typescript@6.0.3: {}
-
-  ua-parser-js@0.7.41: {}
 
   ua-parser-js@1.0.41: {}
 

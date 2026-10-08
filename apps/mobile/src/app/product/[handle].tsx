@@ -32,7 +32,7 @@ import { useWishlist } from '@/features/wishlist/WishlistProvider';
 import { discountPercent, formatMoney } from '@/lib/format';
 import { htmlToText } from '@/lib/html';
 import { SHOP_URL } from '@/lib/shopify/client';
-import type { ProductDetail, ShopImage } from '@/lib/shopify/types';
+import type { Money, ProductDetail, ProductVariant, ShopImage } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { usePagedList, useIsRTL, useTracking } from '@/lib/direction';
@@ -145,26 +145,171 @@ function LoadingProduct() {
   );
 }
 
-export default function ProductScreen() {
-  const { handle } = useLocalSearchParams<{ handle: string }>();
-  const { t, i18n } = useTranslation();
-  const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
+/** Scroll position drives the compact bar: it fades in as the photo scrolls away and only then takes touches. */
+function useCompactBar() {
   const { width } = useWindowDimensions();
-  const { add, busy } = useAddToCart();
-  const wishlist = useWishlist();
-  const isRTL = useIsRTL();
-  const query = useProduct(handle);
-  const product = query.data;
-  const vendor = useBrandName(product?.vendor ?? '');
-  const vendorTracking = useTracking(1);
-  const [selection, setSelection] = useState<Selection>({});
-  // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
-  const [barHeight, setBarHeight] = useState(0);
+  const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [collapsed, setCollapsed] = useState(false);
   const fadeEnd = width * GALLERY_RATIO - insets.top;
-  const compactOpacity = scrollY.interpolate({ inputRange: [fadeEnd - COMPACT_FADE, fadeEnd], outputRange: [0, 1], extrapolate: 'clamp' });
+  const opacity = scrollY.interpolate({ inputRange: [fadeEnd - COMPACT_FADE, fadeEnd], outputRange: [0, 1], extrapolate: 'clamp' });
+  const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+    useNativeDriver: true,
+    listener: (event: { nativeEvent: { contentOffset: { y: number } } }) =>
+      setCollapsed(event.nativeEvent.contentOffset.y > fadeEnd - COMPACT_FADE / 2),
+  });
+  return { opacity, collapsed, onScroll };
+}
+
+function CompactBar({ title, opacity, collapsed }: { title: string; opacity: Animated.AnimatedInterpolation<number>; collapsed: boolean }) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const isRTL = useIsRTL();
+  return (
+    <Animated.View
+      pointerEvents={collapsed ? 'auto' : 'none'}
+      style={[styles.compactBar, { paddingTop: insets.top, backgroundColor: colors.background, opacity }]}>
+      <IconButton name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} color={colors.text} onPress={goBack} />
+      <AppText variant="bodyStrong" numberOfLines={1} style={styles.compactTitle}>
+        {title}
+      </AppText>
+      <IconButton name="bag-outline" label={t('tabs.cart')} color={colors.text} onPress={() => router.push('/cart')} />
+    </Animated.View>
+  );
+}
+
+function FloatingBack() {
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const isRTL = useIsRTL();
+  return (
+    <View style={[styles.floatingBack, { top: insets.top + spacing.xs }]}>
+      <IconButton filled name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} onPress={goBack} />
+    </View>
+  );
+}
+
+interface SummaryProps {
+  product: ProductDetail;
+  price: Money;
+  compareAt: Money | null;
+}
+
+/** Brand (with share), name, rating, type and price, directly under the photo. */
+function ProductSummary({ product, price, compareAt }: SummaryProps) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const vendor = useBrandName(product.vendor);
+  const vendorTracking = useTracking(1);
+  const percent = discountPercent(price.amount, compareAt?.amount);
+  const share = () => Share.share({ message: `${product.title}\n${SHOP_URL}/products/${product.handle}` });
+
+  return (
+    <>
+      <View style={styles.vendorRow}>
+        <AppText variant="label" color={colors.primaryText} style={[styles.vendor, { letterSpacing: vendorTracking }]}>
+          {vendor}
+        </AppText>
+        <IconButton name="share-outline" label={t('product.share')} color={colors.text} onPress={share} />
+      </View>
+      <AppText variant="title" accessibilityRole="header">
+        {product.title}
+      </AppText>
+      <RatingLine handle={product.handle} />
+      {product.productType ? <AppText muted>{product.productType}</AppText> : null}
+      <View style={styles.priceRow}>
+        <Price price={price} compareAt={compareAt} large />
+        {percent ? (
+          <View style={[styles.badge, { backgroundColor: colors.primary }]}>
+            <AppText variant="caption" color={colors.onPrimary}>
+              {t('common.off', { percent })}
+            </AppText>
+          </View>
+        ) : null}
+      </View>
+    </>
+  );
+}
+
+interface AddToCartBarProps {
+  productId: string;
+  variant: ProductVariant | undefined;
+  price: Money;
+  onHeight: (height: number) => void;
+}
+
+function AddToCartBar({ productId, variant, price, onHeight }: AddToCartBarProps) {
+  const { t, i18n } = useTranslation();
+  const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { add, busy } = useAddToCart();
+  const wishlist = useWishlist();
+  const saved = wishlist.has(productId);
+  const available = !!variant?.availableForSale;
+
+  return (
+    <View
+      onLayout={(event) => onHeight(event.nativeEvent.layout.height)}
+      style={[styles.bottomBar, { backgroundColor: colors.background, borderColor: colors.border, paddingBottom: insets.bottom + spacing.sm }]}>
+      <Button
+        style={styles.addButton}
+        label={
+          available
+            ? t('product.addToBagPrice', { price: formatMoney(price.amount, i18n.language, price.currencyCode) })
+            : t('product.unavailable')
+        }
+        onPress={() => variant && add(variant.id)}
+        loading={busy}
+        disabled={!available}
+      />
+      <View style={[styles.heart, { borderColor: colors.border }]}>
+        <IconButton
+          name={saved ? 'heart' : 'heart-outline'}
+          color={saved ? colors.danger : colors.text}
+          label={t(saved ? 'product.removeFromWishlist' : 'product.addToWishlist')}
+          onPress={() => wishlist.toggle(productId)}
+        />
+      </View>
+    </View>
+  );
+}
+
+function ProductDetails({ product, selection, onSelect }: { product: ProductDetail; selection: Selection; onSelect: (next: Selection) => void }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <VariantPicker product={product} selection={selection} onChange={onSelect} />
+      <FragranceJourney notes={product.notes} />
+      <BestForChips bestFor={parseBestFor(product.tags)} />
+      <DeliveryEstimate />
+      <View>
+        {product.description ? (
+          <Accordion title={t('product.description')} initiallyOpen>
+            <AppText muted>{htmlToText(product.descriptionHtml)}</AppText>
+          </Accordion>
+        ) : null}
+        <BrandSection product={product} />
+      </View>
+    </>
+  );
+}
+
+function galleryImages(product: ProductDetail): ShopImage[] {
+  if (product.images.length > 0) return product.images;
+  return product.featuredImage ? [product.featuredImage] : [];
+}
+
+export default function ProductScreen() {
+  const { handle } = useLocalSearchParams<{ handle: string }>();
+  const { t } = useTranslation();
+  const { colors, isDark } = useTheme();
+  const query = useProduct(handle);
+  const product = query.data;
+  const [selection, setSelection] = useState<Selection>({});
+  // Measured so the page ends exactly above the add-to-cart bar instead of leaving empty space below.
+  const [barHeight, setBarHeight] = useState(0);
+  const compact = useCompactBar();
 
   useEffect(() => {
     if (product) setSelection(initialSelection(product));
@@ -183,11 +328,6 @@ export default function ProductScreen() {
   const variant = findVariant(product, selection);
   const price = variant?.price ?? product.price;
   const compareAt = variant ? variant.compareAtPrice : product.compareAtPrice;
-  const percent = discountPercent(price.amount, compareAt?.amount);
-  const saved = wishlist.has(product.id);
-  const images = product.images.length > 0 ? product.images : product.featuredImage ? [product.featuredImage] : [];
-  const available = !!variant?.availableForSale;
-  const share = () => Share.share({ message: `${product.title}\n${SHOP_URL}/products/${product.handle}` });
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -195,98 +335,22 @@ export default function ProductScreen() {
       <Animated.ScrollView
         contentInsetAdjustmentBehavior="never"
         scrollEventThrottle={16}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-          useNativeDriver: true,
-          listener: (event: { nativeEvent: { contentOffset: { y: number } } }) =>
-            setCollapsed(event.nativeEvent.contentOffset.y > fadeEnd - COMPACT_FADE / 2),
-        })}
+        onScroll={compact.onScroll}
         contentContainerStyle={{ paddingBottom: barHeight + spacing.md }}
         {...NO_OVERSCROLL}
         showsVerticalScrollIndicator={false}>
-        <Gallery images={images} title={product.title} />
-
+        <Gallery images={galleryImages(product)} title={product.title} />
         <View style={styles.info}>
-          <View style={styles.vendorRow}>
-            <AppText variant="label" color={colors.primaryText} style={[styles.vendor, { letterSpacing: vendorTracking }]}>
-              {vendor}
-            </AppText>
-            <IconButton name="share-outline" label={t('product.share')} color={colors.text} onPress={share} />
-          </View>
-          <AppText variant="title" accessibilityRole="header">
-            {product.title}
-          </AppText>
-          <RatingLine handle={product.handle} />
-          {product.productType ? <AppText muted>{product.productType}</AppText> : null}
-          <View style={styles.priceRow}>
-            <Price price={price} compareAt={compareAt} large />
-            {percent ? (
-              <View style={[styles.badge, { backgroundColor: colors.primary }]}>
-                <AppText variant="caption" color={colors.onPrimary}>
-                  {t('common.off', { percent })}
-                </AppText>
-              </View>
-            ) : null}
-          </View>
-
-          <VariantPicker product={product} selection={selection} onChange={setSelection} />
-          <FragranceJourney notes={product.notes} />
-          <BestForChips bestFor={parseBestFor(product.tags)} />
-          <DeliveryEstimate />
-
-          <View>
-            {product.description ? (
-              <Accordion title={t('product.description')} initiallyOpen>
-                <AppText muted>{htmlToText(product.descriptionHtml)}</AppText>
-              </Accordion>
-            ) : null}
-            <BrandSection product={product} />
-          </View>
+          <ProductSummary product={product} price={price} compareAt={compareAt} />
+          <ProductDetails product={product} selection={selection} onSelect={setSelection} />
         </View>
-
         <ReviewsSection productId={product.id} handle={product.handle} />
         <RelatedRails product={product} />
       </Animated.ScrollView>
 
-      <View style={[styles.floatingBack, { top: insets.top + spacing.xs }]}>
-        <IconButton filled name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} onPress={goBack} />
-      </View>
-
-      <Animated.View
-        pointerEvents={collapsed ? 'auto' : 'none'}
-        style={[styles.compactBar, { paddingTop: insets.top, backgroundColor: colors.background, opacity: compactOpacity }]}>
-        <IconButton name={isRTL ? 'chevron-forward' : 'chevron-back'} label={t('common.back')} color={colors.text} onPress={goBack} />
-        <AppText variant="bodyStrong" numberOfLines={1} style={styles.compactTitle}>
-          {product.title}
-        </AppText>
-        <IconButton name="bag-outline" label={t('tabs.cart')} color={colors.text} onPress={() => router.push('/cart')} />
-      </Animated.View>
-
-      <View
-        onLayout={(event) => setBarHeight(event.nativeEvent.layout.height)}
-        style={[
-          styles.bottomBar,
-          { backgroundColor: colors.background, borderColor: colors.border, paddingBottom: insets.bottom + spacing.sm },
-        ]}>
-        <Button
-          style={styles.addButton}
-          label={
-            available
-              ? t('product.addToBagPrice', { price: formatMoney(price.amount, i18n.language, price.currencyCode) })
-              : t('product.unavailable')
-          }
-          onPress={() => variant && add(variant.id)}
-          loading={busy}
-          disabled={!available}
-        />
-        <View style={[styles.heart, { borderColor: colors.border }]}>
-          <IconButton
-            name={saved ? 'heart' : 'heart-outline'}
-            color={saved ? colors.danger : colors.text}
-            label={t(saved ? 'product.removeFromWishlist' : 'product.addToWishlist')}
-            onPress={() => wishlist.toggle(product.id)}
-          />
-        </View>
-      </View>
+      <FloatingBack />
+      <CompactBar title={product.title} opacity={compact.opacity} collapsed={compact.collapsed} />
+      <AddToCartBar productId={product.id} variant={variant} price={price} onHeight={setBarHeight} />
     </View>
   );
 }

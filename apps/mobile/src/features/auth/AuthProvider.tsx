@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { unregisterDevice } from '@/features/notifications/registeredDevice';
+import { reportFailure } from '@/lib/sentry';
 import {
   fetchProfile,
   isSignInConfigured,
@@ -10,6 +11,12 @@ import {
   type CustomerProfile,
   type Session,
 } from '@/lib/customerAccount';
+
+/** The account still works without the profile (name, email); the greeting just falls back. */
+function profileUnavailable(error: unknown): null {
+  reportFailure(error);
+  return null;
+}
 
 interface AuthContextValue {
   session: Session | null;
@@ -29,14 +36,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const hydrate = useCallback(async (next: Session | null) => {
     setSession(next);
-    setCustomer(next ? await fetchProfile(next.accessToken).catch(() => null) : null);
+    setCustomer(next ? await fetchProfile(next.accessToken).catch(profileUnavailable) : null);
   }, []);
 
   useEffect(() => {
     if (!isSignInConfigured) return;
     loadSession()
       .then(hydrate)
-      .catch(() => hydrate(null))
+      .catch((error: unknown) => {
+        reportFailure(error);
+        return hydrate(null);
+      })
       .finally(() => setLoading(false));
   }, [hydrate]);
 

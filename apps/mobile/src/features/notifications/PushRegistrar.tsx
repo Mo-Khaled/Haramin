@@ -9,6 +9,7 @@ import { backend } from '@/lib/backend';
 import { env } from '@/lib/env';
 
 import { rememberRegisteredDevice } from './registeredDevice';
+import { reportFailure } from '@/lib/sentry';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -42,8 +43,9 @@ export function PushRegistrar() {
           await backend.registerDevice(session.accessToken, token, Platform.OS, i18n.language === 'ar' ? 'ar' : 'en');
           rememberRegisteredDevice(token);
         }
-      } catch {
+      } catch (error) {
         // Push is optional; failing to register must never block the app.
+        reportFailure(error);
       }
     })();
     return () => {

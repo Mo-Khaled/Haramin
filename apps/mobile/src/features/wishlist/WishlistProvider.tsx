@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { backend } from '@/lib/backend';
 import { haptics } from '@/lib/haptics';
+import { reportFailure } from '@/lib/sentry';
 
 /** Last known server list, so hearts render instantly on launch before the network answers. */
 const CACHE_KEY = 'haramain.wishlist';
@@ -27,7 +28,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const store = useCallback((next: string[]) => {
     setIds(next);
-    AsyncStorage.setItem(CACHE_KEY, JSON.stringify(next)).catch(() => undefined);
+    AsyncStorage.setItem(CACHE_KEY, JSON.stringify(next)).catch(reportFailure);
   }, []);
 
   // The wishlist belongs to the signed-in customer: load theirs, and drop it when the session ends.
@@ -35,22 +36,22 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (loading) return;
     if (!session) {
       setIds([]);
-      AsyncStorage.removeItem(CACHE_KEY).catch(() => undefined);
+      AsyncStorage.removeItem(CACHE_KEY).catch(reportFailure);
       return;
     }
     AsyncStorage.getItem(CACHE_KEY)
       .then((raw) => raw && setIds(JSON.parse(raw) as string[]))
-      .catch(() => undefined);
+      .catch(reportFailure);
     backend
       .getWishlist(session.accessToken)
       .then(store)
-      .catch(() => undefined); // Offline: keep showing the cached list.
+      .catch(reportFailure); // Offline: keep showing the cached list.
   }, [session, loading, store]);
 
   const promptSignIn = useCallback(() => {
     Alert.alert(t('wishlist.signInTitle'), t('wishlist.signInBody'), [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('account.signIn'), onPress: () => auth.signIn().catch(() => undefined) },
+      { text: t('account.signIn'), onPress: () => auth.signIn().catch(reportFailure) },
     ]);
   }, [auth, t]);
 

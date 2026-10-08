@@ -13,6 +13,7 @@ import { formatMoney } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
 import { NO_OVERSCROLL } from '@/lib/scroll';
+import { reportFailure } from '@/lib/sentry';
 
 function OrderRow({ order }: { order: OrderSummary }) {
   const { t, i18n } = useTranslation();
@@ -46,7 +47,7 @@ function OrderRow({ order }: { order: OrderSummary }) {
 
 /** Tracking links come from fulfillment data, so only plain web links may open (never tel:, intent: or app schemes). */
 function openTrackingUrl(url: string): void {
-  if (/^https:\/\//i.test(url)) Linking.openURL(url).catch(() => undefined);
+  if (/^https:\/\//i.test(url)) Linking.openURL(url).catch(reportFailure);
 }
 
 export default function OrdersScreen() {

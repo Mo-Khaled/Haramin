@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 
 import { withRecent } from '@/features/catalog/recentlyViewed';
+import { reportFailure } from '@/lib/sentry';
 
 const STORAGE_KEY = 'haramain.recentSearches';
 const MAX_SEARCHES = 8;
@@ -13,12 +14,12 @@ export function useRecentSearches() {
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
       .then((raw) => raw && setSearches(JSON.parse(raw) as string[]))
-      .catch(() => undefined);
+      .catch(reportFailure);
   }, []);
 
   const persist = useCallback((next: string[]) => {
     setSearches(next);
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => undefined);
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(reportFailure);
   }, []);
 
   const remember = useCallback(

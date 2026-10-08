@@ -1,4 +1,5 @@
 import { backend } from '@/lib/backend';
+import { reportFailure } from '@/lib/sentry';
 
 let registeredToken: string | null = null;
 
@@ -11,5 +12,5 @@ export async function unregisterDevice(accessToken: string): Promise<void> {
   const token = registeredToken;
   registeredToken = null;
   if (!token) return;
-  await backend.unregisterDevice(accessToken, token).catch(() => undefined);
+  await backend.unregisterDevice(accessToken, token).catch(reportFailure);
 }

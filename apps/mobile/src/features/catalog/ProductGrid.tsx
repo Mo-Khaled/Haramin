@@ -1,5 +1,5 @@
 import { useCallback, useState, type ReactElement } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
 import type { ProductCard } from '@/lib/shopify/types';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -19,12 +19,18 @@ interface Props {
   stickyHeaderIndices?: number[];
   refreshing?: boolean;
   onRefresh?: () => void;
+  /** Told whether the list has left its top, e.g. to show a shadow under a pinned toolbar. */
+  onScrolledChange?: (scrolled: boolean) => void;
 }
 
-export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, stickyHeaderIndices, refreshing, onRefresh }: Props) {
+export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, stickyHeaderIndices, refreshing, onRefresh, onScrolledChange }: Props) {
   const { colors } = useTheme();
   const [quickView, setQuickView] = useState<ProductCard | null>(null);
   const topBounce = useTopOnlyBounce();
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    topBounce.onScroll(event);
+    onScrolledChange?.(event.nativeEvent.contentOffset.y > 0);
+  };
 
   const renderItem = useCallback(
     ({ item }: { item: ProductCard }) => (
@@ -39,6 +45,8 @@ export function ProductGrid({ products, header, empty, onEndReached, loadingMore
     <>
       <FlatList
         {...(onRefresh ? topBounce : NO_OVERSCROLL)}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         data={products}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
