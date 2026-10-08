@@ -8,10 +8,11 @@ import { ListRow } from '@/components/ui/ListRow';
 import type { IconName } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { RowGroup } from '@/components/ui/RowGroup';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { HeaderSearch } from '@/components/ui/HeaderSearch';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/States';
+import { TabHeader } from '@/components/ui/TabHeader';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { useBrandName } from '@/features/catalog/brandNames';
 import { useCollections } from '@/features/catalog/hooks';
@@ -137,11 +138,13 @@ export default function ShopScreen() {
   }, [params.view]);
 
   return (
-    <TabScroll contentContainerStyle={styles.page}>
-      <AppText variant="title" accessibilityRole="header">
-        {t('shop.title')}
-      </AppText>
-      <SearchBar placeholder={t('search.placeholder')} />
+    <TabScroll
+      header={
+        <TabHeader title={t('shop.title')}>
+          <HeaderSearch placeholder={t('search.placeholder')} />
+        </TabHeader>
+      }>
+      <View style={styles.page}>
       <SegmentedControl<ShopView>
         value={view}
         onChange={setView}
@@ -151,12 +154,13 @@ export default function ShopScreen() {
         ]}
       />
       {view === 'brands' ? <BrandsGrid /> : <Categories />}
+      </View>
     </TabScroll>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl * 2 },
+  page: { padding: spacing.md, gap: spacing.md, paddingBottom: spacing.xxl },
   center: { textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.xs },
   gridCell: { width: '50%', padding: spacing.xs },

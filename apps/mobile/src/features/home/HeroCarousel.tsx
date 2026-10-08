@@ -42,7 +42,7 @@ export function HeroCarousel() {
             accessibilityRole="link"
             accessibilityLabel={item.label}
             onPress={() => open(item)}
-            style={[styles.slide, { width: slideWidth, backgroundColor: colors.surfaceAlt }]}>
+            style={[styles.slide, { width: slideWidth, backgroundColor: colors.surfaceAlt, borderColor: colors.border }]}>
             <Image source={{ uri: item.image }} style={styles.image} contentFit="cover" transition={200} cachePolicy="memory-disk" />
           </PressableScale>
         )}
@@ -62,7 +62,7 @@ export function HeroCarousel() {
 const styles = StyleSheet.create({
   wrap: { gap: spacing.sm },
   list: { paddingHorizontal: spacing.md, gap: spacing.sm },
-  slide: { aspectRatio: PHONE_ASPECT, borderRadius: radius.lg, overflow: 'hidden' },
+  slide: { aspectRatio: PHONE_ASPECT, borderRadius: radius.lg, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth },
   image: { width: '100%', height: '100%' },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: spacing.xs },
   dot: { height: 6, borderRadius: radius.pill },

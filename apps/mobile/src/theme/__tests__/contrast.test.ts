@@ -48,6 +48,15 @@ describe.each([
   });
 });
 
+describe.each([
+  ['light', lightPalette],
+  ['dark', darkPalette],
+])('%s header block', (_name, palette) => {
+  it('keeps header text legible on the brand block', () => {
+    expect(contrast(palette.onHeader, palette.header)).toBeGreaterThanOrEqual(7);
+  });
+});
+
 describe('dark palette character', () => {
   it('keeps button text strongly legible on the wine fill', () => {
     expect(contrast(darkPalette.onPrimary, darkPalette.primary)).toBeGreaterThanOrEqual(6);

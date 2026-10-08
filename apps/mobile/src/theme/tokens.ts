@@ -14,6 +14,9 @@ export interface Palette {
   success: string;
   overlay: string;
   onOverlay: string;
+  /** Brand block behind the clock, logo, titles and category row at the top of every screen. */
+  header: string;
+  onHeader: string;
 }
 
 export const lightPalette: Palette = {
@@ -30,6 +33,8 @@ export const lightPalette: Palette = {
   success: '#2F6B3F',
   overlay: 'rgba(30, 11, 12, 0.5)',
   onOverlay: '#FFFFFF',
+  header: '#6E2931',
+  onHeader: '#FBF5EE',
 };
 
 export const darkPalette: Palette = {
@@ -46,6 +51,8 @@ export const darkPalette: Palette = {
   success: '#7FD39A',
   overlay: 'rgba(0, 0, 0, 0.6)',
   onOverlay: '#FFFFFF',
+  header: '#5E2530',
+  onHeader: '#FBF5EE',
 };
 
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 } as const;

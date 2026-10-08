@@ -11,7 +11,8 @@
       "bundleIdentifier": "com.haramain.app",
       "supportsTablet": true,
       "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
+        "CFBundleAllowMixedLocalizations": true,
+        "ExpoLocalization_supportsRTL": true
       }
     },
     "android": {
@@ -42,7 +43,12 @@
           }
         }
       ],
-      ["expo-localization", { "supportsRTL": true }],
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true
+        }
+      ],
       "expo-secure-store",
       "expo-font",
       "expo-notifications",
@@ -62,7 +68,17 @@
     },
     "extra": {
       "supportsRTL": true,
-      "eas": {}
+      "eas": {
+        "projectId": "1115ca0f-b760-484b-8ce0-a7cba9e80f82"
+      },
+      "router": {}
+    },
+    "owner": "mo_4222",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1115ca0f-b760-484b-8ce0-a7cba9e80f82"
     }
   }
 }

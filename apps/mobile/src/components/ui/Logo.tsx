@@ -6,14 +6,14 @@ import { useTheme } from '@/theme/ThemeProvider';
 const LOGO = require('@/assets/images/logo.png');
 
 /** The wordmark is single-colour on a transparent background, so it is tinted to stay legible in both themes. */
-export function Logo() {
+export function Logo({ tintColor }: { tintColor?: string }) {
   const { colors } = useTheme();
   return (
     <Image
       source={LOGO}
       style={styles.logo}
       contentFit="contain"
-      tintColor={colors.primaryText}
+      tintColor={tintColor ?? colors.primaryText}
       accessibilityLabel="Haramain Perfumes"
     />
   );

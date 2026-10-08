@@ -29,7 +29,7 @@ export function CollectionTile({ title, image, fallbackIcon, onPress, style }: P
   const { colors } = useTheme();
   const tracking = useTracking(0.5);
   return (
-    <PressableScale accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={[styles.tile, { backgroundColor: colors.primary }, style]}>
+    <PressableScale accessibilityRole="button" accessibilityLabel={title} onPress={onPress} style={[styles.tile, { backgroundColor: colors.primary, borderColor: colors.border }, style]}>
       {image ? (
         <Image source={{ uri: sizedImage(image.url, IMAGE_WIDTH) }} style={styles.image} contentFit="cover" transition={150} accessibilityIgnoresInvertColors />
       ) : (
@@ -47,7 +47,7 @@ export function CollectionTile({ title, image, fallbackIcon, onPress, style }: P
 }
 
 const styles = StyleSheet.create({
-  tile: { aspectRatio: 3 / 4, borderRadius: radius.sm, overflow: 'hidden' },
+  tile: { aspectRatio: 3 / 4, borderRadius: radius.sm, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth },
   image: { width: '100%', height: '100%' },
   fallback: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.18)' },
   watermark: { opacity: 0.22 },

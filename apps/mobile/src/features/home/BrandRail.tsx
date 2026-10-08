@@ -16,14 +16,18 @@ const BAND_HEIGHT = 64;
 const LOGO_ASPECT = 4226 / 1421;
 const LOGO_WIDTH = Math.round(BAND_HEIGHT * LOGO_ASPECT);
 const TILE_GAP = 6;
-const CREAM = '#F6EEE6';
+/** Plain logos are drawn for white paper, so their tile is white; the border shows every tile is tappable. */
+const PLAIN_TILE = '#FFFFFF';
+const PLAIN_BORDER = '#C9A66B';
+const BANNER_BORDER = 'rgba(251, 245, 238, 0.55)';
 
 /** Brands whose collection image is a plain dark or gold logo, not a wine banner, so it needs a light tile. */
 const PLAIN_LOGO_BRANDS = new Set([
   'ajmal',
   'almas',
-  'amarah',
+  'amarah-perfumes',
   'arabiyat-sugar',
+  'asdaf',
   'banafa-for-oud',
   'french-avenue',
   'jean-antone',
@@ -38,7 +42,7 @@ export function BrandMark({ brand, width }: { brand: Brand; width: number }) {
     <View
       style={[
         styles.mark,
-        { width, aspectRatio: LOGO_ASPECT, backgroundColor: plain ? CREAM : lightPalette.primary },
+        { width, aspectRatio: LOGO_ASPECT, backgroundColor: plain ? PLAIN_TILE : lightPalette.primary, borderColor: plain ? PLAIN_BORDER : BANNER_BORDER },
         plain && styles.plainMark,
       ]}>
       {brand.logo ? (
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
   // Banner images carry their own wine background, so the band uses the same fixed colour in both themes.
   band: { backgroundColor: lightPalette.primary, height: BAND_HEIGHT + TILE_GAP * 2 },
   bandLogo: { width: LOGO_WIDTH - 8 + TILE_GAP, height: BAND_HEIGHT + TILE_GAP * 2, alignItems: 'center', justifyContent: 'center' },
-  mark: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: radius.sm },
+  mark: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderRadius: radius.sm, borderWidth: 1.5 },
   plainMark: { padding: 8 },
   logo: { width: '100%', height: '100%' },
 });

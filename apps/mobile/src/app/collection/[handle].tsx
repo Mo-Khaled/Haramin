@@ -54,7 +54,7 @@ export default function CollectionScreen() {
     <Screen>
       <Header
         title={collection.data?.title}
-        right={<IconButton name="search" label={t('search.placeholder')} onPress={() => router.push('/search')} />}
+        right={<IconButton name="search" label={t('search.placeholder')} color={colors.onHeader} onPress={() => router.push('/search')} />}
       />
       {query.isLoading ? (
         <ProductGridSkeleton />

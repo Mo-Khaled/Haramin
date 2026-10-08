@@ -7,6 +7,7 @@ import { AppText } from '@/components/ui/AppText';
 import { Button } from '@/components/ui/Button';
 import { ListRow } from '@/components/ui/ListRow';
 import { RowGroup } from '@/components/ui/RowGroup';
+import { TabHeader } from '@/components/ui/TabHeader';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { STORE_INFO, whatsappUrl } from '@/features/info/storeInfo';
@@ -82,10 +83,8 @@ export default function AccountScreen() {
   const auth = useAuth();
 
   return (
-    <TabScroll contentContainerStyle={styles.content}>
-      <AppText variant="title" accessibilityRole="header">
-        {t('account.title')}
-      </AppText>
+    <TabScroll header={<TabHeader title={t('account.title')} />}>
+      <View style={styles.content}>
       <WelcomeCard />
 
       <Section title={t('account.manage')}>
@@ -129,6 +128,7 @@ export default function AccountScreen() {
           </RowGroup>
         </>
       ) : null}
+      </View>
     </TabScroll>
   );
 }

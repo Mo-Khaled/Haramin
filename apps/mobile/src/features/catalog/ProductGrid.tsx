@@ -13,13 +13,14 @@ interface Props {
   empty?: ReactElement | null;
   onEndReached?: () => void;
   loadingMore?: boolean;
-  /** Extra top padding when the grid is a tab screen's root (see useTabTopInset). */
+  /** Space above the list when the grid is a tab screen's root (see useTabTopInset). */
   topInset?: number;
+  stickyHeaderIndices?: number[];
   refreshing?: boolean;
   onRefresh?: () => void;
 }
 
-export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, refreshing, onRefresh }: Props) {
+export function ProductGrid({ products, header, empty, onEndReached, loadingMore, topInset = 0, stickyHeaderIndices, refreshing, onRefresh }: Props) {
   const { colors } = useTheme();
   const [quickView, setQuickView] = useState<ProductCard | null>(null);
 
@@ -40,9 +41,10 @@ export function ProductGrid({ products, header, empty, onEndReached, loadingMore
         renderItem={renderItem}
         numColumns={2}
         columnWrapperStyle={styles.row}
-        style={{ backgroundColor: colors.background }}
+        style={{ backgroundColor: colors.background, marginTop: topInset }}
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={[styles.content, { paddingTop: topInset, paddingBottom: spacing.xl }]}
+        contentContainerStyle={[styles.content, { paddingBottom: spacing.xl }]}
+        stickyHeaderIndices={stickyHeaderIndices}
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
         ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.primaryText} style={styles.footer} /> : null}

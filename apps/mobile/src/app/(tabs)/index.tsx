@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/ui/AppText';
 import { Logo } from '@/components/ui/Logo';
-import { SearchBar } from '@/components/ui/SearchBar';
+import { HeaderSearch } from '@/components/ui/HeaderSearch';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { localizedBrandName } from '@/features/catalog/brandNames';
 import { ProductRail } from '@/features/catalog/ProductRail';
@@ -20,9 +20,8 @@ import { TrustStrip } from '@/features/home/TrustStrip';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 
-/** Index of <CategoryTabs> among TabScroll's direct children; it sticks while scrolling (iOS only,
- * because Android draws under the status bar and a stuck header would sit beneath it). */
-const STICKY_TABS = Platform.OS === 'ios' ? [1] : undefined;
+/** Index of <CategoryTabs> among TabScroll's direct children; it stays pinned below the status bar band. */
+const STICKY_TABS = [1];
 
 function BrandWorlds() {
   const { t, i18n } = useTranslation();
@@ -52,14 +51,14 @@ export default function HomeScreen() {
   return (
     <TabScroll
       stickyHeaderIndices={STICKY_TABS}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.primaryText} />}>
-      <View style={styles.header}>
-        <Logo />
-        <AppText muted style={styles.tagline}>
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.onHeader} />}>
+      <View style={[styles.header, { backgroundColor: colors.header }]}>
+        <Logo tintColor={colors.onHeader} />
+        <AppText color={colors.onHeader} style={styles.tagline}>
           {t('home.tagline')}
         </AppText>
         <View style={styles.search}>
-          <SearchBar placeholder={t('home.search')} />
+          <HeaderSearch placeholder={t('home.search')} />
         </View>
       </View>
 
@@ -80,8 +79,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', gap: spacing.xs, paddingTop: spacing.md },
+  header: { alignItems: 'center', gap: spacing.xs, paddingTop: spacing.md, paddingBottom: spacing.xs },
   tagline: { textAlign: 'center' },
-  search: { alignSelf: 'stretch', paddingHorizontal: spacing.md, paddingTop: spacing.sm },
-  sections: { gap: spacing.xl, paddingTop: spacing.sm, paddingBottom: spacing.xxl },
+  search: { alignSelf: 'stretch', paddingHorizontal: spacing.md },
+  sections: { gap: spacing.xl, paddingTop: spacing.sm, paddingBottom: spacing.md },
 });

@@ -33,7 +33,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
       accessibilityRole="button"
       accessibilityLabel={product.title}
       onPress={() => router.push({ pathname: '/product/[handle]', params: { handle: product.handle } })}
-      style={[styles.card, { backgroundColor: colors.surface }]}>
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={[styles.imageWrap, { backgroundColor: colors.surfaceAlt }]}>
         {product.featuredImage ? (
           <Image
@@ -99,7 +99,7 @@ function ProductCardView({ product, onQuickAdd }: Props) {
 export const ProductCardItem = memo(ProductCardView);
 
 const styles = StyleSheet.create({
-  card: { flex: 1, borderRadius: radius.md, overflow: 'hidden' },
+  card: { flex: 1, borderRadius: radius.md, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth },
   imageWrap: { aspectRatio: 4 / 5, width: '100%' },
   image: { width: '100%', height: '100%' },
   badge: {

@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText } from '@/components/ui/AppText';
 import { BottleIllustration } from '@/components/ui/BottleIllustration';
 import { ProductGridSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState, ErrorState } from '@/components/ui/States';
+import { TabHeader } from '@/components/ui/TabHeader';
 import { TabScroll, useTabTopInset } from '@/components/ui/TabScroll';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { SignInPrompt } from '@/features/auth/SignInPrompt';
@@ -21,30 +21,29 @@ export default function WishlistScreen() {
   const query = useProductsByIds(ids);
   const topInset = useTabTopInset();
 
-  const title = (
-    <View style={styles.header}>
-      <AppText variant="title" accessibilityRole="header">
-        {t('tabs.wishlist')}
-      </AppText>
-    </View>
-  );
+  const header = <TabHeader title={t('tabs.wishlist')} />;
 
   if (!session) {
     return (
-      <TabScroll>
-        {title}
+      <TabScroll header={header}>
         <SignInPrompt message={t('wishlist.needSignIn')} />
       </TabScroll>
     );
   }
 
   if (ids.length > 0 && query.data) {
-    return <ProductGrid products={query.data} header={title} topInset={topInset} />;
+    return (
+      <ProductGrid
+        products={query.data}
+        header={<TabHeader title={t('tabs.wishlist')} style={styles.gridHeader} />}
+        stickyHeaderIndices={[0]}
+        topInset={topInset}
+      />
+    );
   }
 
   return (
-    <TabScroll>
-      {title}
+    <TabScroll header={header}>
       {ids.length === 0 ? (
         <EmptyState
           illustration={<BottleIllustration />}
@@ -65,5 +64,6 @@ export default function WishlistScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md },
+  // Cancels ProductGrid's side padding so the brand block spans the full width.
+  gridHeader: { marginHorizontal: -spacing.md, marginBottom: spacing.md },
 });

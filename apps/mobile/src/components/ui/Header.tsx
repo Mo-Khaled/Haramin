@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 import { IconButton } from './IconButton';
@@ -17,18 +18,20 @@ interface Props {
 export function Header({ title, right, showBack = true }: Props) {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const { colors } = useTheme();
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { backgroundColor: colors.header }]}>
       <View style={styles.side}>
         {showBack ? (
           <IconButton
             name={isRTL ? 'chevron-forward' : 'chevron-back'}
             label={t('common.back')}
+            color={colors.onHeader}
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
           />
         ) : null}
       </View>
-      <AppText variant="heading" numberOfLines={1} style={styles.title} accessibilityRole="header">
+      <AppText variant="heading" color={colors.onHeader} numberOfLines={1} style={styles.title} accessibilityRole="header">
         {title}
       </AppText>
       <View style={[styles.side, styles.sideEnd]}>{right}</View>

@@ -12,9 +12,11 @@ import { EmptyState, LoadingState } from '@/components/ui/States';
 import { useCart } from '@/features/cart/CartProvider';
 import { classifyCheckoutUrl } from '@/features/checkout/checkoutNavigation';
 import { env } from '@/lib/env';
+import { useTheme } from '@/theme/ThemeProvider';
 
 export default function CheckoutScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const cart = useCart();
   const finished = useRef(false);
   const checkoutUrl = cart.cart?.checkoutUrl;
@@ -68,7 +70,7 @@ export default function CheckoutScreen() {
       <Header
         title={t('checkout.title')}
         showBack={false}
-        right={<IconButton name="close" label={t('common.close')} onPress={confirmLeave} />}
+        right={<IconButton name="close" label={t('common.close')} color={colors.onHeader} onPress={confirmLeave} />}
       />
       <View style={styles.flex}>
         <WebView

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { EmptyState, LoadingState } from '@/components/ui/States';
+import { TabHeader } from '@/components/ui/TabHeader';
 import { TabScroll } from '@/components/ui/TabScroll';
 import { FreeShippingBar } from '@/features/cart/FreeShippingBar';
 import { useBrandName } from '@/features/catalog/brandNames';
@@ -181,9 +182,11 @@ export default function CartScreen() {
   const cart = useCart();
   const data = cart.cart;
 
+  const header = <TabHeader title={t('cart.title')} />;
+
   if (cart.loading) {
     return (
-      <TabScroll>
+      <TabScroll header={header}>
         <LoadingState />
       </TabScroll>
     );
@@ -191,23 +194,22 @@ export default function CartScreen() {
 
   if (!data || data.lines.length === 0) {
     return (
-      <TabScroll>
+      <TabScroll header={header}>
         <EmptyState message={t('cart.empty')} actionLabel={t('cart.continue')} onAction={() => router.push('/shop')} />
       </TabScroll>
     );
   }
 
   return (
-    <TabScroll contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <AppText variant="title" accessibilityRole="header">
-        {t('cart.title')}
-      </AppText>
-      <FreeShippingBar subtotal={parseFloat(data.subtotal.amount)} />
-      {data.lines.map((line) => (
-        <LineItem key={line.id} line={line} />
-      ))}
-      <DiscountField />
-      <OrderSummary />
+    <TabScroll header={header} keyboardShouldPersistTaps="handled">
+      <View style={styles.content}>
+        <FreeShippingBar subtotal={parseFloat(data.subtotal.amount)} />
+        {data.lines.map((line) => (
+          <LineItem key={line.id} line={line} />
+        ))}
+        <DiscountField />
+        <OrderSummary />
+      </View>
     </TabScroll>
   );
 }
